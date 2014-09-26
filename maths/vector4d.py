@@ -1,42 +1,49 @@
 import math
+from maths.point3d import Point3d
+from maths.vector2d import Vector2d
+from maths.vector3d import Vector3d
+
 
 class Vector4d:
-
     __slots__ = ['x', 'y', 'z', 'w']
 
-    def __init__(self, x:float=0.0, y:float=0.0, z:float=0.0, w:float=0.0):
+    def __init__(self, x: float=0.0, y: float=0.0, z: float=0.0, w: float=0.0):
         self.x = x
         self.y = y
         self.z = z
         self.w = w
 
     @staticmethod
-    def createFromVector2d(other, z:float=0.0, w:float=0.0):
+    def create_from_vector2d(other: Vector2d, z: float=0.0, w: float=0.0):
         return Vector4d(other.x, other.y, z, w)
 
     @staticmethod
-    def createFromVector3d(other, w:float=0.0):
+    def create_from_vector3d(other: Vector3d, w: float=0.0):
         return Vector4d(other.x, other.y, other.z, w)
 
     @staticmethod
-    def createFromPoint3d(other):
+    def create_from_point3d(other: Point3d):
         return Vector4d(other.x, other.y, other.z, 1.0)
 
     @staticmethod
-    def createFromVector4d(other):
+    def create_from_vector4d(other):
         return Vector4d(other.x, other.y, other.z, other.w)
 
     def dot(self, other) -> float:
         return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
 
-    def get_length(self)->float:
+    def get_length(self) -> float:
         return math.sqrt(self.get_length_squared())
 
-    def get_length_squared(self)->float:
+    def get_length_squared(self) -> float:
         return self.dot(self)
 
     def set_to_zero(self):
         self.x = self.y = self.z = self.w = 0.0
+
+    # Unary operator
+    def __neg__(self):
+        return Vector4d(-self.x, -self.y, -self.z, -self.w)
 
     def __len__(self):
         return 4
@@ -63,7 +70,7 @@ class Vector4d:
     def __ge__(self, other):
         raise NotImplemented
 
-    def __getitem__(self, key)->float:
+    def __getitem__(self, key) -> float:
         if key == 0:
             return self.x
         elif key == 1:
@@ -99,11 +106,12 @@ class Vector4d:
         elif type(other) == Vector4d:
             return Vector4d(self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w)
         elif type(other) == Matrix44:
-            obj = Vector4d()
-            mat_transpose = other.get_transpose()
-            for col in range(0, 4):
-                obj[col] = mat_transpose[col].dot(self)
-            return obj
+            return Vector4d(
+                self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0] + self.w * other[3][0],
+                self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1] + self.w * other[3][1],
+                self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2] + self.w * other[3][2],
+                self.x * other[0][3] + self.y * other[1][3] + self.z * other[2][3] + self.w * other[3][3]
+            )
         elif type(other) == Transform:
             return self * other.mat
         else:
@@ -128,6 +136,7 @@ class Vector4d:
     def __add__(self, other):
         from maths.vector3d import Vector3d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             return Vector4d(self.x + other, self.y + other, self.z + other, self.w + other)
         elif type(other) == Vector4d:
@@ -142,6 +151,7 @@ class Vector4d:
     def __iadd__(self, other):
         from maths.vector3d import Vector3d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             self.x += other
             self.y += other
@@ -169,6 +179,7 @@ class Vector4d:
     def __sub__(self, other):
         from maths.vector3d import Vector3d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             return Vector4d(self.x - other, self.y - other, self.z - other, self.w - other)
         elif type(other) == Vector4d:
@@ -183,6 +194,7 @@ class Vector4d:
     def __isub__(self, other):
         from maths.vector3d import Vector3d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             self.x -= other
             self.y -= other

@@ -1,31 +1,32 @@
 import math
 
+
 class Vector2d:
     __slots__ = ['x', 'y']
 
-    def __init__(self, x:float=0.0, y:float=0.0):
+    def __init__(self, x: float=0.0, y: float=0.0):
         self.x = x
         self.y = y
 
     @staticmethod
-    def createFromVector2d(other):
+    def create_from_vector2d(other):
         return Vector2d(other.x, other.y)
 
     @staticmethod
-    def createFromVector3d(other):
+    def create_from_vector3d(other):
         return Vector2d(other.x, other.y)
 
     @staticmethod
-    def createFromVector4d(other):
+    def create_from_vector4d(other):
         return Vector2d(other.x, other.y)
 
-    def dot(self, other)->float:
+    def dot(self, other) -> float:
         return self.x * other.x + self.y * other.y
 
-    def get_length(self)->float:
+    def get_length(self) -> float:
         return math.sqrt(self.get_length_squared())
 
-    def get_length_squared(self)->float:
+    def get_length_squared(self) -> float:
         return self.dot(self)
 
     def set_to_zero(self):
@@ -34,7 +35,11 @@ class Vector2d:
     def __len__(self):
         return 2
 
-    def __getitem__(self, key)->float:
+    # Unary operator
+    def __neg__(self):
+        return Vector2d(-self.x, -self.y)
+
+    def __getitem__(self, key) -> float:
         if key == 0:
             return self.x
         elif key == 1:
@@ -44,10 +49,11 @@ class Vector2d:
 
     def __eq__(self, other):
         from maths.config import CONST_EPSILON
+
         if type(other) is not Vector2d:
             return NotImplemented
 
-        if (self-other).get_length_squared() <= CONST_EPSILON:
+        if (self - other).get_length_squared() <= CONST_EPSILON:
             return True
 
         return False
@@ -64,7 +70,7 @@ class Vector2d:
     def __ge__(self, other):
         raise NotImplemented
 
-    def __setitem__(self, key:int, value:float):
+    def __setitem__(self, key: int, value: float):
         if key == 0:
             self.x = value
         elif key == 1:
@@ -78,7 +84,7 @@ class Vector2d:
     def __mul__(self, other):
         if type(other) == int or type(other) == float:
             return Vector2d(self.x * other, self.y * other)
-        elif type(other)== Vector2d:
+        elif type(other) == Vector2d:
             return Vector2d(self.x * other.x, self.y * other.y)
         else:
             raise NotImplemented
@@ -88,7 +94,7 @@ class Vector2d:
             self.x *= other
             self.y *= other
             return self
-        elif type(other)== Vector2d:
+        elif type(other) == Vector2d:
             self.x *= other.x
             self.y *= other.y
             return self
@@ -113,12 +119,12 @@ class Vector2d:
         from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
-            self.x+=other
-            self.y+=other
+            self.x += other
+            self.y += other
             return self
         elif type(other) == Vector4d or type(other) == Vector3d or type(other) == Vector2d:
-            self.x+=other.x
-            self.y+=other.y
+            self.x += other.x
+            self.y += other.y
             return self
         else:
             raise NotImplemented
@@ -141,12 +147,12 @@ class Vector2d:
         from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
-            self.x-=other
-            self.y-=other
+            self.x -= other
+            self.y -= other
             return self
         elif type(other) == Vector4d or type(other) == Vector3d or type(other) == Vector2d:
-            self.x-=other.x
-            self.y-=other.y
+            self.x -= other.x
+            self.y -= other.y
             return self
         else:
             raise NotImplemented

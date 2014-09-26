@@ -9,8 +9,3 @@ class Scene():
 
     def add_geometry(self, other):
         self.aggregate.add(other)
-
-    def render(self):
-        pass
-#        im = Image.open("bride.jpg")
-#        im.rotate(45).show()

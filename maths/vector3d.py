@@ -1,30 +1,32 @@
 import math
 
+
 class Vector3d:
     __slots__ = ['x', 'y', 'z']
 
-    def __init__(self, x:float=0.0, y:float=0.0, z:float=0.0):
+    def __init__(self, x: float=0.0, y: float=0.0, z: float=0.0):
         self.x = x
         self.y = y
         self.z = z
 
     @staticmethod
-    def createFromVector2d(other, z:float=0.0):
+    def create_from_vector2d(other, z: float=0.0):
         return Vector3d(other.x, other.y, z)
 
     @staticmethod
-    def createFromVector3d(other):
+    def create_from_vector3d(other):
         return Vector3d(other.x, other.y, other.z)
 
     @staticmethod
-    def createFromVector4d(other):
+    def create_from_vector4d(other):
         return Vector3d(other.x, other.y, other.z)
 
-    def dot(self, other)->float:
+    def dot(self, other) -> float:
         return self.x * other.x + self.y * other.y + self.z * other.z
 
     def cross(self, other):
-        return Vector3d((self.y * other.z) - (self.z * other.y), (self.z * other.x) - (self.x * other.z), (self.x * other.y) - (self.y * other.x))
+        return Vector3d((self.y * other.z) - (self.z * other.y), (self.z * other.x) - (self.x * other.z),
+                        (self.x * other.y) - (self.y * other.x))
 
     @staticmethod
     def get_up():
@@ -50,21 +52,26 @@ class Vector3d:
     def get_backward():
         return Vector3d(0.0, 0.0, -1.0)
 
-    def get_length(self)->float:
+    def get_length(self) -> float:
         return math.sqrt(self.get_length_squared())
 
-    def get_length_squared(self)->float:
+    def get_length_squared(self) -> float:
         return self.dot(self)
 
     def set_to_zero(self):
         self.x = self.y = self.z = 0.0
 
+    # Unary operator
+    def __neg__(self):
+        return Vector3d(-self.x, -self.y, -self.z)
+
     def __eq__(self, other):
         from maths.config import CONST_EPSILON
+
         if type(other) is not Vector3d:
             return NotImplemented
 
-        if (self-other).get_length_squared() <= CONST_EPSILON:
+        if (self - other).get_length_squared() <= CONST_EPSILON:
             return True
 
         return False
@@ -81,7 +88,7 @@ class Vector3d:
     def __ge__(self, other):
         raise NotImplemented
 
-    def __getitem__(self, key)->float:
+    def __getitem__(self, key) -> float:
         if key == 0:
             return self.x
         elif key == 1:
@@ -91,7 +98,7 @@ class Vector3d:
         else:
             raise IndexError("Invalid subscript " + str(key) + " to Vec3d")
 
-    def __setitem__(self, key:int, value:float):
+    def __setitem__(self, key: int, value: float):
         if key == 0:
             self.x = value
         elif key == 1:
@@ -110,7 +117,7 @@ class Vector3d:
     def __mul__(self, other):
         if type(other) == int or type(other) == float:
             return Vector3d(self.x * other, self.y * other, self.z * other)
-        elif type(other)== Vector3d:
+        elif type(other) == Vector3d:
             return Vector3d(self.x * other.x, self.y * other.y, self.z * other.z)
         else:
             raise NotImplemented
@@ -121,7 +128,7 @@ class Vector3d:
             self.y *= other
             self.z *= other
             return self
-        elif type(other)== Vector3d:
+        elif type(other) == Vector3d:
             self.x *= other.x
             self.y *= other.y
             self.z *= other.z
@@ -132,6 +139,7 @@ class Vector3d:
     def __add__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             return Vector3d(self.x + other, self.y + other, self.z + other)
         elif type(other) == Vector4d or type(other) == Vector3d:
@@ -144,19 +152,20 @@ class Vector3d:
     def __iadd__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
-            self.x+=other
-            self.y+=other
-            self.z+=other
+            self.x += other
+            self.y += other
+            self.z += other
             return self
-        elif type(other) == Vector4d  or type(other) == Vector3d:
-            self.x+=other.x
-            self.y+=other.y
-            self.z+=other.z
+        elif type(other) == Vector4d or type(other) == Vector3d:
+            self.x += other.x
+            self.y += other.y
+            self.z += other.z
             return self
         elif type(other) == Vector2d:
-            self.x+=other.x
-            self.y+=other.y
+            self.x += other.x
+            self.y += other.y
             return self
         else:
             raise NotImplemented
@@ -164,6 +173,7 @@ class Vector3d:
     def __sub__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector2d import Vector2d
+
         if type(other) == int or type(other) == float:
             return Vector3d(self.x - other, self.y - other, self.z - other)
         elif type(other) == Vector4d or type(other) == Vector3d:
@@ -178,25 +188,25 @@ class Vector3d:
         from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
-            self.x-=other
-            self.y-=other
-            self.z-=other
+            self.x -= other
+            self.y -= other
+            self.z -= other
             return self
-        elif type(other) == Vector4d  or type(other) == Vector3d:
-            self.x-=other.x
-            self.y-=other.y
-            self.z-=other.z
+        elif type(other) == Vector4d or type(other) == Vector3d:
+            self.x -= other.x
+            self.y -= other.y
+            self.z -= other.z
             return self
         elif type(other) == Vector2d:
-            self.x-=other.x
-            self.y-=other.y
+            self.x -= other.x
+            self.y -= other.y
             return self
         else:
             raise NotImplemented
 
     def get_normalized(self):
         t = self.get_length()
-        if t==0:
+        if t == 0:
             raise ZeroDivisionError
-        d = 1.0/math.sqrt(t)
-        return Vector3d(self.x*d, self.y*d, self.z*d)
+        d = 1.0 / math.sqrt(t)
+        return Vector3d(self.x * d, self.y * d, self.z * d)

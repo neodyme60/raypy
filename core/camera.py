@@ -8,7 +8,7 @@ class Camera:
         self.film = film
         self.camera_to_world = cam2world
         self.shutterOpen = shutterOpen
-        self.sutterClose = sutterClose
+        self.shutterClose = sutterClose
 
     def GenerateRay(self, sample:CameraSample, r: Ray):
         pass

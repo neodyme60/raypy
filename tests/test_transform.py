@@ -1,8 +1,8 @@
 from unittest import TestCase
 import math
 
-class TestTransform(TestCase):
 
+class TestTransform(TestCase):
     def test__get_invert__(self):
         from core.transform import Transform
 
@@ -28,34 +28,17 @@ class TestTransform(TestCase):
                     self.assertEqual(foo.mat[i][j], 0.0)
                     self.assertEqual(foo.mat_inv[i][j], 0.0)
 
-    def test_set_to_scale(self):
-        self.fail()
-
-    def test_set_to_translate(self):
-        self.fail()
-
-    def test_set_to_rot_x(self):
-        self.fail()
-
-    def test_set_to_rot_y(self):
-        self.fail()
-
-    def test_set_to_rot_z(self):
-        self.fail()
-
-    def test_get_transpose(self):
-        self.fail()
-
     def test___mul__(self):
         from core.transform import Transform
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
-        #//////////////////////////////////////////////////////I *I = I
+        # //////////////////////////////////////////////////////I *I = I
         foo1 = Transform.create_identity()
         foo2 = Transform.create_identity()
 
         foo3 = foo1 * foo2
+
         for i in range(0, 4):
             for j in range(0, 4):
                 if i == j:
@@ -111,6 +94,16 @@ class TestTransform(TestCase):
 
         self.assertEqual(foo2, foo3)
 
+        #//////////////////////////////////////////////////////RotXa * T = RotXab
+        foo0 = Transform.create_translate(1.0, 2.0, 3.0)
+        foo1 = Transform.create_rot_x(math.radians(90))
+        foo2 = Transform.create_rot_z(math.radians(22))
+        foo3 = Transform.create_translate(1.0, 2.0, 3.0)
+
+        foo4 = foo0 * foo1 * foo2 * foo3
+
+        self.assertEqual(foo4.mat_inv, foo4.mat.get_invert())
+
     def test__look_at(self):
         from core.transform import Transform
         from maths.point3d import Point3d
@@ -121,6 +114,3 @@ class TestTransform(TestCase):
         up = Vector3d.get_up()
 
         t = Transform.create_look_at(pos, at, up)
-
-
-        print(t)

@@ -11,10 +11,11 @@ class Point3d:
 
     def __eq__(self, other):
         from maths.config import CONST_EPSILON
+
         if type(other) is not Point3d:
             return NotImplemented
 
-        if (self-other).get_length_squared() <= CONST_EPSILON:
+        if (self - other).get_length_squared() <= CONST_EPSILON:
             return True
 
         return False
@@ -32,11 +33,11 @@ class Point3d:
         raise NotImplemented
 
     @staticmethod
-    def createFromVector3d(other):
+    def create_from_vector3d(other):
         return Point3d(other.x, other.y, other.z)
 
     @staticmethod
-    def createFromVector4d(other):
+    def create_from_vector4d(other):
         if other.w == 0.0:
             raise ZeroDivisionError
         w_inv = 1.0 / other.w
@@ -80,7 +81,8 @@ class Point3d:
 
     def __mul__(self, other):
         from maths.vector4d import Vector4d
-        a = Vector4d.createFromPoint3d(self)
+
+        a = Vector4d.create_from_point3d(self)
         v = a * other.mat
         w_inv = 1.0 / v.w
         return Point3d(v.x * w_inv, v.y * w_inv, v.z * w_inv)

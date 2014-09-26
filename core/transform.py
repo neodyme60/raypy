@@ -35,7 +35,9 @@ class Transform:
 
     def __mul__(self, other):
         if type(other)==Transform:
-            return Transform(self.mat * other.mat, self.mat_inv * other.mat_inv)
+            #invert of matrix product is :  (AxB)-1 = B-1 x A-1
+            #see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
+            return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
         raise NotImplemented
 
 
@@ -154,10 +156,10 @@ class Transform:
         new_up = dir.cross(left)
 
         m = Matrix44.create_from_vector4d(
-            Vector4d.createFromVector3d(left, 0.0),
-            Vector4d.createFromVector3d(new_up, 0.0),
-            Vector4d.createFromVector3d(dir, 0.0),
-            Vector4d.createFromVector3d(pos, 1.0)
+            Vector4d.create_from_vector3d(left, 0.0),
+            Vector4d.create_from_vector3d(new_up, 0.0),
+            Vector4d.create_from_vector3d(dir, 0.0),
+            Vector4d.create_from_vector3d(pos, 1.0)
         )
         return Transform(m.get_invert(), m)
 
@@ -172,13 +174,13 @@ class Transform:
 
         #Perform projective divide
         persp = Matrix44.create_from_vector4d(
-            Vector4d.createFromVector3d(1.0, 0.0, 0.0, 0.0),
-            Vector4d.createFromVector3d(0.0, 1.0, 0.0, 0.0),
-            Vector4d.createFromVector3d(0.0, 0.0,  f / (f - n), 1.0),
-            Vector4d.createFromVector3d(0.0, 0.0, -f*n / (f - n), 0.0)
+            Vector4d(1.0, 0.0, 0.0, 0.0),
+            Vector4d(0.0, 1.0, 0.0, 0.0),
+            Vector4d(0.0, 0.0,  f / (f - n), 1.0),
+            Vector4d(0.0, 0.0, -f*n / (f - n), 0.0)
         )
 
         #Scale to canonical viewing volume
-        invTanAng = 1.0 / math.tan(math.Radian(fov) / 2.0)
+        invTanAng = 1.0 / math.tan(math.radians(fov) / 2.0)
 
         return Transform.create_scale(invTanAng, invTanAng, 1.0) * Transform(persp)

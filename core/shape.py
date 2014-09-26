@@ -1,4 +1,9 @@
-__author__ = 'nicolas'
+from core.bbox import BoundingBox
+from core.intersection import Intersection
+from core.ray import Ray
+from maths.normal import Normal
+from maths.point3d import Point3d
+
 
 class Shape:
 
@@ -6,11 +11,24 @@ class Shape:
         self.objectToWorld = o2w
         self.worldToObject = w2o
 
-    def CanIntersect(self)->bool:
+    def get_can_intersect(self)->bool:
         raise Exception("must be implemented")
 
-    def Intersect(self, ray, intersection)->bool:
+    def get_intersection(self, ray:Ray)->Intersection:
         raise Exception("must be implemented")
 
-    def IntersectP(self, ray)->bool:
+    def get_intersectP(self, ray:Ray)->bool:
         raise Exception("must be implemented")
+
+    def get_object_bound(self)->BoundingBox:
+        raise Exception("must be implemented")
+
+    def get_world_object_bound(self)->BoundingBox:
+        raise Exception("must be implemented")
+
+    def get_are(self)->float:
+        raise Exception("must be implemented")
+
+    def get_sample(u1:float, u2:float)->(Point3d, Normal):
+        raise Exception("must be implemented")
+

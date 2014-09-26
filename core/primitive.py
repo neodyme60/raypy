@@ -5,7 +5,7 @@ __author__ = 'nicolas'
 class Primitive:
 
     def __init__(self):
-        self.tranform = Transform(Transform.create_identity(), Transform.create_identity())
+        self.transform = Transform(Transform.create_identity(), Transform.create_identity())
 
     def CanIntersect(self)->bool:
         raise Exception("must be implemented")

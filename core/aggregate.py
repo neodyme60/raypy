@@ -1,6 +1,5 @@
 from core.primitive import Primitive
 
-__author__ = 'nicolas'
 
 class Aggregate(Primitive):
 
