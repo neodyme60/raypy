@@ -16,8 +16,8 @@ class Application(QtGui.QMainWindow):
     def updateData(self):
         self.qimage = QtGui.QImage(self.film.data, self.w, self.h, QtGui.QImage.Format_RGB32)
         self.pix = QtGui.QPixmap.fromImage(self.qimage)
-        self.myScaledPixmap = self.pix.scaled(self.imageLabel.size(), QtCore.Qt.KeepAspectRatio)
-        self.imageLabel.setPixmap(self.myScaledPixmap)
+#        self.myScaledPixmap = self.pix.scaled(self.imageLabel.size(), QtCore.Qt.KeepAspectRatio)
+        self.imageLabel.setPixmap(self.pix)
         self.i += 1
 
     def initUI(self):

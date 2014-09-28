@@ -14,6 +14,6 @@ class PerspectiveCamera(ProjectiveCamera):
         self.dyCamera = (Point3d(0.0, 1.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
 
     def GenerateRay(self, sample:CameraSample, r: Ray):
-        point_camera = Point3d(sample.image_x, sample.image_y, 0.0) * self.rasterToCamera()
+        point_camera = Point3d(sample.image_xy, sample.image_y, 0.0) * self.rasterToCamera()
         r = Ray(Point3d(0.0, 0.0, 0.0), point_camera, 0.0, infinity_max_f)
         return r * self.camera_to_world

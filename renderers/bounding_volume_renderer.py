@@ -1,7 +1,9 @@
+import copy
 import random
 
-from core.buckets import BucketOrderSortType, BucketOrder, BucketOrderInfo
+from core.buckets import BucketOrder, BucketOrderInfo, BucketExtend
 from core.camera import Camera
+from core.ray import Ray
 from core.renderer import Renderer
 from core.sample import Sample
 from core.scene import Scene
@@ -16,26 +18,60 @@ class BoundingVolumeRenderer(Renderer):
         self.camera = camera
         self.main_sampler = sampler
 
-    def render_task(self, task_index: int, bucket_index: int, bucket_order_info: BucketOrderInfo, sample: Sample,
-                    color: int):
+    def draw_bucket_extend(self, bucket_extend: BucketExtend):
+        pass
+        for x in range(bucket_extend.start_x, bucket_extend.end_x):
+            self.camera.film.data[bucket_extend.start_y, x] = 0xffffffff
+            self.camera.film.data[bucket_extend.end_y-1, x] = 0xffffffff
 
-        maxSamples = self.main_sampler.get_Maximum_Sample_Count()
+        for y in range(bucket_extend.start_y, bucket_extend.end_y):
+            self.camera.film.data[y, bucket_extend.start_x] = 0xffffffff
+            self.camera.film.data[y, bucket_extend.end_x-1] = 0xffffffff
+
+    def render_task(self, task_index: int,
+                    bucket_index: int,
+                    bucket_order_info: BucketOrderInfo,
+                    sample_list: Sample,
+                    color: int):
 
         sampler = self.main_sampler.get_sub_sampler(bucket_index, bucket_order_info)
 
-        print("start render task : id(" + str(task_index) + ") (" + str(sampler.pixel_start_x) + "," + str(
-            sampler.pixel_start_y) + ") " + "(" + str(sampler.pixel_end_x) + "," + str(
-            sampler.pixel_end_y) + ")")  # my_samples = sample.duplicate(maxSamples)
+        if sampler == None:
+            return
 
-        for x in range(sampler.pixel_start_x, sampler.pixel_end_x):
-            for y in range(sampler.pixel_start_y, sampler.pixel_end_y):
-                self.camera.film.data[x][y] = (int(color) << 8)
+        print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
+            sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x-1) + "," + str(
+            sampler.bucket_extend.end_y-1) + ")")
+
+        self.draw_bucket_extend(sampler.bucket_extend)
+
+        max_samples_count = self.main_sampler.get_maximum_sample_count()
+
+        new_samples_list = copy.deepcopy(sample_list)
+
+        rays = [Ray] * max_samples_count
+
+        while True:
+            sampleCount = sampler.get_more_samples(new_samples_list)
+
+            if sampleCount == 0:
+                break
+
+            for i in range(sampleCount):
+                x = int(new_samples_list[i].image_xy[0])
+                y = int(new_samples_list[i].image_xy[1])
+                self.camera.film.data[y, x] = (int(color) << 8)
+
+            #                ray = self.camera.GenerateRay(samples, rays[i] )
+            #                if sample.
 
         print("end render task " + str(task_index))
 
 
     def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
-        my_sample = Sample(self.main_sampler, scene)
+
+        sample_list = []
+        sample_list.append(Sample(self.main_sampler, scene))
 
         my_bucket_orders = BucketOrder.create(bucket_order_info.width, bucket_order_info.height,
                                               bucket_order_info.bucket_order_type)
@@ -46,8 +82,12 @@ class BoundingVolumeRenderer(Renderer):
         # 2) Add the task to the queue
         task_index = 0
         for i in range(bucket_order_info.width * bucket_order_info.height):
-            pool.add_task(self.render_task, task_index, my_bucket_orders.buckets_orders[task_index],
-                          bucket_order_info, my_sample, random.random() * 255)
+            pool.add_task(self.render_task,
+                          task_index,
+                          my_bucket_orders.buckets_orders[task_index],
+                          bucket_order_info,
+                          sample_list,
+                          random.random() * 255)
             task_index += 1
 
         # 3) Wait for completion

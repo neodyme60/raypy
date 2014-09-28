@@ -10,6 +10,7 @@ class BucketOrderSortType(Enum):
     Hilbert = 4
     Random = 5
 
+
 class BucketOrder:
     def __init__(self, width: int, height: int, sort_order: BucketOrderSortType):
         self.buckets_orders = []
@@ -21,6 +22,8 @@ class BucketOrder:
     def create(width: int, height: int, sort_order: BucketOrderSortType):
         if sort_order == BucketOrderSortType.Row:
             return RowBucketOrder(width, height)
+        if sort_order == BucketOrderSortType.Column:
+            return ColumnBucketOrder(width, height)
         elif sort_order == BucketOrderSortType.Random:
             return RandomBucketOrder(width, height)
         elif sort_order == BucketOrderSortType.Hilbert:
@@ -30,6 +33,15 @@ class BucketOrder:
         else:
             return RandomBucketOrder(width, height)
 
+class BucketExtend:
+    def __init__(self, start_x: int, start_y: int, end_x: int, end_y: int):
+        self.start_x = start_x
+        self.end_x = end_x
+        self.start_y = start_y
+        self.end_y = end_y
+
+    def get_is_null(self):
+        return self.start_x == self.end_x and self.start_y == self.end_y
 
 class BucketOrderInfo:
     def __init__(self, bucket_order_type: BucketOrderSortType, width: int, height: int):
@@ -49,6 +61,18 @@ class RowBucketOrder(BucketOrder):
             if (by & 1) == 1:
                 bx = self.width - 1 - bx
             self.buckets_orders.append(bx + by * self.width)
+
+class ColumnBucketOrder(BucketOrder):
+    def __init__(self, width: int, height: int):
+
+        BucketOrder.__init__(self, width, height, BucketOrderSortType.Column)
+
+        for i in range(self.height * self.width):
+            by = i // self.width
+            bx = i % self.width
+            if (by & 1) == 1:
+                bx = self.width - 1 - bx
+            self.buckets_orders.append(by + bx * self.width)
 
 
 class RandomBucketOrder(BucketOrder):
@@ -91,9 +115,10 @@ class DiagonalBucketOrder(BucketOrder):
 
 
 class HilbertBucketOrder(BucketOrder):
-
     def __init__(self, width: int, height: int):
+
         BucketOrder.__init__(self, width, height, BucketOrderSortType.Random)
+
         hi = hn = 0
         while ((1 << hn) < width or (1 << hn) < height) and hn < 16:
             hn += 1

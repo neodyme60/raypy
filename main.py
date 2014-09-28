@@ -1,5 +1,5 @@
 from camera.perspective_camera import PerspectiveCamera
-from core.buckets import BucketOrderInfo, BucketOrderSortType
+from core.buckets import BucketOrderInfo, BucketOrderSortType, BucketExtend
 from core.film import Film
 from core.scene import Scene
 from renderers.bounding_volume_renderer import BoundingVolumeRenderer
@@ -38,10 +38,10 @@ def load_scene(w:int, h:int):
     my_camera = PerspectiveCamera(Transform.create_identity(), 0.0, 1.0, 1.0, 1.0, 60.0, my_film)
 
     #sampler
-    my_sampler = RandomSampler(0, w-1, 0, h-1, nb_samples, sopen, sclose)
+    my_sampler = RandomSampler( BucketExtend(0, 0, w-1, h-1), nb_samples, sopen, sclose)
 
     #buket
-    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 50, 50)
+    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Random, 50, 50)
 
     #create renderer and assign scene
     my_renderer = BoundingVolumeRenderer(my_sampler, my_camera)
@@ -59,7 +59,7 @@ def main():
     global my_camera
 
     width = 600
-    height = 600
+    height = 300
 
     load_scene(width, height)
 
