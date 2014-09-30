@@ -31,8 +31,8 @@ class Application(QtGui.QMainWindow):
 
         # SET UP RECURRING EVENTS
         self.timer = QtCore.QTimer()
-        self.timer.start(0.2)
         self.connect(self.timer, QtCore.SIGNAL('timeout()'), self.updateData)
+        self.timer.start(100)
 
         self.setGeometry(300, 300, self.w, self.h)
         self.setWindowTitle('Absolute')

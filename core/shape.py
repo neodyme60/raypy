@@ -17,7 +17,7 @@ class Shape:
     def get_intersection(self, ray:Ray)->Intersection:
         raise Exception("must be implemented")
 
-    def get_intersectP(self, ray:Ray)->bool:
+    def get_is_intersected(self, ray:Ray)->bool:
         raise Exception("must be implemented")
 
     def get_object_bound(self)->BoundingBox:

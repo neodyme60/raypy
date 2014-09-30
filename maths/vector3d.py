@@ -128,9 +128,9 @@ class Vector3d:
             return Vector3d(self.x * other.x, self.y * other.y, self.z * other.z)
         elif type(other) == Matrix44:
             return Vector3d(
-                self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0] + other[3][0],
-                self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1] + other[3][1],
-                self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2] + other[3][2]
+                self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0],
+                self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1],
+                self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2]
             )
         elif type(other) == Transform:
             return self * other.mat

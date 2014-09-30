@@ -13,6 +13,13 @@ class Vector4d:
         self.z = z
         self.w = w
 
+    def set_from_vector4d(self, other):
+        self.x = other.x
+        self.y = other.y
+        self.z = other.z
+        self.w = other.w
+        return self
+
     @staticmethod
     def create_from_vector2d(other: Vector2d, z: float=0.0, w: float=0.0):
         return Vector4d(other.x, other.y, z, w)

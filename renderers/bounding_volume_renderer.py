@@ -39,11 +39,11 @@ class BoundingVolumeRenderer(Renderer):
         if sampler == None:
             return
 
-        print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
-            sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x - 1) + "," + str(
-            sampler.bucket_extend.end_y - 1) + ")")
+#        print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
+ #           sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x - 1) + "," + str(
+  #          sampler.bucket_extend.end_y - 1) + ")")
 
-#        self.draw_bucket_extend(sampler.bucket_extend)
+        self.draw_bucket_extend(sampler.bucket_extend)
 
         max_samples_count = self.main_sampler.get_maximum_sample_count()
 
@@ -70,7 +70,7 @@ class BoundingVolumeRenderer(Renderer):
                 else:
                     self.camera.film.data[y, x] = 0xff0000ff
 
-        print("end render task " + str(task_index))
+#        print("end render task " + str(task_index))
 
 
     def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
@@ -84,7 +84,7 @@ class BoundingVolumeRenderer(Renderer):
                                               bucket_order_info.bucket_order_type)
 
         # 1) Init a Thread pool with the desired number of threads
-        pool = ThreadPool(1)
+        pool = ThreadPool(7)
 
         # 2) Add the task to the queue
         task_index = 0

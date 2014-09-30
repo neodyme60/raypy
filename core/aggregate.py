@@ -9,15 +9,16 @@ class Aggregate(Primitive):
     def add(self, other):
         self.primitives.append(other)
 
-    def CanIntersect(self)->bool:
+    def get_can_intersect(self)->bool:
         return True
 
-    def Intersect(self, ray, intersection)->bool:
+    def get_intersection(self, ray, intersection)->bool:
         for p in self.primitives:
             pass
 
-    def IntersectP(self, ray)->bool:
-        if len(self.primitives) > 0:
-            a = self.primitives[0].get_intersectP(ray)
-            return a
+    def get_is_intersected(self, ray)->bool:
+        for obj in self.primitives:
+            a = obj.get_is_intersected(ray)
+            if a == True:
+                return True
         return False

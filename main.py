@@ -26,9 +26,11 @@ def load_scene(w:int, h:int):
 
     # create scene populate with object
     my_scene = Scene()
-    transform = Transform.create_translate(0.0, 0.0, 50.0)
-    form1 = Sphere(transform, transform.get_invert(), 0.02)
-    my_scene.add_geometry(form1)
+    for x in range(5):
+        for y in range(5):
+            transform = Transform.create_translate(float(x)-2.5, float(y)-2.5, 5.0)
+            form1 = Sphere(transform, transform.get_invert(), 1.0)
+            my_scene.add_geometry(form1)
 
     shutter_open = 0.0
     shutter_close = 0.0
@@ -52,13 +54,13 @@ def load_scene(w:int, h:int):
         screen_window[3] = 1.0 / frame
 
     my_camera = PerspectiveCamera(Transform.create_translate(0.0, 0.0, 0.0), screen_window, 0.0, 1.0, 5.0, 1.0, 90.0, my_film)
-#    my_camera = OrthographicCamera(Transform.create_translate(0.0, 0.0, -5.0), screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
+#    my_camera = OrthographicCamera(Transform.create_translate(0.0, 0.0, 0.0), screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
 
     #sampler
     my_sampler = RandomSampler(BucketExtend(0, 0, w - 1, h - 1), nb_samples, shutter_open, shutter_close)
 
     #buket
-    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Random, 50, 50)
+    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Random, 50,50 )
 
     #create renderer and assign scene
     my_renderer = BoundingVolumeRenderer(my_sampler, my_camera)
@@ -77,15 +79,15 @@ def main():
     global my_scene
     global my_camera
 
-    width = 300
-    height = 300
+    width = 600
+    height = 600
 
     load_scene(width, height)
 
     qt_app = QtGui.QApplication(sys.argv)
     app = Application(width, height, my_camera.film)
 
-    pool = ThreadPool(20)
+    pool = ThreadPool(1)
     pool.add_task(render)
     # render()
 

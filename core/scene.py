@@ -13,5 +13,5 @@ class Scene():
         self.aggregate.add(other)
 
     def intersect(self, ray: Ray, intersection: Intersection):
-        has_intersection = self.aggregate.IntersectP(ray)
+        has_intersection = self.aggregate.get_is_intersected(ray)
         return has_intersection

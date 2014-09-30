@@ -1,5 +1,4 @@
 from core.bbox import BoundingBox
-import math
 from core.shape import Shape
 import maths
 from maths.point3d import Point3d
@@ -18,7 +17,7 @@ class Sphere(Shape):
     def get_intersection(self, ray) -> Intersection:
         raise NotImplemented
 
-    def get_intersectP(self, ray) -> bool:
+    def get_is_intersected(self, ray) -> bool:
 
         # ray from word_space_to_object_space
         ray_o = ray * self.worldToObject
@@ -27,15 +26,15 @@ class Sphere(Shape):
 
         a = ray_o.direction.dot(ray_o.direction)
         b = 2 * ray_o.direction.dot(o)
-        c = o.dot(o) - self.radius * self.radius
+        c = o.dot(o) - self.radius_squared
 
-        #Solve quadratic equation for _t_ values
+        # Solve quadratic equation for _t_ values
         t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
         if t0 == None and t1 == None:
             return False
 
         # Compute intersection distance along ray
-        if t0 > ray.max_t and t1 < ray.min_t:
+        if t0 > ray.max_t or t1 < ray.min_t:
             return False
         thit = t0
         if t0 < ray.min_t:

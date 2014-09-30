@@ -6,6 +6,8 @@ from core.transform import Transform
 
 class Ray:
 
+    __slots__ = ['origin', 'direction', 'depth', 'max_t', 'min_t', 'time']
+
     def __init__(self, origin: Point3d=Point3d(0.0, 0.0, 0.0), direction:Vector3d=Vector3d.get_forward(), min_t: float=0.0, max_t: float=infinity_max_f, time: float=0.0, depth: int=0):
 
         self.origin = origin

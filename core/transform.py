@@ -3,7 +3,7 @@ from maths.matrix44 import Matrix44
 
 
 class Transform:
-    def __init__(self, mat:Matrix44, mat_inv:Matrix44=None):
+    def __init__(self, mat: Matrix44, mat_inv: Matrix44=None):
         self.mat = mat
         if mat_inv is None:
             self.mat_inv = mat.get_invert()
@@ -18,8 +18,7 @@ class Transform:
         return t
 
     def __eq__(self, other):
-        if type(other) is not Transform:
-            return NotImplemented
+        assert type(other) == Transform
         return self.mat == other.mat and self.mat_inv == other.mat_inv
 
     def __ne__(self, other):
@@ -35,23 +34,18 @@ class Transform:
         raise NotImplemented
 
     def __mul__(self, other):
-        if type(other) == Transform:
-            # invert of matrix product is :  (AxB)-1 = B-1 x A-1
-            # see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
-            return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
-        raise NotImplemented
-
+        assert type(other) == Transform
+        # invert of matrix product is :  (AxB)-1 = B-1 x A-1
+        # see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
+        return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
 
     @staticmethod
     def create_identity():
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
-        m = Matrix44.create_from_vector4d(
-            Vector4d(1.0, 0.0, 0.0, 0.0),
-            Vector4d(0.0, 1.0, 0.0, 0.0),
-            Vector4d(0.0, 0.0, 1.0, 0.0),
-            Vector4d(0.0, 0.0, 0.0, 1.0))
+        m = Matrix44.create_from_vector4d(Vector4d(1.0, 0.0, 0.0, 0.0), Vector4d(0.0, 1.0, 0.0, 0.0),
+                                          Vector4d(0.0, 0.0, 1.0, 0.0), Vector4d(0.0, 0.0, 0.0, 1.0))
         return Transform(m, m)
 
     @staticmethod
@@ -158,7 +152,7 @@ class Transform:
 
         m = Matrix44.create_from_vector4d(
             Vector4d.create_from_vector3d(x_axis, -x_axis.dot(eye)),
-            Vector4d.create_from_vector3d(y_axis, 0.0, -y_axis.dot(eye)),
+            Vector4d.create_from_vector3d(y_axis, -y_axis.dot(eye)),
             Vector4d.create_from_vector3d(z_axis, -z_axis.dot(eye)),
             Vector4d.create_from_vector3d(eye, 1.0)
         )
@@ -184,6 +178,6 @@ class Transform:
         )
 
         # Scale to canonical viewing volume
-        invTanAng = 1.0 / math.tan(math.radians(fov)  * 0.5)
+        inv_tan = 1.0 / math.tan(math.radians(fov) * 0.5)
 
-        return Transform(perspective_matrix) * Transform.create_scale(invTanAng, invTanAng, 1.0)
+        return Transform(perspective_matrix) * Transform.create_scale(inv_tan, inv_tan, 1.0)

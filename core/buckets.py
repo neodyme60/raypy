@@ -33,6 +33,7 @@ class BucketOrder:
         else:
             return RandomBucketOrder(width, height)
 
+
 class BucketExtend:
     def __init__(self, start_x: int, start_y: int, end_x: int, end_y: int):
         self.start_x = start_x
@@ -42,6 +43,7 @@ class BucketExtend:
 
     def get_is_null(self):
         return self.start_x == self.end_x and self.start_y == self.end_y
+
 
 class BucketOrderInfo:
     def __init__(self, bucket_order_type: BucketOrderSortType, width: int, height: int):
@@ -61,6 +63,7 @@ class RowBucketOrder(BucketOrder):
             if (by & 1) == 1:
                 bx = self.width - 1 - bx
             self.buckets_orders.append(bx + by * self.width)
+
 
 class ColumnBucketOrder(BucketOrder):
     def __init__(self, width: int, height: int):

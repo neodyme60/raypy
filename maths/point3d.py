@@ -5,7 +5,7 @@ from core.transform import Transform
 class Point3d:
     __slots__ = ['x', 'y', 'z']
 
-    def __init__(self, x:float=0.0, y:float=0.0, z:float=0.0):
+    def __init__(self, x: float=0.0, y: float=0.0, z: float=0.0):
         self.x = x
         self.y = y
         self.z = z

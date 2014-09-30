@@ -1,7 +1,5 @@
 import math
 
-inline_math_mult = False
-
 
 class Matrix44:
     __slots__ = ['data']
@@ -14,10 +12,10 @@ class Matrix44:
     @staticmethod
     def create_from_vector4d(u, v, n, t):
         m = Matrix44()
-        m.data[0] = u
-        m.data[1] = v
-        m.data[2] = n
-        m.data[3] = t
+        m.data[0].set_from_vector4d(u)
+        m.data[1].set_from_vector4d(v)
+        m.data[2].set_from_vector4d(n)
+        m.data[3].set_from_vector4d(t)
         return m
 
     def __str__(self):
@@ -187,8 +185,6 @@ class Matrix44:
         return obj
 
     def __mul__(self, other):
-        from maths.vector4d import Vector4d
-
         if type(other) == int or type(other) == float:
             obj = Matrix44()
             for col in range(4):
