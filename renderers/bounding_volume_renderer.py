@@ -22,11 +22,11 @@ class BoundingVolumeRenderer(Renderer):
         pass
         for x in range(bucket_extend.start_x, bucket_extend.end_x):
             self.camera.film.data[bucket_extend.start_y, x] = 0xffffffff
-            self.camera.film.data[bucket_extend.end_y-1, x] = 0xffffffff
+            self.camera.film.data[bucket_extend.end_y - 1, x] = 0xffffffff
 
         for y in range(bucket_extend.start_y, bucket_extend.end_y):
             self.camera.film.data[y, bucket_extend.start_x] = 0xffffffff
-            self.camera.film.data[y, bucket_extend.end_x-1] = 0xffffffff
+            self.camera.film.data[y, bucket_extend.end_x - 1] = 0xffffffff
 
     def render_task(self, task_index: int,
                     bucket_index: int,
@@ -40,10 +40,10 @@ class BoundingVolumeRenderer(Renderer):
             return
 
         print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
-            sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x-1) + "," + str(
-            sampler.bucket_extend.end_y-1) + ")")
+            sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x - 1) + "," + str(
+            sampler.bucket_extend.end_y - 1) + ")")
 
-        self.draw_bucket_extend(sampler.bucket_extend)
+#        self.draw_bucket_extend(sampler.bucket_extend)
 
         max_samples_count = self.main_sampler.get_maximum_sample_count()
 
@@ -57,18 +57,25 @@ class BoundingVolumeRenderer(Renderer):
             if sampleCount == 0:
                 break
 
+            intersection = None
+
             for i in range(sampleCount):
                 x = int(new_samples_list[i].image_xy[0])
                 y = int(new_samples_list[i].image_xy[1])
-                self.camera.film.data[y, x] = (int(color) << 8)
-
-            #                ray = self.camera.GenerateRay(samples, rays[i] )
-            #                if sample.
+                # self.camera.film.data[y, x] = (int(color) << 8)
+                rays[i] = self.camera.generate_ray(new_samples_list[i], rays[i])
+                has_intersection = self.scene.intersect(rays[i], intersection)
+                if has_intersection == True:
+                    self.camera.film.data[y, x] = 0xffffffff
+                else:
+                    self.camera.film.data[y, x] = 0xff0000ff
 
         print("end render task " + str(task_index))
 
 
     def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
+
+        self.scene = scene
 
         sample_list = []
         sample_list.append(Sample(self.main_sampler, scene))

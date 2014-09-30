@@ -109,8 +109,37 @@ class TestTransform(TestCase):
         from maths.point3d import Point3d
         from maths.vector3d import Vector3d
 
-        pos = Point3d(0.0, 0.0, 0.0)
-        at = Point3d(0.0, 0.0, 1.0)
+        pos = Point3d(1.0, 0.0, 0.0)
+        at = Point3d(1.0, 0.0, 1.0)
         up = Vector3d.get_up()
 
         t = Transform.create_look_at(pos, at, up)
+
+        foo = Vector3d(1.0, 0.0, 0.0)
+
+        self.assertEqual(foo * t, Vector3d(0.0, 0.0, 0.0))
+
+    def test__orthographic(self):
+        from core.transform import Transform
+        from maths.vector3d import Vector3d
+
+        t = Transform.create_orthographic(0.0, 1000.0)
+
+        p = Vector3d(0.0, 0.0, 500.0)
+        self.assertEqual(p * t, Vector3d(0.0, 0.0, 0.5))
+
+        p = Vector3d(5.0, 5.0, 1000.0)
+        self.assertEqual(p * t, Vector3d(5.0, 5.0, 1.0))
+
+    def test__perspective(self):
+        from core.transform import Transform
+        from maths.vector3d import Vector3d
+
+        p = Vector3d(0.0, 0.0, 500.0)
+        t = Transform.create_perspective(60.0, 1000.0)
+        self.assertEqual(p * t, Vector3d(0.0, 0.0, 0.5))
+
+        p = Vector3d(0.0, 0.0, 000.0)
+        t = Transform.create_perspective(60.0, 1000.0)
+        print(p*t)
+        self.assertEqual(p * t, Vector3d(0.0, 0.0, 1.0))

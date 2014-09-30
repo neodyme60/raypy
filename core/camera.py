@@ -4,11 +4,11 @@ from core.film import Film
 
 class Camera:
 
-    def __init__(self, cam2world:float, shutterOpen:float, sutterClose:float, film:Film):
+    def __init__(self, cam2world:float, shutter_open:float, shutter_close:float, film:Film):
         self.film = film
         self.camera_to_world = cam2world
-        self.shutterOpen = shutterOpen
-        self.shutterClose = sutterClose
+        self.shutterOpen = shutter_open
+        self.shutterClose = shutter_close
 
-    def GenerateRay(self, sample:CameraSample, r: Ray):
-        pass
+    def generate_ray(self, sample:CameraSample, r: Ray):
+        raise NotImplemented

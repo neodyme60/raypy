@@ -13,8 +13,8 @@ class RandomSampler(Sampler):
         self.samples_count = samples_count
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y
-        self.image_samples = [float, float] * samples_count
-        self.lens_samples = [float, float] * samples_count
+        self.image_samples = [(float, float)] * samples_count
+        self.lens_samples = [(float, float)] * samples_count
         self.time_samples = [float] * samples_count
 
         # re compute random values and reset counter
@@ -25,19 +25,19 @@ class RandomSampler(Sampler):
 
         # generate random tuple for image samples and shift them
         for i in range(nb_samples):
-            self.image_samples[i] = [random.random() + self.pos_x, random.random() + self.pos_y]
+            self.image_samples[i] = (random.random() + self.pos_x, random.random() + self.pos_y)
 
         # generate random tuple for lens samples and shift them
         for i in range(nb_samples):
-            self.lens_samples[i] = [random.random() + self.pos_x, random.random() + self.pos_y]
+            self.lens_samples[i] = (random.random() + self.pos_x, random.random() + self.pos_y)
 
-        #generate random value for time samples
+        # generate random value for time samples
         for i in range(nb_samples):
             self.time_samples[i] = random.random()
 
     def get_more_samples(self, sample_list: Sample) -> int:
 
-        #move to next sample and generate random sub sample
+        # move to next sample and generate random sub sample
         if self.sample_pos == self.samples_count:
 
             if self.bucket_extend.get_is_null():
@@ -59,7 +59,8 @@ class RandomSampler(Sampler):
         #we have only one sample
         sample_list[0].image_xy = self.image_samples[self.sample_pos]
         sample_list[0].lens_uv = self.lens_samples[self.sample_pos]
-        sample_list[0].time = maths.tools.get_lerp(self.time_samples[self.sample_pos], self.shutter_open, self.shutter_close)
+        sample_list[0].time = maths.tools.get_lerp(self.time_samples[self.sample_pos], self.shutter_open,
+                                                   self.shutter_close)
 
         self.sample_pos += 1
 

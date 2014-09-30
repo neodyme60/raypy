@@ -1,5 +1,5 @@
 from core.primitive import Primitive
-
+from core.shape import Shape
 
 class Aggregate(Primitive):
 
@@ -7,8 +7,7 @@ class Aggregate(Primitive):
         self.primitives = []
 
     def add(self, other):
-        if isinstance(other, Primitive):
-            self.primitives.append(other)
+        self.primitives.append(other)
 
     def CanIntersect(self)->bool:
         return True
@@ -18,5 +17,7 @@ class Aggregate(Primitive):
             pass
 
     def IntersectP(self, ray)->bool:
-        for p in self.primitives:
-            pass
+        if len(self.primitives) > 0:
+            a = self.primitives[0].get_intersectP(ray)
+            return a
+        return False

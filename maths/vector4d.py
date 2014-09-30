@@ -22,8 +22,8 @@ class Vector4d:
         return Vector4d(other.x, other.y, other.z, w)
 
     @staticmethod
-    def create_from_point3d(other: Point3d):
-        return Vector4d(other.x, other.y, other.z, 1.0)
+    def create_from_point3d(other: Point3d, w: float=0.0):
+        return Vector4d(other.x, other.y, other.z, w)
 
     @staticmethod
     def create_from_vector4d(other):

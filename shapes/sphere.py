@@ -1,6 +1,7 @@
 from core.bbox import BoundingBox
 import math
 from core.shape import Shape
+import maths
 from maths.point3d import Point3d
 from maths.vector3d import Vector3d
 from core.intersection import Intersection
@@ -11,24 +12,38 @@ class Sphere(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, radius: float):
         Shape.__init__(self, o2w, w2o)
 
-        self.center = Vector3d(0.0, 0.0, 0.0)
         self.radius = radius
-        self.radius_squared = 1.0
+        self.radius_squared = self.radius * self.radius
 
     def get_intersection(self, ray) -> Intersection:
-        i = None
-        e = self.center - ray.origin
-        a = ray.direction.dot(e)
+        raise NotImplemented
 
-        f = self.radius_squared - e.dot(e) + (a * a)
-        if f > 0.0:
-            t = a - math.sqrt(f)
-            if 0.1 < t < ray.max_t:
-                i = Intersection()
-                i.distance = t
-                i.intersection = ray.origin + ray.direction * t
-                i.normal = (i.intersection - self.center).get_normalized()
-        return i
+    def get_intersectP(self, ray) -> bool:
+
+        # ray from word_space_to_object_space
+        ray_o = ray * self.worldToObject
+
+        o = Vector3d.create_from_point3d(ray_o.origin)
+
+        a = ray_o.direction.dot(ray_o.direction)
+        b = 2 * ray_o.direction.dot(o)
+        c = o.dot(o) - self.radius * self.radius
+
+        #Solve quadratic equation for _t_ values
+        t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
+        if t0 == None and t1 == None:
+            return False
+
+        # Compute intersection distance along ray
+        if t0 > ray.max_t and t1 < ray.min_t:
+            return False
+        thit = t0
+        if t0 < ray.min_t:
+            thit = t1
+        if thit > ray.max_t:
+            return False
+
+        return True
 
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),

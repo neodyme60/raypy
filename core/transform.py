@@ -1,6 +1,7 @@
 import math
 from maths.matrix44 import Matrix44
 
+
 class Transform:
     def __init__(self, mat:Matrix44, mat_inv:Matrix44=None):
         self.mat = mat
@@ -34,9 +35,9 @@ class Transform:
         raise NotImplemented
 
     def __mul__(self, other):
-        if type(other)==Transform:
-            #invert of matrix product is :  (AxB)-1 = B-1 x A-1
-            #see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
+        if type(other) == Transform:
+            # invert of matrix product is :  (AxB)-1 = B-1 x A-1
+            # see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
             return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
         raise NotImplemented
 
@@ -107,7 +108,7 @@ class Transform:
         return Transform(m, m_inv)
 
     @staticmethod
-    def create_rot_x(angle):
+    def create_rot_x(angle: float):
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
@@ -146,41 +147,43 @@ class Transform:
         return Transform(m, m.get_transpose())
 
     @staticmethod
-    def create_look_at(pos, look, up):
+    def create_look_at(eye, at, up):
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
         # Initialize first three columns of viewing matrix
-        dir = (look - pos).get_normalized()
-        left = up.get_normalized().cross(dir).get_normalized()
-        new_up = dir.cross(left)
+        z_axis = (at - eye).get_normalized()
+        x_axis = up.cross(z_axis).get_normalized()
+        y_axis = z_axis.cross(x_axis)
 
         m = Matrix44.create_from_vector4d(
-            Vector4d.create_from_vector3d(left, 0.0),
-            Vector4d.create_from_vector3d(new_up, 0.0),
-            Vector4d.create_from_vector3d(dir, 0.0),
-            Vector4d.create_from_vector3d(pos, 1.0)
+            Vector4d.create_from_vector3d(x_axis, -x_axis.dot(eye)),
+            Vector4d.create_from_vector3d(y_axis, 0.0, -y_axis.dot(eye)),
+            Vector4d.create_from_vector3d(z_axis, -z_axis.dot(eye)),
+            Vector4d.create_from_vector3d(eye, 1.0)
         )
-        return Transform(m.get_invert(), m)
+        return Transform(m)
 
     @staticmethod
-    def create_orthographic(z_near:float, z_far:float):
-        return Transform.create_scale(1.0, 1.0, 1.0 / (z_far - z_near)) * Transform.create_translate(0.0, 0.0, -z_near)
+    def create_orthographic(z_near: float, z_far: float):
+        return Transform.create_translate(0.0, 0.0, -z_near) * Transform.create_scale(1.0, 1.0, 1.0 / (z_far - z_near))
 
     @staticmethod
-    def create_perspective(fov:float=90, n:float=0.0, f:float=1.0):
+    def create_perspective(fov: float=90, z_near: float=0.0, z_far: float=1.0):
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
-        #Perform projective divide
-        persp = Matrix44.create_from_vector4d(
+        inv = 1.0 / (z_far - z_near)
+
+        # Perform projective divide
+        perspective_matrix = Matrix44.create_from_vector4d(
             Vector4d(1.0, 0.0, 0.0, 0.0),
             Vector4d(0.0, 1.0, 0.0, 0.0),
-            Vector4d(0.0, 0.0,  f / (f - n), 1.0),
-            Vector4d(0.0, 0.0, -f*n / (f - n), 0.0)
+            Vector4d(0.0, 0.0, z_far * inv, 1.0),
+            Vector4d(0.0, 0.0, -z_far * z_near * inv, 0.0)
         )
 
-        #Scale to canonical viewing volume
-        invTanAng = 1.0 / math.tan(math.radians(fov) / 2.0)
+        # Scale to canonical viewing volume
+        invTanAng = 1.0 / math.tan(math.radians(fov)  * 0.5)
 
-        return Transform.create_scale(invTanAng, invTanAng, 1.0) * Transform(persp)
+        return Transform(perspective_matrix) * Transform.create_scale(invTanAng, invTanAng, 1.0)

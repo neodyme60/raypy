@@ -5,15 +5,27 @@ from core.film import Film
 from core.camera_sample import CameraSample
 from core.ray import Ray
 from maths.config import infinity_max_f
+from maths.vector3d import Vector3d
+
 
 class PerspectiveCamera(ProjectiveCamera):
 
-    def __init__(self, cam2world: Transform, sopen: float, sclose: float, lensr: float, focald: float, fov: float, film: Film):
-        ProjectiveCamera.__init__(self, cam2world, Transform.create_perspective(fov, 1e-2, 1000.0), sopen, sclose, lensr, focald, film)
+    def __init__(self, cam2world: Transform, screen_window: [float]*4, shutter_open: float, shutter_close: float, lensr: float, focald: float, fov: float, film: Film):
+
+        ProjectiveCamera.__init__(self, cam2world, Transform.create_perspective(fov, 1e-2, 1000.0), screen_window, shutter_open, shutter_close, lensr, focald, film)
         self.dxCamera = (Point3d(1.0, 0.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
         self.dyCamera = (Point3d(0.0, 1.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
 
-    def GenerateRay(self, sample:CameraSample, r: Ray):
-        point_camera = Point3d(sample.image_xy, sample.image_y, 0.0) * self.rasterToCamera()
-        r = Ray(Point3d(0.0, 0.0, 0.0), point_camera, 0.0, infinity_max_f)
+    def generate_ray(self, sample:CameraSample, r: Ray):
+
+        camera_point = Point3d(sample.image_xy[0], sample.image_xy[1], 0.0) * self.rasterToCamera
+        camera_direction = Vector3d(camera_point.x, camera_point.y, camera_point.z).get_normalized()
+
+        r = Ray(camera_point, camera_direction, 0.0, infinity_max_f)
+
+        if self.lensRadius>0.0:
+            pass
+            #todo
+
+        r.time = sample.time
         return r * self.camera_to_world

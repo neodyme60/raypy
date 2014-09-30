@@ -1,5 +1,7 @@
 from PIL import Image
 from aggregates.simple import Simple
+from core.intersection import Intersection
+from core.ray import Ray
 
 
 class Scene():
@@ -9,3 +11,7 @@ class Scene():
 
     def add_geometry(self, other):
         self.aggregate.add(other)
+
+    def intersect(self, ray: Ray, intersection: Intersection):
+        has_intersection = self.aggregate.IntersectP(ray)
+        return has_intersection
