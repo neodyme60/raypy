@@ -1,4 +1,5 @@
 import math
+
 from core.filter import Filter
 
 
@@ -15,7 +16,7 @@ class TriangleFilter(Filter):
         x = math.fabs(2.0 * x)
         if x > 1.0:
             return ((-self.b - 6.0 * self.C) * x * x * x + (6.0 * self.b + 30.0 * self.c) * x * x + (
-            -12.0 * self.b - 48.0 * self.c) * x + (8.0 * self.b + 24.0 * self.c)) * (1.0 / 6.0)
+                -12.0 * self.b - 48.0 * self.c) * x + (8.0 * self.b + 24.0 * self.c)) * (1.0 / 6.0)
         else:
             return ((12.0 - 9.0 * self.b - 6.0 * self.c) * x * x * x +
                     (-18.0 + 12.0 * self.b + 6.0 * self.c) * x * x +

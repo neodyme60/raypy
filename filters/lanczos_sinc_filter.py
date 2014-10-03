@@ -1,16 +1,17 @@
 import math
+
 from core.filter import Filter
 
-class LanczosSincFilter(Filter):
 
+class LanczosSincFilter(Filter):
     def __init__(self, width: float, height: float, tau: float):
         Filter.__init__(self, width, height)
         self.tau = tau
 
-    def evaluate(self, x: float, y: float)->float:
+    def evaluate(self, x: float, y: float) -> float:
         return self.sinc_1d(x * self.inv_width) * self.sinc_1d(y * self.inv_width)
 
-    def sinc_1d(self, x: float):
+    def sinc_1d(self, x: float) -> filter:
         x = math.fabs(x)
         if x < 1e-5:
             return 1.0
