@@ -1,5 +1,6 @@
 import math
 from maths.matrix44 import Matrix44
+from maths.vector3d import Vector3d
 
 
 class Transform:
@@ -147,13 +148,13 @@ class Transform:
 
         # Initialize first three columns of viewing matrix
         z_axis = (at - eye).get_normalized()
-        x_axis = up.cross(z_axis).get_normalized()
-        y_axis = z_axis.cross(x_axis)
+        x_axis = Vector3d.cross(up, z_axis).get_normalized()
+        y_axis = Vector3d.cross(z_axis, x_axis)
 
         m = Matrix44.create_from_vector4d(
-            Vector4d.create_from_vector3d(x_axis, -x_axis.dot(eye)),
-            Vector4d.create_from_vector3d(y_axis, -y_axis.dot(eye)),
-            Vector4d.create_from_vector3d(z_axis, -z_axis.dot(eye)),
+            Vector4d.create_from_vector3d(x_axis, -Vector3d.dot(x_axis, eye)),
+            Vector4d.create_from_vector3d(y_axis, -Vector3d.dot(y_axis, eye)),
+            Vector4d.create_from_vector3d(z_axis, -Vector3d.dot(z_axis, eye)),
             Vector4d.create_from_vector3d(eye, 1.0)
         )
         return Transform(m)

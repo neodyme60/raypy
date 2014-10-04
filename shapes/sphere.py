@@ -14,8 +14,33 @@ class Sphere(Shape):
         self.radius = radius
         self.radius_squared = self.radius * self.radius
 
-    def get_intersection(self, ray) -> Intersection:
-        raise NotImplemented
+    def get_intersection(self, ray, intersection: Intersection) ->bool:
+
+        # ray from word_space_to_object_space
+        ray_o = ray * self.worldToObject
+
+        o = Vector3d.create_from_point3d(ray_o.origin)
+
+        a = Vector3d.dot(ray_o.direction, ray_o.direction)
+        b = 2.0 * Vector3d.dot(ray_o.direction, o)
+        c = Vector3d.dot(o, o) - self.radius_squared
+
+        # Solve quadratic equation for _t_ values
+        t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
+        if t0 == None and t1 == None:
+            return False
+
+        # Compute intersection distance along ray
+        if t0 > ray.max_t or t1 < ray.min_t:
+            return False
+        thit = t0
+        if t0 < ray.min_t:
+            thit = t1
+        if thit > ray.max_t:
+            return False
+
+        intersection.ray_epsilon = thit
+        return True
 
     def get_is_intersected(self, ray) -> bool:
 
@@ -24,9 +49,9 @@ class Sphere(Shape):
 
         o = Vector3d.create_from_point3d(ray_o.origin)
 
-        a = ray_o.direction.dot(ray_o.direction)
-        b = 2 * ray_o.direction.dot(o)
-        c = o.dot(o) - self.radius_squared
+        a = Vector3d.dot(ray_o.direction, ray_o.direction)
+        b = 2.0 * Vector3d.dot(ray_o.direction, o)
+        c = Vector3d.dot(o, o) - self.radius_squared
 
         # Solve quadratic equation for _t_ values
         t0, t1 = maths.tools.get_solve_quadratic(a, b, c)

@@ -20,14 +20,17 @@ class Vector2d:
     def create_from_vector4d(other):
         return Vector2d(other.x, other.y)
 
-    def dot(self, other) -> float:
-        return self.x * other.x + self.y * other.y
-
     def get_length(self) -> float:
         return math.sqrt(self.get_length_squared())
 
     def get_length_squared(self) -> float:
-        return self.dot(self)
+        return Vector2d.dot(self, self)
+
+    @staticmethod
+    def dot(a, b) -> float:
+        assert type(a) == Vector2d
+        assert type(b) == Vector2d
+        return a.x * b.x + a.y * b.y
 
     def set_to_zero(self):
         self.x = self.y = 0.0
@@ -104,7 +107,6 @@ class Vector2d:
     def __add__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector3d import Vector3d
-        from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
             return Vector2d(self.x + other, self.y + other)
@@ -116,7 +118,6 @@ class Vector2d:
     def __iadd__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector3d import Vector3d
-        from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
             self.x += other
@@ -132,7 +133,6 @@ class Vector2d:
     def __sub__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector3d import Vector3d
-        from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
             return Vector2d(self.x - other, self.y - other)
@@ -144,7 +144,6 @@ class Vector2d:
     def __isub__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector3d import Vector3d
-        from maths.vector2d import Vector2d
 
         if type(other) == int or type(other) == float:
             self.x -= other

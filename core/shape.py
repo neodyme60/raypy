@@ -14,7 +14,7 @@ class Shape:
     def get_can_intersect(self)->bool:
         raise Exception("must be implemented")
 
-    def get_intersection(self, ray:Ray)->Intersection:
+    def get_intersection(self, ray:Ray, intersection: Intersection)->bool:
         raise Exception("must be implemented")
 
     def get_is_intersected(self, ray:Ray)->bool:
@@ -26,7 +26,7 @@ class Shape:
     def get_world_object_bound(self)->BoundingBox:
         raise Exception("must be implemented")
 
-    def get_are(self)->float:
+    def get_area(self)->float:
         raise Exception("must be implemented")
 
     def get_sample(u1:float, u2:float)->(Point3d, Normal):

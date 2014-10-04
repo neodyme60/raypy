@@ -12,7 +12,7 @@ class TestVector4d(TestCase):
     def test_dot(self):
         foo1 = Vector4d(1.0, 2.0, 3.0, 4.0)
         foo2 = Vector4d(10.0, 20.0, 30.0, 40.0)
-        foo3 = foo1.dot(foo2)
+        foo3 = Vector4d.dot(foo1, foo2)
         self.assertEqual(foo3, foo1.x * foo2.x + foo1.y * foo2.y + foo1.z * foo2.z + foo1.w * foo2.w)
 
     def test_set_to_zero(self):

@@ -7,18 +7,17 @@ import maths.tools
 
 
 class RandomSampler(Sampler):
-    def __init__(self, bucket_extend: BucketExtend, samples_count: int, shutter_open: float, shutter_close: float):
+    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int, shutter_open: float, shutter_close: float):
 
-        Sampler.__init__(self, bucket_extend, samples_count, shutter_open, shutter_close)
-        self.samples_count = samples_count
+        Sampler.__init__(self, bucket_extend, samples_per_pixel, shutter_open, shutter_close)
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y
-        self.image_samples = [(float, float)] * samples_count
-        self.lens_samples = [(float, float)] * samples_count
-        self.time_samples = [float] * samples_count
+        self.image_samples = [(float, float)] * self.samples_per_pixel
+        self.lens_samples = [(float, float)] * self.samples_per_pixel
+        self.time_samples = [float] * self.samples_per_pixel
 
         # re compute random values and reset counter
-        self.internal_fill_random(self.samples_count)
+        self.internal_fill_random(self.samples_per_pixel)
         self.sample_pos = 0
 
     def internal_fill_random(self, nb_samples):
@@ -38,7 +37,7 @@ class RandomSampler(Sampler):
     def get_more_samples(self, sample_list: Sample) -> int:
 
         # move to next sample and generate random sub sample
-        if self.sample_pos == self.samples_count:
+        if self.sample_pos == (self.samples_per_pixel):
 
             if self.bucket_extend.get_is_null():
                 return 0
@@ -53,14 +52,14 @@ class RandomSampler(Sampler):
                 return 0
 
             # re compute random values and reset counter
-            self.internal_fill_random(self.samples_count)
+            self.internal_fill_random(self.samples_per_pixel)
             self.sample_pos = 0
 
         #we have only one sample
         sample_list[0].image_xy = self.image_samples[self.sample_pos]
         sample_list[0].lens_uv = self.lens_samples[self.sample_pos]
-        sample_list[0].time = maths.tools.get_lerp(self.time_samples[self.sample_pos], self.shutter_open,
-                                                   self.shutter_close)
+        sample_list[0].time = maths.tools.get_lerp(self.shutter_open,
+                                                   self.shutter_close, self.time_samples[self.sample_pos])
 
         self.sample_pos += 1
 
@@ -73,10 +72,10 @@ class RandomSampler(Sampler):
         if bucket_extend.get_is_null():
             return None
 
-        return RandomSampler(bucket_extend, self.samples_count, self.shutter_open, self.shutter_close)
+        return RandomSampler(bucket_extend, self.samples_per_pixel, self.shutter_open, self.shutter_close)
 
     def get_round_size(self, size: int) -> int:
         return 1
 
     def get_maximum_sample_count(self) -> int:
-        return 1
+        return self.samples_per_pixel

@@ -1,6 +1,6 @@
 import math
+import core.transform
 from maths.matrix44 import Matrix44
-from core.transform import Transform
 
 class Vector3d:
     __slots__ = ['x', 'y', 'z']
@@ -26,14 +26,17 @@ class Vector3d:
     def create_from_vector4d(other):
         return Vector3d(other.x, other.y, other.z)
 
-    def dot(self, other) -> float:
-        assert type(other) == Vector3d
-        return self.x * other.x + self.y * other.y + self.z * other.z
+    @staticmethod
+    def dot(a, b) -> float:
+        assert type(a) == Vector3d
+        assert type(b) == Vector3d
+        return a.x * b.x + a.y * b.y + a.z * b.z
 
-    def cross(self, other):
-        return Vector3d((self.y * other.z) - (self.z * other.y),
-                        (self.z * other.x) - (self.x * other.z),
-                        (self.x * other.y) - (self.y * other.x))
+    @staticmethod
+    def cross(a, b):
+        return Vector3d((a.y * b.z) - (a.z * b.y),
+                        (a.z * b.x) - (a.x * b.z),
+                        (a.x * b.y) - (a.y * b.x))
 
     @staticmethod
     def get_up():
@@ -63,7 +66,7 @@ class Vector3d:
         return math.sqrt(self.get_length_squared())
 
     def get_length_squared(self) -> float:
-        return self.dot(self)
+        return Vector3d.dot(self, self)
 
     def set_to_zero(self):
         self.x = self.y = self.z = 0.0
@@ -132,7 +135,7 @@ class Vector3d:
                 self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1],
                 self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2]
             )
-        elif type(other) == Transform:
+        elif type(other) == core.transform.Transform:
             return self * other.mat
         else:
             raise NotImplemented
@@ -223,5 +226,5 @@ class Vector3d:
         t = self.get_length()
         if t == 0:
             raise ZeroDivisionError
-        d = 1.0 / math.sqrt(t)
+        d = 1.0 / t
         return Vector3d(self.x * d, self.y * d, self.z * d)

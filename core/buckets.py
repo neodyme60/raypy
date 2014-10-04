@@ -41,6 +41,12 @@ class BucketExtend:
         self.start_y = start_y
         self.end_y = end_y
 
+    def get_width(self):
+        return self.end_x - self.start_x
+
+    def get_height(self):
+        return self.end_y - self.start_y
+
     def get_is_null(self):
         return self.start_x == self.end_x and self.start_y == self.end_y
 

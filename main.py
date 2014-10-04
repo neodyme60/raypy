@@ -3,8 +3,12 @@ from camera.perspective_camera import PerspectiveCamera
 from core.buckets import BucketOrderInfo, BucketOrderSortType, BucketExtend
 from core.film import Film
 from core.scene import Scene
+from maths.vector3d import Vector3d
 from renderers.bounding_volume_renderer import BoundingVolumeRenderer
+from samplers.haltonSampler import HaltonSampler
 from samplers.randomSampler import RandomSampler
+from samplers.stratifiedSampler import StratifiedSampler
+from shapes.plane import Plane
 from shapes.sphere import Sphere
 from application import Application
 from core.transform import Transform
@@ -18,6 +22,10 @@ my_camera = None
 my_buckets_info = None
 
 
+class Plan(object):
+    pass
+
+
 def load_scene(w:int, h:int):
     global my_renderer
     global my_scene
@@ -26,15 +34,20 @@ def load_scene(w:int, h:int):
 
     # create scene populate with object
     my_scene = Scene()
-    for x in range(5):
-        for y in range(5):
-            transform = Transform.create_translate(float(x)-2.5, float(y)-2.5, 5.0)
-            form1 = Sphere(transform, transform.get_invert(), 1.0)
-            my_scene.add_geometry(form1)
+
+    transform = Transform.create_translate(0.0, 0.0, 0.0)
+    form1 = Sphere(transform, transform.get_invert(), 1.0)
+
+#    transform2 = Transform.create_rot_x(0)*Transform.create_translate(0.0, 0.0, 5.0)
+    transform2 = Transform.create_identity()
+    form2 = Plane(transform2,transform2.get_invert())
+
+    my_scene.add_geometry(form1)
+    my_scene.add_geometry(form2)
 
     shutter_open = 0.0
     shutter_close = 0.0
-    nb_samples = 1
+    nb_samples = 5
 
     # film
     my_film = Film(w, h)
@@ -53,11 +66,14 @@ def load_scene(w:int, h:int):
         screen_window[2] = -1.0 / frame
         screen_window[3] = 1.0 / frame
 
-    my_camera = PerspectiveCamera(Transform.create_translate(0.0, 0.0, 0.0), screen_window, 0.0, 1.0, 5.0, 1.0, 90.0, my_film)
+    transform3 = Transform.create_look_at(Vector3d(0.0, 2.0, -5.0), Vector3d(0.0, 0.0, 0.0), Vector3d.get_up())
+    my_camera = PerspectiveCamera(transform3, screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
 #    my_camera = OrthographicCamera(Transform.create_translate(0.0, 0.0, 0.0), screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
 
     #sampler
-    my_sampler = RandomSampler(BucketExtend(0, 0, w - 1, h - 1), nb_samples, shutter_open, shutter_close)
+    my_sampler = RandomSampler(BucketExtend(0, 0, w - 1, h - 1), 1, shutter_open, shutter_close)
+#    my_sampler = StratifiedSampler(BucketExtend(0, 0, w - 1, h - 1), 1, 1, True, shutter_open, shutter_close)
+#    my_sampler = HaltonSampler(BucketExtend(0, 0, w - 1, h - 1), 5, shutter_open, shutter_close)
 
     #buket
     my_buckets_info = BucketOrderInfo(BucketOrderSortType.Random, 50,50 )
@@ -89,7 +105,7 @@ def main():
 
     pool = ThreadPool(1)
     pool.add_task(render)
-    # render()
+#    render()
 
     sys.exit(qt_app.exec_())
 

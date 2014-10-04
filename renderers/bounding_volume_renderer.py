@@ -3,6 +3,7 @@ import random
 
 from core.buckets import BucketOrder, BucketOrderInfo, BucketExtend
 from core.camera import Camera
+from core.intersection import Intersection
 from core.ray import Ray
 from core.renderer import Renderer
 from core.sample import Sample
@@ -57,18 +58,17 @@ class BoundingVolumeRenderer(Renderer):
             if sampleCount == 0:
                 break
 
-            intersection = None
+            intersection = Intersection()
 
             for i in range(sampleCount):
                 x = int(new_samples_list[i].image_xy[0])
                 y = int(new_samples_list[i].image_xy[1])
                 # self.camera.film.data[y, x] = (int(color) << 8)
                 rays[i] = self.camera.generate_ray(new_samples_list[i], rays[i])
-                has_intersection = self.scene.intersect(rays[i], intersection)
-                if has_intersection == True:
-                    self.camera.film.data[y, x] = 0xffffffff
+                if self.scene.intersect(rays[i], intersection):
+                    self.camera.film.data[y, x] = min(intersection.ray_epsilon/5.0*100, 255)
                 else:
-                    self.camera.film.data[y, x] = 0xff0000ff
+                    self.camera.film.data[y, x] = 0xff303030
 
 #        print("end render task " + str(task_index))
 
@@ -84,7 +84,7 @@ class BoundingVolumeRenderer(Renderer):
                                               bucket_order_info.bucket_order_type)
 
         # 1) Init a Thread pool with the desired number of threads
-        pool = ThreadPool(7)
+        pool = ThreadPool(1)
 
         # 2) Add the task to the queue
         task_index = 0

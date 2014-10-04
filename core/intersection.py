@@ -1,10 +1,13 @@
-from maths.point3d import Point3d
-from maths.vector3d import Vector3d
+from core.differential_geometry import DifferentialGeometry
+from maths.config import infinity_max_f
 
 
 class Intersection:
     def __init__(self):
-        self.geometry = None
-        self.distance = 0.0
-        self.intersection = Point3d(0.0, 0.0, 0.0)
-        self.normal = Vector3d().get_up()
+        self.primitive = None
+        self.objectToWorld = None
+        self.worldToObject = None
+        self.ray_epsilon = infinity_max_f
+        self.shape_id = 0
+        self.primitive_id = 0
+        self.differentialGeometry = DifferentialGeometry()

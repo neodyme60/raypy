@@ -10,15 +10,10 @@ class Aggregate(Primitive):
         self.primitives.append(other)
 
     def get_can_intersect(self)->bool:
-        return True
+        raise NotImplemented
 
     def get_intersection(self, ray, intersection)->bool:
-        for p in self.primitives:
-            pass
+        raise NotImplemented
 
     def get_is_intersected(self, ray)->bool:
-        for obj in self.primitives:
-            a = obj.get_is_intersected(ray)
-            if a == True:
-                return True
-        return False
+        raise NotImplemented

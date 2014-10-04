@@ -13,5 +13,5 @@ class TestVector2d(TestCase):
     def test_dot(self):
         foo1 = Vector2d(1.0, 2.0)
         foo2 = Vector2d(10.0, 20.0)
-        foo3 = foo1.dot(foo2)
+        foo3 = Vector2d.dot(foo1, foo2)
         self.assertEqual(foo3, foo1.x * foo2.x + foo1.y * foo2.y)

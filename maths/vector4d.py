@@ -36,14 +36,17 @@ class Vector4d:
     def create_from_vector4d(other):
         return Vector4d(other.x, other.y, other.z, other.w)
 
-    def dot(self, other) -> float:
-        return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
+    @staticmethod
+    def dot(a, b) -> float:
+        assert type(a) == Vector4d
+        assert type(b) == Vector4d
+        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
 
     def get_length(self) -> float:
         return math.sqrt(self.get_length_squared())
 
     def get_length_squared(self) -> float:
-        return self.dot(self)
+        return Vector4d.dot(self, self)
 
     def set_to_zero(self):
         self.x = self.y = self.z = self.w = 0.0
