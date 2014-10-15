@@ -1,3 +1,4 @@
+import copy
 from core.aggregate import Aggregate
 from core.intersection import Intersection
 
@@ -13,11 +14,19 @@ class Simple(Aggregate):
         i = Intersection()
         has_intersection = False
         for obj in self.primitives:
-            if obj.get_intersection(ray, i):
+            r = copy.deepcopy(ray)
+            if obj.get_intersection(r, i):
                 if i.ray_epsilon < intersection.ray_epsilon:
                     intersection.ray_epsilon = i.ray_epsilon
+                    intersection.differentialGeometry.point = i.differentialGeometry.point
+                    intersection.differentialGeometry.normal = i.differentialGeometry.normal
+                    intersection.differentialGeometry.shape = i.differentialGeometry.shape
                     has_intersection = True
         return has_intersection
 
     def get_is_intersected(self, ray)->bool:
-        return True
+        for obj in self.primitives:
+            if obj.get_is_intersected(ray):
+                return True
+        return False
+

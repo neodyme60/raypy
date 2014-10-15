@@ -40,6 +40,9 @@ class Sphere(Shape):
             return False
 
         intersection.ray_epsilon = thit
+        intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
+        intersection.differentialGeometry.normal = intersection.differentialGeometry.point * self.objectToWorld
+        intersection.differentialGeometry.shape = self
         return True
 
     def get_is_intersected(self, ray) -> bool:

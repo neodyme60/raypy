@@ -1,4 +1,5 @@
 from core.buckets import BucketOrderSortType, BucketOrderInfo
+from core.intersection import Intersection
 from core.renderer import Renderer
 from core.sample import Sample
 from core.scene import Scene
@@ -17,4 +18,7 @@ class AggregateRenderer(Renderer):
         pass
 
     def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
+        pass
+
+    def get_li(self, scene: Scene, sample: Sample, intersection: Intersection):
         pass
