@@ -15,7 +15,7 @@ from core.spectrum import Spectrum
 
 class BoundingVolumeRenderer(Renderer):
     def __init__(self, sampler: Sampler, camera: Camera):
-        Renderer.__init__(self)
+        super().__init__()
 
         self.camera = camera
         self.main_sampler = sampler

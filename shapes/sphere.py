@@ -5,72 +5,65 @@ from maths.point3d import Point3d
 from maths.vector3d import Vector3d
 from core.intersection import Intersection
 from core.transform import Transform
-
+from core.ray import Ray
 
 class Sphere(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, radius: float):
-        Shape.__init__(self, o2w, w2o)
+        super().__init__(o2w, w2o)
 
         self.radius = radius
         self.radius_squared = self.radius * self.radius
 
-    def get_intersection(self, ray, intersection: Intersection) ->bool:
 
-        # ray from word_space_to_object_space
-        ray_o = ray * self.worldToObject
+    def internal_solve(self, ray_l: Ray, ray_w: Ray)-> (float, float):
 
-        o = Vector3d.create_from_point3d(ray_o.origin)
+        o = Vector3d.create_from_point3d(ray_l.origin)
 
-        a = Vector3d.dot(ray_o.direction, ray_o.direction)
-        b = 2.0 * Vector3d.dot(ray_o.direction, o)
+        a = Vector3d.dot(ray_l.direction, ray_l.direction)
+        b = 2.0 * Vector3d.dot(ray_l.direction, o)
         c = Vector3d.dot(o, o) - self.radius_squared
 
         # Solve quadratic equation for _t_ values
         t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
         if t0 == None and t1 == None:
-            return False
+            return (None, None)
 
         # Compute intersection distance along ray
-        if t0 > ray.max_t or t1 < ray.min_t:
-            return False
+        if t0 > ray_w.max_t or t1 < ray_w.min_t:
+            return (None, None)
+
         thit = t0
-        if t0 < ray.min_t:
+        if t0 < ray_w.min_t:
             thit = t1
-        if thit > ray.max_t:
+        if thit > ray_w.max_t:
+            return (None, None)
+        return t0, t1
+
+    def get_intersection(self, ray: Ray, intersection: Intersection) ->bool:
+
+        # ray from word_space_to_object_space
+        ray_o = ray * self.worldToObject
+
+        t0, t1 = self.internal_solve(ray_o, ray)
+
+        if t0== None and t1 == None:
             return False
 
-        intersection.ray_epsilon = thit
+        intersection.ray_epsilon = t0
         intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
         intersection.differentialGeometry.normal = intersection.differentialGeometry.point * self.objectToWorld
         intersection.differentialGeometry.shape = self
         return True
 
-    def get_is_intersected(self, ray) -> bool:
+    def get_is_intersected(self, ray: Ray) -> bool:
 
         # ray from word_space_to_object_space
         ray_o = ray * self.worldToObject
 
-        o = Vector3d.create_from_point3d(ray_o.origin)
+        t0, t1 = self.internal_solve(ray_o, ray)
 
-        a = Vector3d.dot(ray_o.direction, ray_o.direction)
-        b = 2.0 * Vector3d.dot(ray_o.direction, o)
-        c = Vector3d.dot(o, o) - self.radius_squared
+        return t0== None and t1 == None
 
-        # Solve quadratic equation for _t_ values
-        t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
-        if t0 == None and t1 == None:
-            return False
-
-        # Compute intersection distance along ray
-        if t0 > ray.max_t or t1 < ray.min_t:
-            return False
-        thit = t0
-        if t0 < ray.min_t:
-            thit = t1
-        if thit > ray.max_t:
-            return False
-
-        return True
 
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),

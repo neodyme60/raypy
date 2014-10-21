@@ -4,8 +4,8 @@ from core.sampler import Sampler
 
 class LowDiscrepancySampler(Sampler):
     def __init__(self, bucket_extend: BucketExtend, samples_count: int, shutter_open: float, shutter_close: float):
+        super().__init__(bucket_extend, samples_count, shutter_open, shutter_close)
 
-        Sampler.__init__(self, bucket_extend, samples_count, shutter_open, shutter_close)
         self.samples_count = samples_count
         self.pos_x = self.pixel_start_x
         self.pos_y = self.pixel_start_y

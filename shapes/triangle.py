@@ -7,7 +7,7 @@ from core.intersection import Intersection
 from core.transform import Transform
 
 
-class Torus(Shape):
+class Triangle(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, radius: float):
         super().__init__(o2w, w2o)
 

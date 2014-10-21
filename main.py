@@ -31,7 +31,7 @@ def load_scene(w:int, h:int):
     global my_camera
     global my_buckets_info
 
-    surface_integrator = AmbientOcclusionIntegrator(1, 10.0)
+    surface_integrator = AmbientOcclusionIntegrator(10, 10.0)
 
     # create scene populate with object
     my_scene = Scene(surface_integrator)
@@ -105,7 +105,7 @@ def main():
     qt_app = QtGui.QApplication(sys.argv)
     app = Application(width, height, my_camera.film)
 
-    pool = ThreadPool(5)
+    pool = ThreadPool(1)
     pool.add_task(render)
 #    render()
 

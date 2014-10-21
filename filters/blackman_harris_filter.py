@@ -5,7 +5,7 @@ from core.filter import Filter
 
 class BlackmanHarrisFilter(Filter):
     def __init__(self, width: float, height: float):
-        Filter.__init__(self, width, height)
+        super().__init__(width, height)
 
     def evaluate(self, x: float, y: float) -> float:
         return self.bh_1d(x * self.inv_width * 2.0) * self.bh_1d(y * self.inv_heightinv * 2.0)

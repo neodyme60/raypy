@@ -5,7 +5,7 @@ from core.filter import Filter
 
 class GaussianFilter(Filter):
     def __init__(self, width: float, height: float, alpha: float):
-        Filter.__init__(self, width, height)
+        super().__init__(width, height)
         self.alpha = alpha
         self.exp_x = math.exp(-self.alpha * self.width * self.width)
         self.exp_y = math.exp(-self.alpha * self.height * self.height)

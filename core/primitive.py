@@ -15,3 +15,6 @@ class Primitive:
 
     def get_is_intersected(self, ray)->bool:
         raise Exception("must be implemented")
+
+    def get_bsdf(self):
+        pass

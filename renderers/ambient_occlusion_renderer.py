@@ -17,7 +17,7 @@ from shapes.plane import Plane
 
 class AmbientOcclusionRenderer(Renderer):
     def __init__(self, sampler: Sampler, camera: Camera, samples_count: int=1, max_distance: float=100.0):
-        Renderer.__init__(self)
+        super().__init__()
 
         self.camera = camera
         self.main_sampler = sampler
@@ -25,7 +25,6 @@ class AmbientOcclusionRenderer(Renderer):
         self.max_distance = max_distance
 
     def draw_bucket_extend(self, bucket_extend: BucketExtend):
-        pass
         for x in range(bucket_extend.start_x, bucket_extend.end_x):
             self.camera.film.data[bucket_extend.start_y, x] = 0xffffffff
             self.camera.film.data[bucket_extend.end_y - 1, x] = 0xffffffff

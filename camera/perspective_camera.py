@@ -4,7 +4,7 @@ from maths.point3d import Point3d
 from core.film import Film
 from core.camera_sample import CameraSample
 from core.ray import Ray
-from maths.config import infinity_max_f
+from maths.config import infinity_max_f, infinity_min_f
 from maths.vector3d import Vector3d
 
 
@@ -12,7 +12,7 @@ class PerspectiveCamera(ProjectiveCamera):
 
     def __init__(self, cam2world: Transform, screen_window: [float]*4, shutter_open: float, shutter_close: float, lensr: float, focald: float, fov: float, film: Film):
 
-        ProjectiveCamera.__init__(self, cam2world, Transform.create_perspective(fov, 1e-2, 1000.0), screen_window, shutter_open, shutter_close, lensr, focald, film)
+        ProjectiveCamera.__init__(self, cam2world, Transform.create_perspective(fov, infinity_min_f, 1000.0), screen_window, shutter_open, shutter_close, lensr, focald, film)
         self.dxCamera = (Point3d(1.0, 0.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
         self.dyCamera = (Point3d(0.0, 1.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
 

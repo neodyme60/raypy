@@ -6,8 +6,7 @@ from core.scene import Scene
 class Sample(CameraSample):
 
     def __init__(self, sampler: Sampler, scene: Scene):
-
-        CameraSample.__init__(self)
+        super().__init__()
 
         self.index_values_array_1d = []
         self.index_values_array_2d= []

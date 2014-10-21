@@ -5,7 +5,7 @@ from core.filter import Filter
 
 class TriangleFilter(Filter):
     def __init__(self, width: float, height: float, b: float, c: float):
-        Filter.__init__(self, width, height)
+        super().__init__(width, height)
         self.b = b
         self.c = c
 

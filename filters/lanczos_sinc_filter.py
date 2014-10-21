@@ -5,7 +5,7 @@ from core.filter import Filter
 
 class LanczosSincFilter(Filter):
     def __init__(self, width: float, height: float, tau: float):
-        Filter.__init__(self, width, height)
+        super().__init__(width, height)
         self.tau = tau
 
     def evaluate(self, x: float, y: float) -> float:

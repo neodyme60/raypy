@@ -11,3 +11,7 @@ class Intersection:
         self.shape_id = 0
         self.primitive_id = 0
         self.differentialGeometry = DifferentialGeometry()
+
+
+    def get_bsdf(self):
+        pass

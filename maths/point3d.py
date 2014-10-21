@@ -84,19 +84,13 @@ class Point3d:
             raise NotImplemented
 
     def __mul__(self, other):
-        from maths.vector4d import Vector4d
 
         if type(other) == Matrix44:
-            v = Vector4d(
+            return Point3d(
                 self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0] + other[3][0],
                 self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1] + other[3][1],
                 self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2] + other[3][2],
-                self.x * other[0][3] + self.y * other[1][3] + self.z * other[2][3] + other[3][3]
             )
-            if v.w == 1.0:
-                return Point3d(v.x, v.y, v.z)
-            w_inv = 1.0 / v.w
-            return Point3d(v.x * w_inv, v.y * w_inv, v.z * w_inv)
         elif type(other) == Transform:
             return self * other.mat
         raise NotImplemented

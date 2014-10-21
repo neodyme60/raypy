@@ -1,25 +1,81 @@
 import math
-
-
-# linear interpolation between a and b using t.
 from random import random
+from maths.config import CONST_EPSILON
 from maths.vector3d import Vector3d
 
+def get_clamp(value: float, low: float, high: float):
+    return max(min(float, high), low)
 
+def get_spherical_theta(v: Vector3d)->float:
+    return math.acos(get_clamp(v.z, -1.0, 1.0))
+
+
+def get_spherical_phi(v: Vector3d)->float:
+    p = math.atan2(v.y, v.x)
+    if p < 0.0:
+        return  p + 2.0*math.pi
+    return p
+
+def nroot(x, n):
+    return math.pow(x, 1.0/n)
+
+# linear interpolation between a and b using t.
 def get_lerp(a:float,  b:float, t:float)->float:
-  return a + t * (b-a)
+    return a + t * (b-a)
 
+# Normal form: a*x^3 + b*x^2 + c*x + d = 0
+def get_solve_cubic(self, a: float, b: float, c: float, d: float)->(float, float, float):
+    _a = b/a
+    _b = c/a
+    _c = d/a
+
+    r0 = r1 = r2 = None
+
+    #Substitute x = y - A/3 to eliminate quadric term: x^3 + px + q = 0.
+    sq_a = _a * _a
+    p = 1.0 / 3.0 * (-1.0 / 3.0 * sq_a + _b)
+    q = 1.0 / 2.0 * (2.0 / 27.0 * _a * sq_a - 1.0 / 3.0 * _a * _b + _c)
+
+    #use Cardano's formula
+    cb_p = p * p * p
+    det = q * q + cb_p
+
+    if math.fabs(det <= CONST_EPSILON):
+        if math.fabs(q <= CONST_EPSILON):
+            r0 = 0.0
+        else:
+            u = nroot(-q, 3.0)
+            r0 = 2.0 * u
+            r1 = -u
+
+    return r0, r1, r2
+
+# A quartic is a polynomial of degree 4.
+# Normal form: a*x^4 + b*x^3 + c*x^2 + d*x + e= 0
+def get_solve_quartic(a: float, b: float, c: float):
+    pass
+
+# A quadric is a locus in 3-dimensional space that can be represented in Cartesian coordinates as a polynomial equation in x, y and z of the second degree.
+# It is the 3-D analog of a conic (circle, ellipse, parabola, hyperbola, pair of straight lines). The general quadric equation may be written as
+# Normal form: x^2 + a*x + b = 0
+def get_solve_quadric(a: float, b: float,):
+    pass
+
+
+# A quadratic is a second-degree polynomial.
+# Normal form: a*x^2 + b*x + c = 0
 def get_solve_quadratic(a: float, b: float, c: float):
 
     #Find quadratic discriminant
     discriminant = b * b - 4.0 * a *  c
     if discriminant < 0.0:
+        #no real roots http://jblanco_60.tripod.com/c_pp_quadratic.html
         return None, None
 
     root_discriminant = math.sqrt(discriminant)
 
     #Compute quadratic _t_ values
-    if b < 0:
+    if math.fabs(b) < CONST_EPSILON:
         q = -0.5 * (b - root_discriminant)
     else:
         q = -0.5 * (b + root_discriminant)
@@ -105,4 +161,4 @@ def get_concentric_sample_disk(u1: float, u2: float)->(float, float):
             r = -sy
             theta = 6.0 + sx/r
     theta *= math.pi / 4.0
-    return (r * math.cos(theta), r * math.sin(theta))
+    return r * math.cos(theta), r * math.sin(theta)

@@ -9,7 +9,7 @@ from maths.point3d import Point3d
 class PointLight(Light):
 
     def __init__(self, l2w: Transform, s: Spectrum):
-        Light.__init__(l2w)
+        super().__init__(l2w)
         self.point = Point3d(0.0, 0.0, 0.0)
         self.intensity = Spectrum()
 

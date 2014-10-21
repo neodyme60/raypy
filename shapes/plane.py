@@ -10,7 +10,8 @@ class Plane(Shape):
     # plan in form ax+by+cz+d=0
 
     def __init__(self, o2w, w2o):
-        Shape.__init__(self, o2w, w2o)
+        super().__init__(o2w, w2o)
+
         self.normal = Vector3d.get_up()
         self.distance = 0.0
 

@@ -5,7 +5,7 @@ from core.filter import Filter
 
 class CatmullRomFilter(Filter):
     def __init__(self, width: float, height: float):
-        Filter.__init__(self, width, height)
+        super().__init__( width, height)
 
     def evaluate(self, x: float, y: float) -> float:
         return self.catrom_1d(x) * self.catrom_1d(y)

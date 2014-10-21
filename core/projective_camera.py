@@ -8,7 +8,7 @@ from core.transform import Transform
 class ProjectiveCamera(Camera):
 
     def __init__(self, cam2world: Transform, projection_matrix: Transform, screen_window: [float]*4, shutter_open: float, shutter_close: float, lensr: float, focald: float, film: Film):
-        Camera.__init__(self, cam2world, shutter_open, shutter_close, film)
+        super().__init__(cam2world, shutter_open, shutter_close, film)
         self.cameraToScreen = projection_matrix
         self.screenToRaster = \
                               Transform.create_translate(-screen_window[0], -screen_window[3], 0.0) * \

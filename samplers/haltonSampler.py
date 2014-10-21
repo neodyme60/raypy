@@ -10,8 +10,8 @@ import maths.tools
 
 class HaltonSampler(Sampler):
     def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int, shutter_open: float, shutter_close: float):
+        super().__init__(bucket_extend, samples_per_pixel, shutter_open, shutter_close)
 
-        Sampler.__init__(self, bucket_extend, samples_per_pixel, shutter_open, shutter_close)
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y
         self.image_samples = [(float, float)] * self.samples_per_pixel

@@ -2,7 +2,6 @@ from random import random
 from core.integrator import SurfaceIntegrator
 from core.intersection import Intersection
 from core.ray import Ray
-from core.renderer import Renderer
 from core.scene import Scene
 import maths.tools
 from maths.vector3d import Vector3d
@@ -11,7 +10,7 @@ from maths.vector3d import Vector3d
 class AmbientOcclusionIntegrator(SurfaceIntegrator):
 
     def __init__(self, samples_count: int, max_distance: float):
-        SurfaceIntegrator.__init__(self)
+        super().__init__()
         self.samples_count = samples_count
         self.max_distance = max_distance
 
@@ -31,6 +30,6 @@ class AmbientOcclusionIntegrator(SurfaceIntegrator):
             else:
                     occlusion += 1
 
-        occlusion = min((float(occlusion) / float(self.samples_count)) * 255, 255)
-        color = 0xff000000 + occlusion + (occlusion * 256) + (occlusion * 256 * 256)
+        occlusion = int(min((float(occlusion) / float(self.samples_count)) * 255, 255))
+        color = 0xff000000 + occlusion + (occlusion << 8) + (occlusion << 16)
         return color
