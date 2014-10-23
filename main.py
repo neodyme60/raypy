@@ -7,6 +7,7 @@ from core.scene import Scene
 from integrator.ambient_occlusion_integrator import AmbientOcclusionIntegrator
 from maths.vector3d import Vector3d
 from renderers.ambient_occlusion_renderer import AmbientOcclusionRenderer
+from samplers.haltonSampler import HaltonSampler
 from samplers.randomSampler import RandomSampler
 from shapes.plane import Plane
 from shapes.sphere import Sphere
@@ -31,13 +32,13 @@ def load_scene(w:int, h:int):
     global my_camera
     global my_buckets_info
 
-    surface_integrator = AmbientOcclusionIntegrator(10, 10.0)
+    surface_integrator = AmbientOcclusionIntegrator(100, 2.0)
 
     # create scene populate with object
     my_scene = Scene(surface_integrator)
 
-    transform = Transform.create_translate(0.0, 2.0, 0.0)
-    form1 = Sphere(transform, transform.get_invert(), 2.0)
+    transform = Transform.create_translate(0.0, 1.0, 0.0)
+    form1 = Sphere(transform, transform.get_invert(), 1.0)
 
 #    transform2 = Transform.create_rot_x(0)*Transform.create_translate(0.0, 0.0, 5.0)
     transform2 = Transform.create_identity()
@@ -67,8 +68,8 @@ def load_scene(w:int, h:int):
         screen_window[2] = -1.0 / frame
         screen_window[3] = 1.0 / frame
 
-    transform3 = Transform.create_look_at(Vector3d(0.0, 2.0, -5.0), Vector3d(0.0, 0.0, 0.0), Vector3d.get_up())
-    my_camera = PerspectiveCamera(transform3, screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
+    transform3 = Transform.create_look_at(Vector3d(0.0, 3.0, -5.0), Vector3d(0.0, 0.0, 0.0), Vector3d.get_up())
+    my_camera = PerspectiveCamera(transform3, screen_window, 0.0, 1.0, 5.0, 1.0, 30.0, my_film)
 #    my_camera = OrthographicCamera(Transform.create_translate(0.0, 0.0, 0.0), screen_window, 0.0, 1.0, 5.0, 1.0, 60.0, my_film)
 
     #sampler
@@ -77,7 +78,7 @@ def load_scene(w:int, h:int):
 #    my_sampler = HaltonSampler(BucketExtend(0, 0, w - 1, h - 1), 5, shutter_open, shutter_close)
 
     #buket
-    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 10, 10 )
+    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 30, 30)
 
     #create renderer and assign scene
     my_renderer = AmbientOcclusionRenderer(my_sampler, my_camera)
@@ -97,8 +98,8 @@ def main():
     global my_scene
     global my_camera
 
-    width = 200
-    height = 200
+    width = 600
+    height = 600
 
     load_scene(width, height)
 

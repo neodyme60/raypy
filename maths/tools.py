@@ -1,6 +1,7 @@
 import math
 from random import random
 from maths.config import CONST_EPSILON
+from maths.normal import Normal
 from maths.vector3d import Vector3d
 
 def get_clamp(value: float, low: float, high: float):
@@ -66,6 +67,9 @@ def get_solve_quadric(a: float, b: float,):
 # Normal form: a*x^2 + b*x + c = 0
 def get_solve_quadratic(a: float, b: float, c: float):
 
+    if a==0.0:
+        return None, None
+
     #Find quadratic discriminant
     discriminant = b * b - 4.0 * a *  c
     if discriminant < 0.0:
@@ -79,6 +83,9 @@ def get_solve_quadratic(a: float, b: float, c: float):
         q = -0.5 * (b - root_discriminant)
     else:
         q = -0.5 * (b + root_discriminant)
+
+    if q==0.0:
+        return None, None
 
     t0 = q / a
     t1 = c / q
@@ -162,3 +169,8 @@ def get_concentric_sample_disk(u1: float, u2: float)->(float, float):
             theta = 6.0 + sx/r
     theta *= math.pi / 4.0
     return r * math.cos(theta), r * math.sin(theta)
+
+def get_face_forward(n: Normal, v: Vector3d)->Normal:
+    if Vector3d.dot(n, v) < 0.0:
+        return Normal(-n.x, n.y, n.z)
+    return n

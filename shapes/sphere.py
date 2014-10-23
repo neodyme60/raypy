@@ -1,11 +1,13 @@
 from core.bbox import BoundingBox
 from core.shape import Shape
 import maths
+from maths.normal import Normal
 from maths.point3d import Point3d
 from maths.vector3d import Vector3d
 from core.intersection import Intersection
 from core.transform import Transform
 from core.ray import Ray
+
 
 class Sphere(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, radius: float):
@@ -15,7 +17,7 @@ class Sphere(Shape):
         self.radius_squared = self.radius * self.radius
 
 
-    def internal_solve(self, ray_l: Ray, ray_w: Ray)-> (float, float):
+    def internal_solve(self, ray_l: Ray, ray_w: Ray) -> (float, float):
 
         o = Vector3d.create_from_point3d(ray_l.origin)
 
@@ -39,30 +41,40 @@ class Sphere(Shape):
             return (None, None)
         return t0, t1
 
-    def get_intersection(self, ray: Ray, intersection: Intersection) ->bool:
+    def get_intersection(self, ray: Ray, intersection: Intersection) -> bool:
 
         # ray from word_space_to_object_space
         ray_o = ray * self.worldToObject
 
         t0, t1 = self.internal_solve(ray_o, ray)
 
-        if t0== None and t1 == None:
+        if t0 == None and t1 == None:
             return False
 
-        intersection.ray_epsilon = t0
-        intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
-        intersection.differentialGeometry.normal = intersection.differentialGeometry.point * self.objectToWorld
-        intersection.differentialGeometry.shape = self
-        return True
+        if ray_o.min_t <= t0 < ray_o.max_t:
+            intersection.ray_epsilon = t0
+            intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
+#            intersection.differentialGeometry.point = ray.get_at(intersection.ray_epsilon)
+            # * self.objectToWorld
+            # intersection.differentialGeometry.normal = Normal.create_from_point3d(intersection.differentialGeometry.point);
+
+            v = Vector3d(intersection.differentialGeometry.point.x,
+                                                              intersection.differentialGeometry.point.y-1.0,
+                                                              intersection.differentialGeometry.point.z)
+            v=v.get_normalized()
+            intersection.differentialGeometry.normal = Normal(v.x, v.y, v.z)
+            intersection.differentialGeometry.shape = self
+            return True
+        return False
 
     def get_is_intersected(self, ray: Ray) -> bool:
 
-        # ray from word_space_to_object_space
+        # ray from world_space_to_object_space
         ray_o = ray * self.worldToObject
 
         t0, t1 = self.internal_solve(ray_o, ray)
 
-        return t0== None and t1 == None
+        return t0 != None and t1 != None
 
 
     def get_object_bound(self) -> BoundingBox:

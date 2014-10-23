@@ -10,7 +10,7 @@ class Sampler:
         self.shutter_close = shutter_close
         self.samples_per_pixel = samples_per_pixel
 
-    def get_more_samples(self, sample_list) -> int:
+    def get_more_samples(self):
         raise NotImplementedError
 
     def get_sub_sampler(self, num: int, bucket_order_info: BucketOrderInfo):

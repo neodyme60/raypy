@@ -42,7 +42,9 @@ class StratifiedSampler(Sampler):
         for i in range(nb_samples):
             self.time_samples[i] = random.random()
 
-    def get_more_samples(self, sample_list: Sample) -> int:
+    def get_more_samples(self) -> [Sample]:
+
+        samples= []
 
         # move to next sample and generate random sub sample
         if self.sample_pos == (self.samples_per_pixel):
@@ -63,15 +65,16 @@ class StratifiedSampler(Sampler):
             self.internal_fill_stratified(self.samples_per_pixel)
             self.sample_pos = 0
 
-        #we have only one sample
-        sample_list[0].image_xy = self.image_samples[self.sample_pos]
-        sample_list[0].lens_uv = self.lens_samples[self.sample_pos]
-        sample_list[0].time = maths.tools.get_lerp(self.shutter_open,
-                                                   self.shutter_close, self.time_samples[self.sample_pos])
+        sample = Sample()
+        sample.image_xy = self.image_samples[self.sample_pos]
+        sample.lens_uv = self.lens_samples[self.sample_pos]
+        sample.time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, self.time_samples[self.sample_pos])
+
+        samples.append(sample)
 
         self.sample_pos += 1
 
-        return 1
+        return samples
 
     def get_sub_sampler(self, bucket_index: int, bucket_order_info: BucketOrderInfo):
 

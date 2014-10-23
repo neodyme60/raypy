@@ -11,5 +11,5 @@ class Camera:
         self.shutterOpen = shutter_open
         self.shutterClose = shutter_close
 
-    def generate_ray(self, sample:CameraSample, r: Ray):
+    def generate_ray(self, sample:CameraSample):
         raise NotImplemented

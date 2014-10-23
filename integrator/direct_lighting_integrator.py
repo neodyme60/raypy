@@ -19,5 +19,7 @@ class DirectLightingIntegrator(SurfaceIntegrator):
         self.max_distance = max_distance
         self.light_strategiy = lightStrategy
         self.max_depth = max_depth
+
+
     def Li(self, scene: Scene, ray: Ray, intersection: Intersection):
         pass

@@ -16,7 +16,7 @@ class OrthographicCamera(ProjectiveCamera):
         self.dxCamera = (Point3d(1.0, 0.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
         self.dyCamera = (Point3d(0.0, 1.0 ,0.0) * self.rasterToCamera) - (Point3d(0.0, 0.0, 0.0) * self.rasterToCamera)
 
-    def generate_ray(self, sample:CameraSample, r: Ray):
+    def generate_ray(self, sample:CameraSample):
 
         point_camera = Point3d(sample.image_xy[0], sample.image_xy[1], 0.0) * self.rasterToCamera
         direction = Vector3d(0.0, 0.0, 1.0)

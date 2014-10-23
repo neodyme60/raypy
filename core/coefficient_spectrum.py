@@ -6,92 +6,88 @@ from maths.tools import get_clamp
 
 
 class CoefficientSpectrum:
-    def __init__(self, samples_count: int, values: float=0.0):
-        self.components = [values] * samples_count
 
-    @staticmethod
-    def create_from_coefficient_spectrum(cs: CoefficientSpectrum):
-        ret = copy(cs)
-        return ret
+    def __init__(self, values: float, samples_count: int):
+        self.components = [values] * samples_count
 
     def __add__(self, other):
         ret = copy(self)
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 ret.components[i] += other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 ret.components[i] += other
         return ret
 
     def __iadd__(self, other):
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 self.components[i] += other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 self.components[i] += other
         return self
 
     def __sub__(self, other):
         ret = copy(self)
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 ret.components[i] -= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 ret.components[i] -= other
         return ret
 
     def __isub__(self, other):
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 self.components[i] -= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 self.components[i] -= other
         return self
 
     def __idiv__(self, other):
         ret = copy(self)
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 ret.components[i] /= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 self.components[i] /= other
         return ret
 
-    def __div__(self, other):
-        if type(other) == CoefficientSpectrum:
+    def __truediv__(self, other):
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 self.components[i] /= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 self.components[i] /= other
         return self
 
     def __imul__(self, other):
         ret = copy(self)
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 ret.components[i] *= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 ret.components[i] *= other
         return ret
 
     def __mul__(self, other):
-        if type(other) == CoefficientSpectrum:
+        if isinstance(other, CoefficientSpectrum):
             for i in range(len(self.components)):
                 self.components[i] *= other.components[i]
-        elif type(other) == float:
+        elif isinstance(other, float):
             for i in range(len(self.components)):
                 self.components[i] *= other
         return self
 
     def __eq__(self, other):
-        assert type(other) == CoefficientSpectrum
+        assert isinstance(other, CoefficientSpectrum)
         for i in range(len(self.components)):
             if self.components[i] != other.components[i]:
                 return False

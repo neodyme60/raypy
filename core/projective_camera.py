@@ -19,6 +19,6 @@ class ProjectiveCamera(Camera):
         self.lensRadius = lensr
         self.focalDistance= focald
 
-    def generate_ray(self, sample:CameraSample, r: Ray):
+    def generate_ray(self, sample:CameraSample):
         pass
 

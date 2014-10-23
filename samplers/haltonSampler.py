@@ -22,10 +22,13 @@ class HaltonSampler(Sampler):
         self.wantedSamples = self.samples_per_pixel * delta * delta
         self.currentSample = 0
 
-    def get_more_samples(self, sample_list: Sample) -> int:
+    def get_more_samples(self) ->  [Sample]:
 
         if self.currentSample >= self.wantedSamples:
             return 0
+
+        samples = []
+        sample = Sample()
 
         # generate random tuple for image samples and shift them
         while True:
@@ -36,13 +39,15 @@ class HaltonSampler(Sampler):
                         maths.tools.get_lerp(self.bucket_extend.start_y, self.bucket_extend.start_y + lerp_delta, v))
             self.currentSample = self.currentSample+1
             if image_xy[0] < self.bucket_extend.end_x and image_xy[1] < self.bucket_extend.end_y:
-                sample_list[0].image_xy = image_xy
+                sample.image_xy = image_xy
                 break
 
-        sample_list[0].lens_uv = (get_radical_invers(self.currentSample, 5), get_radical_invers(self.currentSample, 7))
-        sample_list[0].time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, get_radical_invers(self.currentSample, 11))
+        sample.lens_uv = (get_radical_invers(self.currentSample, 5), get_radical_invers(self.currentSample, 7))
+        sample.time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, get_radical_invers(self.currentSample, 11))
 
-        return 1
+        samples.append(sample)
+
+        return samples
 
     def get_sub_sampler(self, bucket_index: int, bucket_order_info: BucketOrderInfo):
 

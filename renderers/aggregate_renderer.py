@@ -12,9 +12,9 @@ class AggregateRendererTask(Renderer):
 class AggregateRenderer(Renderer):
 
     def __init__(self, scene:Scene):
-        Renderer.__init__(self, scene)
+        super().__init__()
 
-    def render_task(self, task_index: int, bucket_index: int, bucket_order_info: BucketOrderInfo, sample: Sample, color: int):
+    def render_task(self, task_index: int, bucket_index: int, bucket_order_info: BucketOrderInfo, color: int):
         pass
 
     def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):

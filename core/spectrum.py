@@ -1,15 +1,14 @@
-class Spectrum:
+from core.rgb_spectrum import RGBSpectrum
+from core.sampled_spectrum import SampledSpectrum
 
-    def __init__(self):
-        self.components = list()
+def XYZToRGB(x: float, y: float, z: float)->(float, float, float):
+    return 3.240479*x - 1.537150*y - 0.498535*z, -0.969256*x + 1.875991*y + 0.041556*z, 0.055648*x - 0.204043*y + 1.057311*z
 
-    def __mul__(self, other):
-        s = Spectrum()
-        if type(other)==float:
-            for i in self.components:
-                s.components.append(i * other)
-        elif type(other)==Spectrum:
-            assert len(other.compoents)==len(self.components)
-            for i in range(0, len(self.components)):
-                s.components.append(self.components[i] * other.compoents[i])
-        return s
+def RGBToXYZ(r: float, g: float, b: float)->(float, float, float):
+    return 0.412453*r + 0.357580*g + 0.180423*b, 0.212671*r + 0.715160*g + 0.072169*g,0.019334*r + 0.119193*g + 0.950227*b
+
+
+Spectrum = RGBSpectrum
+#else:
+#    Spectrum = SampledSpectrum
+

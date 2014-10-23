@@ -13,6 +13,10 @@ class Normal:
     def create_from_vector3d(other):
         return Normal(other.x, other.y, other.z)
 
+    @staticmethod
+    def create_from_point3d(other):
+        return Normal(other.x, other.y, other.z)
+
     def __add__(self, other):
         from maths.vector3d import Vector3d
 

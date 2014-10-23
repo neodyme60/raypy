@@ -10,7 +10,6 @@ from core.sample import Sample
 from core.scene import Scene
 from core.parallel import ThreadPool
 from core.sampler import Sampler
-from core.spectrum import Spectrum
 
 
 class BoundingVolumeRenderer(Renderer):
@@ -33,7 +32,6 @@ class BoundingVolumeRenderer(Renderer):
     def render_task(self, task_index: int,
                     bucket_index: int,
                     bucket_order_info: BucketOrderInfo,
-                    sample_list: Sample,
                     color: int):
 
         sampler = self.main_sampler.get_sub_sampler(bucket_index, bucket_order_info)
@@ -41,41 +39,40 @@ class BoundingVolumeRenderer(Renderer):
         if sampler == None:
             return
 
-#        print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
- #           sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x - 1) + "," + str(
-  #          sampler.bucket_extend.end_y - 1) + ")")
+            # print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
+            #           sampler.bucket_extend.start_y) + ") " + "(" + str(sampler.bucket_extend.end_x - 1) + "," + str(
+            #          sampler.bucket_extend.end_y - 1) + ")")
 
         self.draw_bucket_extend(sampler.bucket_extend)
 
         max_samples_count = self.main_sampler.get_maximum_sample_count()
 
-        new_samples_list = copy.deepcopy(sample_list)
-
         rays = [Ray] * max_samples_count
 
         while True:
-            sampleCount = sampler.get_more_samples(new_samples_list)
 
-            if sampleCount == 0:
+            samples = sampler.get_more_samples()
+
+            if len(samples) == 0:
                 break
 
             intersection = Intersection()
 
-            for i in range(sampleCount):
-                x = int(new_samples_list[i].image_xy[0])
-                y = int(new_samples_list[i].image_xy[1])
+            for i in range(len(samples)):
+                x = int(samples[i].image_xy[0])
+                y = int(samples[i].image_xy[1])
 
-                rays[i] = self.camera.generate_ray(new_samples_list[i], rays[i])
+#                rays[i] = self.camera.generate_ray(new_samples_list[i], rays[i])
 
                 self.camera.film.data[y, x] = self.get_li(self.scene, rays[i], intersection)
 
 
-#        print("end render task " + str(task_index))
+                # print("end render task " + str(task_index))
 
     def get_li(self, scene: Scene, ray: Ray, intersection: Intersection):
         color = 0xff303030
         if self.scene.get_intersection(ray, intersection):
-            color = min(intersection.ray_epsilon/5.0*100, 255)
+            color = min(intersection.ray_epsilon / 5.0 * 100, 255)
         else:
             color = 0xff303030
         return color

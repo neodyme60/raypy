@@ -1,6 +1,8 @@
 import math
 import core.transform
 from maths.matrix44 import Matrix44
+from maths.normal import Normal
+
 
 class Vector3d:
     __slots__ = ['x', 'y', 'z']
@@ -28,8 +30,8 @@ class Vector3d:
 
     @staticmethod
     def dot(a, b) -> float:
-        assert type(a) == Vector3d
-        assert type(b) == Vector3d
+        assert type(a) == Vector3d or type(a) == Normal
+        assert type(b) == Vector3d or  type(b) == Normal
         return a.x * b.x + a.y * b.y + a.z * b.z
 
     @staticmethod
