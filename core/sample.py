@@ -1,6 +1,4 @@
 from core.camera_sample import CameraSample
-from core.sampler import Sampler
-from core.scene import Scene
 
 
 class Sample(CameraSample):

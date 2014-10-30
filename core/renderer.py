@@ -7,7 +7,7 @@ class Renderer:
     def __init__(self):
         pass
 
-    def render(self, scene, bucket_order_info: BucketOrderInfo):
+    def render(self, scene, bucket_order_info: BucketOrderInfo, multiThread: bool=True):
         raise NotImplementedError
 
     def render_task(self, task_index: int,

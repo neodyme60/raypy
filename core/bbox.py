@@ -5,8 +5,8 @@ from maths.vector3d import Vector3d
 
 
 class BoundingBox:
-    def __init__(self, point_min: Point3d(infinity_max_f, infinity_max_f, infinity_max_f),
-                 point_max: Point3d(infinity_min_f, infinity_min_f, infinity_min_f)):
+    def __init__(self, point_min: Point3d = Point3d(infinity_max_f, infinity_max_f, infinity_max_f),
+                 point_max: Point3d = Point3d(infinity_min_f, infinity_min_f, infinity_min_f)):
         self.point_min = point_min
         self.point_min = point_max
 

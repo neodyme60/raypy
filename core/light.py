@@ -1,4 +1,3 @@
-from core.scene import Scene
 from core.spectrum import Spectrum
 from core.transform import Transform
 
@@ -10,6 +9,6 @@ class Light:
         self.worldToObject = l2w.get_invert()
         self.samples_count = max(1, samples_count)
 
-    def get_power(self, scene: Scene)->Spectrum:
+    def get_power(self, scene)->Spectrum:
         raise NotImplemented
 

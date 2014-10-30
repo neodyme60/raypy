@@ -1,5 +1,4 @@
 from core.camera_sample import CameraSample
-from core.ray import Ray
 from core.film import Film
 from core.transform import Transform
 

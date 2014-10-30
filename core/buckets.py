@@ -59,10 +59,8 @@ class BucketOrderInfo:
 
 
 class RowBucketOrder(BucketOrder):
-    def __init__(self, width: int, height: int):
-
-        BucketOrder.__init__(self, width, height, BucketOrderSortType.Row)
-
+    def __init__(self, width: int, height: int, sort_order):
+        super().__init__(width, height, sort_order)
         for i in range(self.height * self.width):
             by = i // self.width
             bx = i % self.width
@@ -74,7 +72,7 @@ class RowBucketOrder(BucketOrder):
 class ColumnBucketOrder(BucketOrder):
     def __init__(self, width: int, height: int):
 
-        BucketOrder.__init__(self, width, height, BucketOrderSortType.Column)
+        super().__init__(width, height, BucketOrderSortType.Column)
 
         for i in range(self.height * self.width):
             by = i // self.width
@@ -87,7 +85,7 @@ class ColumnBucketOrder(BucketOrder):
 class RandomBucketOrder(BucketOrder):
     def __init__(self, width: int, height: int):
 
-        BucketOrder.__init__(self, width, height, BucketOrderSortType.Random)
+        super().__init__(width, height, BucketOrderSortType.Random)
 
         for i in range(self.height * self.width):
             by = i // self.width
@@ -102,7 +100,7 @@ class RandomBucketOrder(BucketOrder):
 class DiagonalBucketOrder(BucketOrder):
     def __init__(self, width: int, height: int):
 
-        BucketOrder.__init__(self, width, height, BucketOrderSortType.Random)
+        super().__init__(width, height, BucketOrderSortType.Random)
 
         x = y = 0
         nx = 1
@@ -126,7 +124,7 @@ class DiagonalBucketOrder(BucketOrder):
 class HilbertBucketOrder(BucketOrder):
     def __init__(self, width: int, height: int):
 
-        BucketOrder.__init__(self, width, height, BucketOrderSortType.Random)
+        super().__init__(width, height, BucketOrderSortType.Random)
 
         hi = hn = 0
         while ((1 << hn) < width or (1 << hn) < height) and hn < 16:

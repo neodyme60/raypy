@@ -1,10 +1,11 @@
 import random
-import math
+
 from core.buckets import BucketOrderInfo, BucketExtend
 from core.rand import stratified_sample_2D
 from core.sample import Sample
 from core.sampler import Sampler
 import maths.tools
+
 
 class StratifiedSampler(Sampler):
     def __init__(self, bucket_extend: BucketExtend, samples_x: int, samples_y: int, jitter: bool, shutter_open: float, shutter_close: float):

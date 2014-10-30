@@ -1,11 +1,15 @@
 import copy
+
 from core.aggregate import Aggregate
 from core.intersection import Intersection
+from core.primitive import Primitive
+
 
 class Simple(Aggregate):
 
-    def __init__(self):
-        Aggregate.__init__(self)
+    def __init__(self, primitives: [Primitive]):
+        super().__init__()
+        self.primitives = primitives
 
     def get_can_intersect(self)->bool:
         return True

@@ -1,22 +1,18 @@
-import copy
 import multiprocessing
-from multiprocessing.dummy import Manager
 from multiprocessing.pool import Pool
-import os
 import random
 
-from core.buckets import BucketOrder, BucketOrderInfo, BucketExtend
+from core.buckets import BucketOrder, BucketOrderSortType
+from core.buckets import BucketOrderInfo
+from core.buckets import BucketExtend
+
 from core.camera import Camera
+from core.integrator import SurfaceIntegrator, VolumeIntegrator
 from core.intersection import Intersection
-from core.ray import Ray
 from core.renderer import Renderer
-from core.sample import Sample
-from core.scene import Scene
 from core.sampler import Sampler
 from core.spectrum import Spectrum
 from maths.config import infinity_max_f
-from shapes.plane import Plane
-from shapes.sphere import Sphere
 
 
 def write_png(buf, width, height):
@@ -62,13 +58,13 @@ def saveAsPNG(array, filename):
 
 class AmbientOcclusionRenderer(Renderer):
 
-    def __init__(self, sampler: Sampler, camera: Camera, samples_count: int=1, max_distance: float=infinity_max_f):
+    def __init__(self, sampler: Sampler, camera: Camera, surface_integrator: SurfaceIntegrator, volume_integrator: VolumeIntegrator):
         super().__init__()
 
         self.camera = camera
         self.main_sampler = sampler
-        self.samples_count = samples_count
-        self.max_distance = max_distance
+        self.surface_integrator = surface_integrator
+        self.volume_integrator = volume_integrator
 
     def draw_bucket_extend(self, bucket_extend: BucketExtend):
         for x in range(bucket_extend.start_x, bucket_extend.end_x):
@@ -119,7 +115,7 @@ class AmbientOcclusionRenderer(Renderer):
 #                        spectrum.components[1] = 0.0
 #                        spectrum.components[2] = 0.0
 #                    else:
-                    spectrum += self.scene.surface_integrator.Li(self.scene, ray, intersection)
+                    spectrum += self.surface_integrator.Li(self.scene, ray, intersection)
 
                 spectrum_count += 1
             pixels.append(spectrum / float(spectrum_count))
@@ -139,25 +135,31 @@ class AmbientOcclusionRenderer(Renderer):
                 i += 1
 
 
-    def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
+    def render(self, scene, bucket_order_info: BucketOrderInfo, multiThread: bool=True):
 
         self.scene = scene
 
-        my_bucket_orders = BucketOrder.create(bucket_order_info.width, bucket_order_info.height,
-                                              bucket_order_info.bucket_order_type)
+        if multiThread==True:
+            my_bucket_orders = BucketOrder.create(bucket_order_info.width, bucket_order_info.height,
+                                                  bucket_order_info.bucket_order_type)
 
-        pool = Pool(processes=multiprocessing.cpu_count())
+            pool = Pool(processes=multiprocessing.cpu_count())
+            pool._wrap_exception = False
 
-        results = []
+            results = []
 
-        for i in range(bucket_order_info.width * bucket_order_info.height):
-            a = pool.apply_async(self.render_task, args=(
-                i, my_bucket_orders.buckets_orders[i], bucket_order_info, random.random() * 255),
-                                 callback=self.draw)
-            results.append(a)
+            for i in range(bucket_order_info.width * bucket_order_info.height):
+                a = pool.apply_async(self.render_task, args=(
+                    i, my_bucket_orders.buckets_orders[i], bucket_order_info, random.random() * 255),
+                                     callback=self.draw)
+                results.append(a)
 
-        for r in results:
-            r.wait()
+            for r in results:
+                r.wait()
+
+        else:
+            bucketOrderInfo = BucketOrderInfo(BucketOrderSortType.Random, 1, 1)
+            self.render_task(0, 0, bucketOrderInfo, 0)
 
         print("Render end")
 

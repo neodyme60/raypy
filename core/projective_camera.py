@@ -1,7 +1,7 @@
 from core.camera import Camera
 from core.camera_sample import CameraSample
-from core.ray import Ray
 from core.film import Film
+from core.ray import Ray
 from core.transform import Transform
 
 
@@ -19,6 +19,6 @@ class ProjectiveCamera(Camera):
         self.lensRadius = lensr
         self.focalDistance= focald
 
-    def generate_ray(self, sample:CameraSample):
-        pass
+    def generate_ray(self, sample:CameraSample)->Ray:
+        raise NotImplemented
 

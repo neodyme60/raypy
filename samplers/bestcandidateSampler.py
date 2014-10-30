@@ -2,6 +2,7 @@ from core.buckets import BucketExtend
 from core.sampler import Sampler
 
 
+
 class BestcandidateSampler(Sampler):
     def __init__(self, bucket_extend: BucketExtend, samples_count: int, shutter_open: float, shutter_close: float):
         super().__init__(bucket_extend, samples_count, shutter_open, shutter_close)

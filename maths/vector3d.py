@@ -1,5 +1,6 @@
 import math
-import core.transform
+
+from core.transform import Transform
 from maths.matrix44 import Matrix44
 from maths.normal import Normal
 
@@ -31,7 +32,7 @@ class Vector3d:
     @staticmethod
     def dot(a, b) -> float:
         assert type(a) == Vector3d or type(a) == Normal
-        assert type(b) == Vector3d or  type(b) == Normal
+        assert type(b) == Vector3d or type(b) == Normal
         return a.x * b.x + a.y * b.y + a.z * b.z
 
     @staticmethod
@@ -137,7 +138,7 @@ class Vector3d:
                 self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1],
                 self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2]
             )
-        elif type(other) == core.transform.Transform:
+        elif type(other) == Transform:
             return self * other.mat
         else:
             raise NotImplemented

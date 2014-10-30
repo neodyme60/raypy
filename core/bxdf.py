@@ -1,5 +1,5 @@
 from enum import Enum
-import math
+
 from core.spectrum import Spectrum
 from maths.config import CONST_PI_INV
 from maths.vector3d import Vector3d

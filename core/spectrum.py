@@ -1,5 +1,5 @@
 from core.rgb_spectrum import RGBSpectrum
-from core.sampled_spectrum import SampledSpectrum
+
 
 def XYZToRGB(x: float, y: float, z: float)->(float, float, float):
     return 3.240479*x - 1.537150*y - 0.498535*z, -0.969256*x + 1.875991*y + 0.041556*z, 0.055648*x - 0.204043*y + 1.057311*z

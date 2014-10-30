@@ -15,7 +15,7 @@ class Shape:
         raise Exception("must be implemented")
 
     def get_intersection(self, ray:Ray, intersection: Intersection)->bool:
-        raise Exception("must be implemented")
+        return True
 
     def get_is_intersected(self, ray:Ray)->bool:
         raise Exception("must be implemented")
@@ -23,12 +23,14 @@ class Shape:
     def get_object_bound(self)->BoundingBox:
         raise Exception("must be implemented")
 
-    def get_world_object_bound(self)->BoundingBox:
+    def get_world_bound(self)->BoundingBox:
         raise Exception("must be implemented")
 
     def get_area(self)->float:
         raise Exception("must be implemented")
 
-    def get_sample(u1:float, u2:float)->(Point3d, Normal):
+    def get_sample(self, u1:float, u2:float)->(Point3d, Normal):
         raise Exception("must be implemented")
 
+    def get_refine(self, shapes_list):
+        raise Exception("must be implemented")

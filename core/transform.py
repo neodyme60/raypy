@@ -1,6 +1,7 @@
 import math
+
+import maths
 from maths.matrix44 import Matrix44
-from maths.vector3d import Vector3d
 
 
 class Transform:
@@ -103,6 +104,20 @@ class Transform:
         return Transform(m, m_inv)
 
     @staticmethod
+    def create_rotate(angle: float, axis):
+        from maths.matrix44 import Matrix44
+        from maths.vector4d import Vector4d
+
+        a = axis.get_normalized()
+        s = math.sin(angle)
+        c = math.cos(angle)
+        m = Matrix44.create_from_vector4d(Vector4d(a.x * a.x + (1.0 - a.x * a.x) * c, a.x * a.y * (1.0 - c) - a.z * s, a.x * a.z * (1.0 - c) + a.y * s, 0.0),
+                                          Vector4d(a.x * a.y * (1.0 - c) + a.z * s, a.y * a.y + (1.0 - a.y * a.y) * c, a.y * a.z * (1.0 - c) - a.x * s, 0.0),
+                                          Vector4d(a.x * a.z * (1.0 - c) - a.y * s, a.y * a.z * (1.0 - c) + a.x * s, a.z * a.z + (1.0 - a.z * a.z) * c, 0.0),
+                                          Vector4d(0.0, 0.0, 0.0, 1.0))
+        return Transform(m, m.get_transpose())
+
+    @staticmethod
     def create_rot_x(angle: float):
         from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
@@ -148,13 +163,13 @@ class Transform:
 
         # Initialize first three columns of viewing matrix
         z_axis = (at - eye).get_normalized()
-        x_axis = Vector3d.cross(up, z_axis).get_normalized()
-        y_axis = Vector3d.cross(z_axis, x_axis)
+        x_axis = maths.vector3d.Vector3d.cross(up, z_axis).get_normalized()
+        y_axis = maths.vector3d.Vector3d.cross(z_axis, x_axis)
 
         m = Matrix44.create_from_vector4d(
-            Vector4d.create_from_vector3d(x_axis, -Vector3d.dot(x_axis, eye)),
-            Vector4d.create_from_vector3d(y_axis, -Vector3d.dot(y_axis, eye)),
-            Vector4d.create_from_vector3d(z_axis, -Vector3d.dot(z_axis, eye)),
+            Vector4d.create_from_vector3d(x_axis, -maths.vector3d.Vector3d.dot(x_axis, eye)),
+            Vector4d.create_from_vector3d(y_axis, -maths.vector3d.Vector3d.dot(y_axis, eye)),
+            Vector4d.create_from_vector3d(z_axis, -maths.vector3d.Vector3d.dot(z_axis, eye)),
             Vector4d.create_from_vector3d(eye, 1.0)
         )
         return Transform(m)

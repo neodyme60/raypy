@@ -1,11 +1,13 @@
 from enum import Enum
-from random import random
+import string
+
 from core.integrator import SurfaceIntegrator
 from core.intersection import Intersection
+from core.param_set import ParamSet
 from core.ray import Ray
 from core.scene import Scene
-import maths.tools
-from maths.vector3d import Vector3d
+
+
 
 class LightStrategy(Enum):
     SAMPLE_ALL_UNIFORM = 0

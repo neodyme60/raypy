@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 from maths.config import infinity_max_f
-from maths.tools import get_clamp
+import maths.tools
 
 
 class CoefficientSpectrum:
@@ -120,7 +120,7 @@ class CoefficientSpectrum:
     def get_clamp(self, low: float=0.0, high: float=infinity_max_f):
         ret = copy(self)
         for i in range(len(self.components)):
-            ret.components[i] = get_clamp(ret.components[i], low, high)
+            ret.components[i] = maths.tools.get_clamp(ret.components[i], low, high)
 
     def get_has_nan(self):
         for i in range(len(self.components)):

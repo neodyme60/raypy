@@ -77,7 +77,7 @@ class BoundingVolumeRenderer(Renderer):
             color = 0xff303030
         return color
 
-    def render(self, scene: Scene, bucket_order_info: BucketOrderInfo):
+    def render(self, scene, bucket_order_info: BucketOrderInfo, multiThread: bool=True):
 
         self.scene = scene
 

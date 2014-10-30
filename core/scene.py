@@ -1,17 +1,16 @@
-from aggregates.simple import Simple
-from core.integrator import SurfaceIntegrator
 from core.intersection import Intersection
+from core.light import Light
+from core.primitive import Primitive
 from core.ray import Ray
+from core.volume_region import VolumeRegion
 
 
 class Scene():
 
-    def __init__(self, surface_integrator: SurfaceIntegrator):
-        self.aggregate = Simple()
-        self.surface_integrator = surface_integrator
-
-    def add_geometry(self, other):
-        self.aggregate.add(other)
+    def __init__(self, accelerator: Primitive, lights: [Light], volume_region: VolumeRegion):
+        self.volume_region = volume_region
+        self.aggregate = accelerator
+        self.lights = lights
 
     def get_intersection(self, ray: Ray, intersection: Intersection):
         if self.aggregate.get_is_intersected(ray):

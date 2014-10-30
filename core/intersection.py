@@ -1,4 +1,4 @@
-from core.differential_geometry import DifferentialGeometry
+import core.differential_geometry
 from maths.config import infinity_max_f
 
 
@@ -10,7 +10,7 @@ class Intersection:
         self.ray_epsilon = infinity_max_f
         self.shape_id = 0
         self.primitive_id = 0
-        self.differentialGeometry = DifferentialGeometry()
+        self.differentialGeometry = core.differential_geometry.DifferentialGeometry()
 
 
     def get_bsdf(self):

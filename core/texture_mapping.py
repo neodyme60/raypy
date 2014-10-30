@@ -1,4 +1,5 @@
 import math
+
 from core.differential_geometry import DifferentialGeometry
 from core.transform import Transform
 from maths.config import CONST_TWOPI_INV, CONST_PI_INV

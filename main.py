@@ -1,13 +1,17 @@
 import sys
+
 from PyQt4 import QtGui
+from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
+from aggregates.simple import Simple
+
 from camera.perspective_camera import PerspectiveCamera
 from core.buckets import BucketOrderInfo, BucketOrderSortType, BucketExtend
 from core.film import Film
 from core.scene import Scene
-from integrator.ambient_occlusion_integrator import AmbientOcclusionIntegrator
+from core.shape import Shape
+from surface_integrator.ambient_occlusion_integrator import AmbientOcclusionIntegrator
 from maths.vector3d import Vector3d
-from renderers.ambient_occlusion_renderer import AmbientOcclusionRenderer
-from samplers.haltonSampler import HaltonSampler
+from renderers.sampler_renderer import AmbientOcclusionRenderer
 from samplers.randomSampler import RandomSampler
 from shapes.plane import Plane
 from shapes.sphere import Sphere
@@ -22,9 +26,20 @@ my_camera = None
 my_buckets_info = None
 
 
-class Plan(object):
-    pass
+def load_from_file(filename):
+    from loader.pbrt_loader import PbrtLoader
+    from loader.pbrt.pbrtLexer import pbrtLexer
+    from loader.pbrt.pbrtParser import pbrtParser
 
+    input = FileStream(filename)
+    lexer = pbrtLexer(input)
+    tokens = CommonTokenStream(lexer)
+    loader = pbrtParser(tokens)
+    tree = loader.body()
+
+    printer = PbrtLoader()
+    walker = ParseTreeWalker()
+    walker.walk(printer, tree)
 
 def load_scene(w:int, h:int):
     global my_renderer
@@ -32,10 +47,9 @@ def load_scene(w:int, h:int):
     global my_camera
     global my_buckets_info
 
-    surface_integrator = AmbientOcclusionIntegrator(100, 2.0)
+    surface_integrator = AmbientOcclusionIntegrator(10, 2.0)
 
-    # create scene populate with object
-    my_scene = Scene(surface_integrator)
+    volume_integrator = None
 
     transform = Transform.create_translate(0.0, 1.0, 0.0)
     form1 = Sphere(transform, transform.get_invert(), 1.0)
@@ -44,8 +58,9 @@ def load_scene(w:int, h:int):
     transform2 = Transform.create_identity()
     form2 = Plane(transform2,transform2.get_invert())
 
-    my_scene.add_geometry(form1)
-    my_scene.add_geometry(form2)
+    my_primitives = [form1, form2]
+
+    my_accelerator = Simple(my_primitives)
 
     shutter_open = 0.0
     shutter_close = 0.0
@@ -81,16 +96,18 @@ def load_scene(w:int, h:int):
     my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 30, 30)
 
     #create renderer and assign scene
-    my_renderer = AmbientOcclusionRenderer(my_sampler, my_camera)
+    my_renderer = AmbientOcclusionRenderer(my_sampler, my_camera, surface_integrator, volume_integrator)
 #    my_renderer = BoundingVolumeRenderer(my_sampler, my_camera)
 
+    # create scene populate with object
+    my_scene = Scene(my_accelerator, None, None)
 
-def render():
+def render(multiThreaded: bool = True):
     global my_renderer
     global my_scene
     global my_camera
     global my_buckets_info
-    my_renderer.render(my_scene, my_buckets_info)
+    my_renderer.render(my_scene, my_buckets_info, multiThreaded)
 
 
 def main():
@@ -102,13 +119,14 @@ def main():
     height = 600
 
     load_scene(width, height)
+#    load_from_file("../scenes/nico.pbrt")
 
     qt_app = QtGui.QApplication(sys.argv)
     app = Application(width, height, my_camera.film)
 
     pool = ThreadPool(1)
     pool.add_task(render)
-#    render()
+#    render(False)
 
     sys.exit(qt_app.exec_())
 

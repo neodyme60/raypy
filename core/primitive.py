@@ -1,6 +1,5 @@
 from core.transform import Transform
 
-__author__ = 'nicolas'
 
 class Primitive:
 
@@ -14,7 +13,7 @@ class Primitive:
         raise Exception("must be implemented")
 
     def get_is_intersected(self, ray)->bool:
-        raise Exception("must be implemented")
+        return True
 
     def get_bsdf(self):
         pass

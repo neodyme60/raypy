@@ -1,5 +1,5 @@
 import random
-import math
+
 from core.buckets import BucketOrderInfo, BucketExtend
 from core.sample import Sample
 from core.sampler import Sampler

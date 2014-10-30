@@ -1,4 +1,3 @@
-from core import texture
 from core.differential_geometry import DifferentialGeometry
 from core.material import Material
 from core.texture import Texture

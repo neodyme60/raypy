@@ -11,7 +11,13 @@ class Integrator():
 class SurfaceIntegrator(Integrator):
 
     def __init__(self):
-        Integrator.__init__(self)
+        super().__init__()
 
     def Li(self, scene, ray: Ray, intersection: Intersection)->Spectrum:
         raise NotImplemented
+
+class VolumeIntegrator(Integrator):
+
+    def __init__(self):
+        super().__init__()
+
