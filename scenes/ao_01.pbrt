@@ -1,0 +1,40 @@
+Film "image"
+	"integer xresolution" [600] 
+	"integer yresolution" [600]
+    "string filename" "sphere-ewa-vs-trilerp.exr"
+
+Renderer "sampler" 
+	"integer samplesperpixel" [16384] 
+    "bool dodirectseparately" ["false"] 
+	
+Sampler "random" 
+	"integer xsamples" [1] 
+	"integer ysamples" [1] 
+	"bool jitter" ["false"]
+
+LookAt 0.0 3.0 -5.0  0.0 0.0 0.0   0 1 0
+Camera "perspective" 
+	"float fov" [30]
+
+SurfaceIntegrator "ambientocclusion" 
+	"integer nsamples" [10] 
+	"float maxdist" [2.0]
+
+WorldBegin
+
+Shape "plane"
+
+AttributeBegin
+Translate 0.0 1.0 0.0
+Shape "sphere"
+	"float radius" [1.0] 
+AttributeEnd
+
+AttributeBegin
+Translate 0.8 0.5 -1.0
+Shape "sphere"
+	"float radius" [0.5] 
+AttributeEnd
+
+
+WorldEnd

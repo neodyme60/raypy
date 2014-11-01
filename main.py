@@ -126,7 +126,7 @@ def main():
     height = 600
 
 #    load_scene(width, height)
-    load_from_file("../scenes/ao_01.pbrt")
+    load_from_file("scenes/ao_01.pbrt")
     my_renderer = renderOptions.make_renderer()
     my_scene = renderOptions.make_scene()
 
