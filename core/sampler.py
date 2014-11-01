@@ -5,10 +5,8 @@ import maths
 
 
 class Sampler:
-    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int, shutter_open: float, shutter_close: float):
+    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int):
         self.bucket_extend = bucket_extend
-        self.shutter_open = shutter_open
-        self.shutter_close = shutter_close
         self.samples_per_pixel = samples_per_pixel
 
     def get_more_samples(self):

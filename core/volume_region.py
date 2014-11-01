@@ -6,5 +6,5 @@ class VolumeRegion():
 
 class AggregateVolume(VolumeRegion):
 
-    def __init__(self):
+    def __init__(self, regions:[VolumeRegion]):
         super().__init__()

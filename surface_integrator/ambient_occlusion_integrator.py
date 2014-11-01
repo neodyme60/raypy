@@ -8,7 +8,7 @@ from core.scene import Scene
 from core.spectrum import Spectrum
 import maths.tools
 from maths.vector3d import Vector3d
-
+from shapes.sphere import Sphere
 
 
 class AmbientOcclusionIntegrator(SurfaceIntegrator):

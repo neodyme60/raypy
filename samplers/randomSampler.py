@@ -7,8 +7,8 @@ import maths.tools
 
 
 class RandomSampler(Sampler):
-    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int, shutter_open: float, shutter_close: float):
-        super().__init__(bucket_extend, samples_per_pixel, shutter_open, shutter_close)
+    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int):
+        super().__init__(bucket_extend, samples_per_pixel)
 
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y
@@ -60,7 +60,8 @@ class RandomSampler(Sampler):
         sample = Sample()
         sample.image_xy = self.image_samples[self.sample_pos]
         sample.lens_uv = self.lens_samples[self.sample_pos]
-        sample.time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, self.time_samples[self.sample_pos])
+#todo        sample.time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, self.time_samples[self.sample_pos])
+        sample.time = maths.tools.get_lerp(0.0, 0.0, self.time_samples[self.sample_pos])
 
         samples.append(sample)
 
@@ -75,7 +76,7 @@ class RandomSampler(Sampler):
         if bucket_extend.get_is_null():
             return None
 
-        return RandomSampler(bucket_extend, self.samples_per_pixel, self.shutter_open, self.shutter_close)
+        return RandomSampler(bucket_extend, self.samples_per_pixel)
 
     def get_round_size(self, size: int) -> int:
         return 1

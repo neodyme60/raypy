@@ -7,13 +7,17 @@ from maths.vector3d import Vector3d
 from core.intersection import Intersection
 from core.transform import Transform
 from core.ray import Ray
+from maths.vector4d import Vector4d
 
 
 class Sphere(Shape):
-    def __init__(self, o2w: Transform, w2o: Transform, radius: float):
+    def __init__(self, o2w: Transform, w2o: Transform, radius: float, zmin: float, zmax: float, phimax: float):
         super().__init__(o2w, w2o)
 
         self.radius = radius
+        self.zmin = zmin
+        self.zmax = zmax
+        self.phimax = phimax
         self.radius_squared = self.radius * self.radius
 
 
@@ -54,15 +58,16 @@ class Sphere(Shape):
         if ray_o.min_t <= t0 < ray_o.max_t:
             intersection.ray_epsilon = t0
             intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
-#            intersection.differentialGeometry.point = ray.get_at(intersection.ray_epsilon)
+            # intersection.differentialGeometry.point = ray.get_at(intersection.ray_epsilon)
             # * self.objectToWorld
             # intersection.differentialGeometry.normal = Normal.create_from_point3d(intersection.differentialGeometry.point);
 
-            v = Vector3d(intersection.differentialGeometry.point.x,
-                                                              intersection.differentialGeometry.point.y-1.0,
-                                                              intersection.differentialGeometry.point.z)
-            v=v.get_normalized()
-            intersection.differentialGeometry.normal = Normal(v.x, v.y, v.z)
+            v = Vector4d(intersection.differentialGeometry.point.x,
+                         intersection.differentialGeometry.point.y,
+                         intersection.differentialGeometry.point.z,
+                         1.0)* self.worldToObject
+            v = Vector3d(v.x, v.y, v.z).get_normalized()
+            intersection.differentialGeometry.normal = Normal(v.x, v.y, v.z) * self.objectToWorld
             intersection.differentialGeometry.shape = self
             return True
         return False
@@ -75,7 +80,6 @@ class Sphere(Shape):
         t0, t1 = self.internal_solve(ray_o, ray)
 
         return t0 != None and t1 != None
-
 
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),

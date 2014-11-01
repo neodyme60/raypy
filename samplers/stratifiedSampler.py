@@ -8,8 +8,8 @@ import maths.tools
 
 
 class StratifiedSampler(Sampler):
-    def __init__(self, bucket_extend: BucketExtend, samples_x: int, samples_y: int, jitter: bool, shutter_open: float, shutter_close: float):
-        super().__init__(bucket_extend, samples_x*samples_y, shutter_open, shutter_close)
+    def __init__(self, bucket_extend: BucketExtend, samples_x: int, samples_y: int, jitter: bool):
+        super().__init__(bucket_extend, samples_x*samples_y)
 
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y

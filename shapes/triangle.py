@@ -8,12 +8,15 @@ from core.transform import Transform
 
 
 class TriangleMesh(Shape):
-    def __init__(self, o2w: Transform, w2o: Transform, p:[Point3d], v: [Vector3d], vi: [int], n: [Normal]):
+    def __init__(self, o2w: Transform, w2o: Transform, p:[Point3d], vi: [int], v: [Vector3d], n: [Normal]):
         super().__init__(o2w, w2o)
         self.vertices = v
         self.normals = n
         self.points = p
-        self.vertex_index = vi
+        self.index = vi
+
+    def get_can_intersect(self)->bool:
+        return False
 
     def get_object_bound(self) -> BoundingBox:
         bb = BoundingBox()
@@ -28,7 +31,7 @@ class TriangleMesh(Shape):
         return bb
 
     def get_refine(self, shapes: [Shape]):
-        for i in range(self.vertex_index/3):
+        for i in range(self.index/3):
             shapes.append(Triangle(self.objectToWorld, self. worldToObject, self, i))
 
 
@@ -36,41 +39,41 @@ class Triangle(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, mesh: TriangleMesh, index: int):
         super().__init__(o2w, w2o)
         self.mesh = mesh
-        self.index0 = index
+        self.triangle_index = index
 
     def get_can_intersect(self)->bool:
         return True
 
     def get_object_bound(self) -> BoundingBox:
-        p1_index = self.mesh.vertex_index[self.index0 + 0]
-        p2_index = self.mesh.vertex_index[self.index0 + 1]
-        p3_index = self.mesh.vertex_index[self.index0 + 2]
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 1]
+        p3_index = self.mesh.index[self.triangle_index*3 + 2]
 
-        p1 = self.mesh.points[p1_index * 3 + 0]
-        p2 = self.mesh.points[p2_index * 3 + 1]
-        p3 = self.mesh.points[p3_index * 3 + 2]
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
         bb = BoundingBox(p1, p2).get_union_point3d(p3)
         return bb
 
     def get_world_bound(self) -> BoundingBox:
-        p1_index = self.mesh.vertex_index[self.index0 + 0]
-        p2_index = self.mesh.vertex_index[self.index0 + 1]
-        p3_index = self.mesh.vertex_index[self.index0 + 2]
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 1]
+        p3_index = self.mesh.index[self.triangle_index*3 + 2]
 
-        p1 = self.mesh.points[p1_index * 3 + 0]
-        p2 = self.mesh.points[p2_index * 3 + 1]
-        p3 = self.mesh.points[p3_index * 3 + 2]
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
         bb = BoundingBox(p1, p2).get_union_point3d(p3)
         return bb
 
     def get_intersection(self, ray, intersection: Intersection) -> bool:
-        p1_index = self.mesh.vertex_index[self.index0 + 0]
-        p2_index = self.mesh.vertex_index[self.index0 + 1]
-        p3_index = self.mesh.vertex_index[self.index0 + 2]
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 1]
+        p3_index = self.mesh.index[self.triangle_index*3 + 2]
 
-        p1 = self.mesh.points[p1_index * 3 + 0]
-        p2 = self.mesh.points[p2_index * 3 + 1]
-        p3 = self.mesh.points[p3_index * 3 + 2]
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
 
         e1 = p2 - p1
         e2 = p3 - p1
@@ -106,13 +109,13 @@ class Triangle(Shape):
 
 
     def get_is_intersected(self, ray) -> bool:
-        p1_index = self.mesh.vertex_index[self.index0 + 0]
-        p2_index = self.mesh.vertex_index[self.index0 + 1]
-        p3_index = self.mesh.vertex_index[self.index0 + 2]
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 1]
+        p3_index = self.mesh.index[self.triangle_index*3 + 2]
 
-        p1 = self.mesh.points[p1_index * 3 + 0]
-        p2 = self.mesh.points[p2_index * 3 + 1]
-        p3 = self.mesh.points[p3_index * 3 + 2]
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
 
         e1 = p2 - p1
         e2 = p3 - p1

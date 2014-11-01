@@ -40,21 +40,21 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#paramSet.
+    def enterParamSet(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#paramSet.
+    def exitParamSet(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#transform.
     def enterTransform(self, ctx):
         pass
 
     # Exit a parse tree produced by pbrtParser#transform.
     def exitTransform(self, ctx):
-        pass
-
-
-    # Enter a parse tree produced by pbrtParser#paramset.
-    def enterParamset(self, ctx):
-        pass
-
-    # Exit a parse tree produced by pbrtParser#paramset.
-    def exitParamset(self, ctx):
         pass
 
 
@@ -73,6 +73,15 @@ class pbrtListener(ParseTreeListener):
 
     # Exit a parse tree produced by pbrtParser#surfaceIntegrator.
     def exitSurfaceIntegrator(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by pbrtParser#renderer.
+    def enterRenderer(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#renderer.
+    def exitRenderer(self, ctx):
         pass
 
 
@@ -130,6 +139,15 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#paramSetLeft.
+    def enterParamSetLeft(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#paramSetLeft.
+    def exitParamSetLeft(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#areaLightSource.
     def enterAreaLightSource(self, ctx):
         pass
@@ -184,6 +202,15 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#concattransform.
+    def enterConcattransform(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#concattransform.
+    def exitConcattransform(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#program.
     def enterProgram(self, ctx):
         pass
@@ -217,15 +244,6 @@ class pbrtListener(ParseTreeListener):
 
     # Exit a parse tree produced by pbrtParser#translate.
     def exitTranslate(self, ctx):
-        pass
-
-
-    # Enter a parse tree produced by pbrtParser#paramsetitem.
-    def enterParamsetitem(self, ctx):
-        pass
-
-    # Exit a parse tree produced by pbrtParser#paramsetitem.
-    def exitParamsetitem(self, ctx):
         pass
 
 

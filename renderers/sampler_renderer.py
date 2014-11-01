@@ -12,7 +12,8 @@ from core.intersection import Intersection
 from core.renderer import Renderer
 from core.sampler import Sampler
 from core.spectrum import Spectrum
-from maths.config import infinity_max_f
+from maths.point3d import Point3d
+from maths.vector3d import Vector3d
 
 
 def write_png(buf, width, height):
@@ -56,7 +57,7 @@ def saveAsPNG(array, filename):
     f.close()
 
 
-class AmbientOcclusionRenderer(Renderer):
+class SamplerRenderer(Renderer):
 
     def __init__(self, sampler: Sampler, camera: Camera, surface_integrator: SurfaceIntegrator, volume_integrator: VolumeIntegrator):
         super().__init__()
@@ -107,7 +108,6 @@ class AmbientOcclusionRenderer(Renderer):
 
             for i in range(len(samples)):
                 ray = self.camera.generate_ray(samples[i])
-
                 # if self.scene.get_is_intersected(rays[i]):
                 if self.scene.get_intersection(ray, intersection):
 #                    if type(intersection.differentialGeometry.shape) == Sphere:
@@ -118,6 +118,10 @@ class AmbientOcclusionRenderer(Renderer):
                     spectrum += self.surface_integrator.Li(self.scene, ray, intersection)
 
                 spectrum_count += 1
+
+                if spectrum.get_is_zero():
+                    spectrum = Spectrum(0.5)
+                    spectrum_count = 1
             pixels.append(spectrum / float(spectrum_count))
 
         print("end render task " + str(task_index))

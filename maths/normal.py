@@ -1,3 +1,6 @@
+from core.transform import Transform
+from maths.matrix44 import Matrix44
+
 __author__ = 'nicolas'
 
 
@@ -30,3 +33,19 @@ class Normal:
         if type(other) is Vector3d:
             return Normal(self.x - other.x, self.y - other.y, self.z - other.z)
         raise NotImplemented
+
+    def __mul__(self, other):
+        if type(other) == int or type(other) == float:
+            return Normal(self.x * other, self.y * other, self.z * other)
+        elif type(other) == Normal:
+            return Normal(self.x * other.x, self.y * other.y, self.z * other.z)
+        elif type(other) == Matrix44:
+            return Normal(
+                self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0],
+                self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1],
+                self.x * other[0][2] + self.y * other[1][2] + self.z * other[2][2]
+            )
+        elif type(other) == Transform:
+            return self * other.mat
+        else:
+            raise NotImplemented

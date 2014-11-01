@@ -3,8 +3,8 @@ from core.sampler import Sampler
 
 
 class AdaptiveSampler(Sampler):
-    def __init__(self, bucket_extend: BucketExtend, samples_count: int, shutter_open: float, shutter_close: float):
-        super().__init__(bucket_extend, samples_count, shutter_open, shutter_close)
+    def __init__(self, bucket_extend: BucketExtend, samples_count: int):
+        super().__init__(bucket_extend, samples_count)
 
         self.samples_count = samples_count
         self.pos_x = self.pixel_start_x
