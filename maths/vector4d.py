@@ -1,4 +1,5 @@
 import math
+
 from maths.point3d import Point3d
 from maths.vector2d import Vector2d
 from maths.vector3d import Vector3d

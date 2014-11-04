@@ -1,5 +1,3 @@
-import string
-from core.param_set import ParamSet
 from core.projective_camera import ProjectiveCamera
 from core.transform import Transform
 from maths.point3d import Point3d

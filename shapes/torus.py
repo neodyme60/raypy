@@ -11,6 +11,9 @@ class Torus(Shape):
     def __init__(self, o2w: Transform, w2o: Transform, radius: float):
         super().__init__(o2w, w2o)
 
+    def get_can_intersect(self):
+        return True
+
     def get_intersection(self, ray, intersection: Intersection) ->bool:
         #todo
         raise NotImplemented

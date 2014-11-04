@@ -1,6 +1,5 @@
 import string
 
-from core.param_set_item import ParamSetItem
 from core.spectrum import Spectrum
 from core.texture import Texture
 from maths.normal import Normal
@@ -27,84 +26,84 @@ class ParamSet():
         if name in self.bools:
             del self.bools[name]
         else:
-            self.bools[name] = ParamSetItem(name, values)
+            self.bools[name] = values
 
     def add_int(self, name: string, values: [int]):
         if name in self.ints:
             del self.ints[name]
         else:
-            self.ints[name] = ParamSetItem(name, values)
+            self.ints[name] = values
 
     def add_float(self, name: string, values: [float]):
         if name in self.floats:
             del self.floats[name]
         else:
-            self.floats[name] = ParamSetItem(name, values)
+            self.floats[name] = values
 
     def add_point(self, name: string, values: [Point3d]):
         if name in self.points:
             del self.points[name]
         else:
-            self.points[name] = ParamSetItem(name, values)
+            self.points[name] = values
 
     def add_vector(self, name: string, values: [Vector3d]):
         if name in self.vectors:
             del self.vectors[name]
         else:
-            self.vectors[name] = ParamSetItem(name, values)
+            self.vectors[name] = values
 
     def add_normals(self, name: string, values: [Normal]):
         if name in self.normals:
             del self.normals[name]
         else:
-            self.normals[name] = ParamSetItem(name, values)
+            self.normals[name] = values
 
     def add_spectrum(self, name: string, values: [Spectrum]):
         if name in self.spectrums:
             del self.spectrums[name]
         else:
-            self.spectrums[name] = ParamSetItem(name, values)
+            self.spectrums[name] = values
 
     def add_string(self, name: string, values: [string]):
         if name in self.strings:
             del self.strings[name]
         else:
-            self.strings[name] = ParamSetItem(name, values)
+            self.strings[name] = values
 
     def add_texture(self, name: string, values: [Texture]):
         if name in self.textures:
             del self.textures[name]
         else:
-            self.textures[name] = ParamSetItem(name, values)
+            self.textures[name] = values
 
     def find_float(self, name: string, default: float)->float:
         if name in self.floats:
-            return self.floats[name].data[0]
+            return self.floats[name][0]
         return default
 
     def find_floats(self, name: string)->[float]:
         if name in self.floats:
-            return self.floats[name].data
+            return self.floats[name]
         return None
 
     def find_int(self, name: string, default: int)->int:
         if name in self.ints:
-            return self.ints[name].data[0]
+            return self.ints[name][0]
         return default
 
     def find_ints(self, name: string)->[int]:
         if name in self.ints:
-            return self.ints[name].data
+            return self.ints[name]
         return None
 
     def find_bool(self, name: string, default: bool)->bool:
         if name in self.bools:
-            return self.bools[name].data[0]
+            return self.bools[name][0]
         return default
 
     def find_bools(self, name: string)->[bool]:
         if name in self.bools:
-            return self.bools[name].data
+            return self.bools[name]
         return None
 
     def find_point(self, name: string)->[Point3d]:
@@ -129,7 +128,7 @@ class ParamSet():
 
     def find_string(self, name: string, default: string)->string:
         if name in self.strings:
-            return self.strings[name].data[0]
+            return self.strings[name][0]
         return default
 
     def find_strings(self, name: string)->[string]:

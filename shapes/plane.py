@@ -1,7 +1,9 @@
 import math
+from core.bbox import BoundingBox
 from core.intersection import Intersection
 from core.shape import Shape
 from maths.config import CONST_EPSILON
+from maths.point3d import Point3d
 from maths.vector3d import Vector3d
 from core.ray import Ray
 
@@ -14,6 +16,12 @@ class Plane(Shape):
 
         self.normal = Vector3d.get_up()
         self.distance = 0.0
+
+    def get_can_intersect(self):
+        return True
+
+    def get_object_bound(self) -> BoundingBox:
+        return BoundingBox(Point3d(-5.0, -0.1, -5.0), Point3d(5.0, 0.1, 5.0))
 
     def get_intersection(self, ray: Ray, intersection: Intersection) -> bool:
 

@@ -50,7 +50,7 @@ class RenderOptions():
 
         accelerator = core.api.make_accelerator(self.acceleratorName, self.primitives, self.acceleratorParams)
         if accelerator == None:
-            accelerator = core.api.make_accelerator("simple", self.primitives, ParamSet())
+            accelerator = core.api.make_accelerator("grid", self.primitives, ParamSet())
 
         scene = Scene(accelerator, self.lights, volume_region)
         # // Erase primitives, lights, and volume regions from _RenderOptions_

@@ -4,6 +4,7 @@ import maths
 from maths.matrix44 import Matrix44
 
 
+
 class Transform:
     def __init__(self, mat: Matrix44, mat_inv: Matrix44=None):
         self.mat = mat
@@ -36,10 +37,25 @@ class Transform:
         raise NotImplemented
 
     def __mul__(self, other):
-        assert type(other) == Transform
+        from core.bbox import BoundingBox
+        from maths.point3d import Point3d
+
+        if isinstance(other, Transform):
+            return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
+        elif  isinstance(other, BoundingBox):
+            ret = BoundingBox.create_from_point3d(Point3d(other.point_min.x, other.point_min.y, other.point_min.z)*self.mat)
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_max.x, other.point_min.y, other.point_min.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_min.x, other.point_max.y, other.point_min.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_min.x, other.point_min.y, other.point_max.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_min.x, other.point_max.y, other.point_max.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_max.x, other.point_max.y, other.point_min.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_max.x, other.point_min.y, other.point_max.z)*self.mat))
+            ret = BoundingBox.get_union_bbox(ret, BoundingBox.create_from_point3d(Point3d(other.point_max.x, other.point_max.y, other.point_max.z)*self.mat))
+            return ret
+
         # invert of matrix product is :  (AxB)-1 = B-1 x A-1
         # see: https://proofwiki.org/wiki/Inverse_of_Matrix_Product
-        return Transform(self.mat * other.mat, other.mat_inv * self.mat_inv)
+        raise NotImplemented
 
     @staticmethod
     def create_identity():

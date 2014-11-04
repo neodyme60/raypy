@@ -92,7 +92,7 @@ def create_shape_triangle_mesh(paramset: ParamSet, object2world: Transform, worl
     shape = TriangleMesh(
         object2world,
         world2object,
-        paramset.find_floats("P"),
+        paramset.find_point("P"),
         paramset.find_ints("indices"),
         None, None
         )
@@ -106,9 +106,9 @@ def create_light_point(paramset: ParamSet, light2world: Transform) -> PointLight
     return None
 
 def create_surface_integrator_ambient_occlusion(paramset: ParamSet) -> AmbientOcclusionIntegrator:
-    nSamples = paramset.find_int("nsamples", 2048)
-    maxDist = paramset.find_float("maxdist", infinity_max_f)
-    integrator = AmbientOcclusionIntegrator(nSamples, maxDist)
+    samples_count = paramset.find_int("nsamples", 2048)
+    max_distance = paramset.find_float("maxdist", infinity_max_f)
+    integrator = AmbientOcclusionIntegrator(samples_count, max_distance)
     return integrator
 
 def create_surface_integrator_direct_lighting(paramset: ParamSet) -> DirectLightingIntegrator:
@@ -121,7 +121,9 @@ def create_aggregator_kdtree(primitives: [Primitive], paramset: ParamSet) -> KDT
     return None
 
 def create_aggregator_grid(primitives: [Primitive], paramset: ParamSet) -> UniformGrid:
-    return None
+    refine_immediately = paramset.find_bool("refineimmediately", False)
+    grid = UniformGrid(primitives, refine_immediately)
+    return grid
 
 def create_aggregator_simple(primitives: [Primitive], paramset: ParamSet) -> Simple:
     return Simple(primitives)

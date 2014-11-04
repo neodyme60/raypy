@@ -24,7 +24,7 @@ class Shape:
         raise Exception("must be implemented")
 
     def get_world_bound(self)->BoundingBox:
-        raise Exception("must be implemented")
+        return self.objectToWorld*self.get_object_bound()
 
     def get_area(self)->float:
         raise Exception("must be implemented")

@@ -20,6 +20,8 @@ class Sphere(Shape):
         self.phimax = phimax
         self.radius_squared = self.radius * self.radius
 
+    def get_can_intersect(self):
+        return True
 
     def internal_solve(self, ray_l: Ray, ray_w: Ray) -> (float, float):
 

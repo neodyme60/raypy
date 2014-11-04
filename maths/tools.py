@@ -6,8 +6,8 @@ from maths.normal import Normal
 import maths.vector3d
 
 
-def get_clamp(value: float, low: float, high: float):
-    return max(min(float, high), low)
+def get_clamp(value, low, high):
+    return max(min(value, high), low)
 
 
 def get_spherical_theta(v: maths.vector3d.Vector3d) -> float:

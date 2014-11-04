@@ -17,7 +17,7 @@ Camera "perspective"
 	"float fov" [30]
 
 SurfaceIntegrator "ambientocclusion" 
-	"integer nsamples" [10] 
+	"integer nsamples" [100] 
 	"float maxdist" [2.0]
 
 WorldBegin

@@ -21,6 +21,14 @@ class Point2d:
     def create_from_vector4d(other):
         return Point2d(other.x, other.y)
 
+    def __getitem__(self, key) -> float:
+        if key == 0:
+            return self.x
+        elif key == 1:
+            return self.y
+        else:
+            raise IndexError("Invalid subscript " + str(key) + " to Vec3d")
+
     def __add__(self, other):
         from maths.vector4d import Vector4d
         from maths.vector3d import Vector3d

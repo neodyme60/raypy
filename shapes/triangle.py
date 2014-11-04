@@ -24,12 +24,6 @@ class TriangleMesh(Shape):
             bb = bb.get_union_point3d(p)
         return bb
 
-    def get_world_bound(self) -> BoundingBox:
-        bb = BoundingBox()
-        for p in self.points:
-            bb = bb.get_union_point3d(p * self.objectToWorld)
-        return bb
-
     def get_refine(self, shapes: [Shape]):
         for i in range(self.index/3):
             shapes.append(Triangle(self.objectToWorld, self. worldToObject, self, i))
@@ -45,17 +39,6 @@ class Triangle(Shape):
         return True
 
     def get_object_bound(self) -> BoundingBox:
-        p1_index = self.mesh.index[self.triangle_index*3 + 0]
-        p2_index = self.mesh.index[self.triangle_index*3 + 1]
-        p3_index = self.mesh.index[self.triangle_index*3 + 2]
-
-        p1 = self.mesh.points[p1_index]
-        p2 = self.mesh.points[p2_index]
-        p3 = self.mesh.points[p3_index]
-        bb = BoundingBox(p1, p2).get_union_point3d(p3)
-        return bb
-
-    def get_world_bound(self) -> BoundingBox:
         p1_index = self.mesh.index[self.triangle_index*3 + 0]
         p2_index = self.mesh.index[self.triangle_index*3 + 1]
         p3_index = self.mesh.index[self.triangle_index*3 + 2]

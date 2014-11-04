@@ -1,6 +1,6 @@
 from core.api import pbrtPixelFilter, pbrtFilm, pbrtCamera, pbrtSurfaceIntegrator, pbrtSampler, pbrtLightSource, \
     pbrtTexture, pbrtAreaLightSource, pbrtShape, pbrtMaterial, pbrtObjectInstance, pbrtRenderer, \
-    pbrtLookAt, pbrtIdentity, pbrtTranslate, pbrtAttributeBegin, pbrtAttributeEnd
+    pbrtLookAt, pbrtIdentity, pbrtTranslate, pbrtAttributeBegin, pbrtAttributeEnd, pbrtScale
 from core.param_set import ParamSet
 from loader.pbrt.pbrtListener import pbrtListener
 from maths.point3d import Point3d
@@ -172,8 +172,12 @@ class PbrtLoader(pbrtListener):
 
     # Enter a parse tree produced by pbrtParser#scale.
     def enterScale(self, ctx):
-        print("enter scale")
-        pass
+        print("enter scale blok")
+        print("enter translate block")
+        a = float(str(ctx.NUMBER(0)))
+        b = float(str(ctx.NUMBER(1)))
+        c = float(str(ctx.NUMBER(2)))
+        pbrtScale(a, b, c)
 
     # Exit a parse tree produced by pbrtParser#scale.
     def exitScale(self, ctx):

@@ -36,6 +36,16 @@ class Point3d:
     def __ge__(self, other):
         raise NotImplemented
 
+    def __getitem__(self, key) -> float:
+        if key == 0:
+            return self.x
+        elif key == 1:
+            return self.y
+        elif key == 2:
+            return self.z
+        else:
+            raise IndexError("Invalid subscript " + str(key) + " to Vec3d")
+
     @staticmethod
     def create_from_vector3d(other):
         return Point3d(other.x, other.y, other.z)
@@ -82,6 +92,11 @@ class Point3d:
             self.z -= other.z
         else:
             raise NotImplemented
+
+    def __div__(self, other):
+        from maths.vector3d import Vector3d
+        if type(other) == Vector3d or type(other)== Point3d:
+            return Point3d(self.x / other.x, self.y / other.y, self.z/ other.z)
 
     def __mul__(self, other):
 
