@@ -1,5 +1,8 @@
 import core.differential_geometry
+from core.ray import Ray
+from core.spectrum import Spectrum
 from maths.config import infinity_max_f
+from maths.vector3d import Vector3d
 
 
 class Intersection:
@@ -12,6 +15,14 @@ class Intersection:
         self.primitive_id = 0
         self.differentialGeometry = core.differential_geometry.DifferentialGeometry()
 
+    def get_bsdf(self, ray: Ray):
+        # todo
+        #self.differentialGeometry.ComputeDifferentials(ray)
+        return self.primitive.GetBSDF(self.differentialGeometry, self.objectToWorld)
 
-    def get_bsdf(self):
-        pass
+    def Le(self, w: Vector3d) -> Spectrum:
+        area = self.primitive.GetAreaLight()
+        if len(area) > 0:
+            return area.L(self.differentialGeometry.point, self.differentialGeometry.normal, w)
+        return Spectrum(0.0)
+

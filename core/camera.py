@@ -1,5 +1,6 @@
 from core.camera_sample import CameraSample
 from core.film import Film
+from core.ray import Ray
 from core.transform import Transform
 
 
@@ -10,5 +11,5 @@ class Camera:
         self.shutterOpen = shutter_open
         self.shutterClose = shutter_close
 
-    def generate_ray(self, sample:CameraSample):
+    def generate_ray(self, sample:CameraSample)->Ray:
         raise NotImplemented

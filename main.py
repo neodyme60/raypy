@@ -8,6 +8,7 @@ from aggregates.simple import Simple
 from camera.perspective_camera import PerspectiveCamera
 from core.api import renderOptions
 from core.buckets import BucketOrderInfo, BucketOrderSortType, BucketExtend
+from core.bxdf import BxDFType
 from core.film import Film
 from core.scene import Scene
 from surface_integrator.ambient_occlusion_integrator import AmbientOcclusionIntegrator
@@ -101,7 +102,7 @@ def load_scene(w:int, h:int):
 #    my_sampler = HaltonSampler(BucketExtend(0, 0, w - 1, h - 1), 5, shutter_open, shutter_close)
 
     #buket
-    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 30, 30)
+    my_buckets_info = BucketOrderInfo(BucketOrderSortType.Hilbert, 80, 80)
 
     #create renderer and assign scene
     my_renderer = SamplerRenderer(my_sampler, my_camera, surface_integrator, volume_integrator)
@@ -125,8 +126,11 @@ def main():
     width = 600
     height = 600
 
+
 #    load_scene(width, height)
-    load_from_file("scenes/ao_01.pbrt")
+#    load_from_file("scenes/ao_02.pbrt")
+#    load_from_file("scenes/ao_01.pbrt")
+    load_from_file("scenes/debug.pbrt")
 #    load_from_file("scenes/cornell.pbrt")
     my_renderer = renderOptions.make_renderer()
     my_scene = renderOptions.make_scene()
@@ -136,7 +140,7 @@ def main():
 
     pool = ThreadPool(1)
     pool.add_task(render)
- #   render(False)
+#    render(False)
 
     sys.exit(qt_app.exec_())
 

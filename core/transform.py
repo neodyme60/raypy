@@ -1,8 +1,6 @@
 import math
-
 import maths
 from maths.matrix44 import Matrix44
-
 
 
 class Transform:
@@ -174,21 +172,39 @@ class Transform:
 
     @staticmethod
     def create_look_at(eye, at, up):
-        from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
+        from maths.vector3d import Vector3d
 
         # Initialize first three columns of viewing matrix
         z_axis = (at - eye).get_normalized()
         x_axis = maths.vector3d.Vector3d.cross(up, z_axis).get_normalized()
         y_axis = maths.vector3d.Vector3d.cross(z_axis, x_axis)
 
+#        m = Matrix44.create_from_vector4d(
+#            Vector4d.create_from_vector3d(x_axis, -maths.vector3d.Vector3d.dot(x_axis, eye)),
+#            Vector4d.create_from_vector3d(y_axis, -maths.vector3d.Vector3d.dot(y_axis, eye)),
+#            Vector4d.create_from_vector3d(z_axis, -maths.vector3d.Vector3d.dot(z_axis, eye)),
+#            Vector4d(0.0, 0.0, 0.0, 1.0)
+#        )
+#        m = Matrix44.create_from_vector4d(
+#            Vector4d.create_from_vector3d(x_axis, 0.0),
+#            Vector4d.create_from_vector3d(y_axis, 0.0),
+#            Vector4d.create_from_vector3d(z_axis, 0.0),
+#            Vector4d(
+#                -maths.vector3d.Vector3d.dot(x_axis, eye),
+#                -maths.vector3d.Vector3d.dot(y_axis, eye),
+#                -maths.vector3d.Vector3d.dot(z_axis, eye), 1.0)
+#        )
         m = Matrix44.create_from_vector4d(
-            Vector4d.create_from_vector3d(x_axis, -maths.vector3d.Vector3d.dot(x_axis, eye)),
-            Vector4d.create_from_vector3d(y_axis, -maths.vector3d.Vector3d.dot(y_axis, eye)),
-            Vector4d.create_from_vector3d(z_axis, -maths.vector3d.Vector3d.dot(z_axis, eye)),
-            Vector4d.create_from_vector3d(eye, 1.0)
+            Vector4d(x_axis.x, y_axis.x, z_axis.x, 0.0),
+            Vector4d(x_axis.y, y_axis.y, z_axis.y, 0.0),
+            Vector4d(x_axis.z, y_axis.z, z_axis.z, 0.0),
+            Vector4d(
+                -maths.vector3d.Vector3d.dot(x_axis, eye),
+                -maths.vector3d.Vector3d.dot(y_axis, eye),
+                -maths.vector3d.Vector3d.dot(z_axis, eye), 1.0)
         )
-        return Transform(m)
+        return Transform(m.get_invert(), m)
 
     @staticmethod
     def create_orthographic(z_near: float, z_far: float):
@@ -196,7 +212,6 @@ class Transform:
 
     @staticmethod
     def create_perspective(fov: float=90, z_near: float=0.0, z_far: float=1.0):
-        from maths.matrix44 import Matrix44
         from maths.vector4d import Vector4d
 
         inv = 1.0 / (z_far - z_near)
@@ -213,3 +228,16 @@ class Transform:
         inv_tan = 1.0 / math.tan(math.radians(fov) * 0.5)
 
         return Transform(perspective_matrix) * Transform.create_scale(inv_tan, inv_tan, 1.0)
+
+    @staticmethod
+    def create_coordinateSystem(v1):
+        from maths.vector3d import Vector3d
+
+        if math.fabs(v1.x) > math.fabs(v1.y):
+            invLen = 1.0 / math.sqrt(v1.x*v1.x + v1.z*v1.z)
+            v2 = maths.vector3d.Vector3d(-v1.z * invLen, 0.0, v1.x * invLen)
+        else:
+            invLen = 1.0 / math.sqrt(v1.y*v1.y + v1.z*v1.z)
+            v2 =  maths.vector3d.Vector3d(0.0, v1.z * invLen, -v1.y * invLen)
+        v3 = maths.vector3d.Vector3d.cross(v1, v2)
+        return (v2,v3)

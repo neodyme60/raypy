@@ -1,7 +1,9 @@
 from core.api import pbrtPixelFilter, pbrtFilm, pbrtCamera, pbrtSurfaceIntegrator, pbrtSampler, pbrtLightSource, \
     pbrtTexture, pbrtAreaLightSource, pbrtShape, pbrtMaterial, pbrtObjectInstance, pbrtRenderer, \
-    pbrtLookAt, pbrtIdentity, pbrtTranslate, pbrtAttributeBegin, pbrtAttributeEnd, pbrtScale
+    pbrtLookAt, pbrtIdentity, pbrtTranslate, pbrtAttributeBegin, pbrtAttributeEnd, pbrtScale, pbrtTransformBegin, \
+    pbrtTransformEnd, pbrtAccelerator, pbrtNamedMaterial
 from core.param_set import ParamSet
+from core.spectrum import Spectrum
 from loader.pbrt.pbrtListener import pbrtListener
 from maths.point3d import Point3d
 from maths.vector3d import Vector3d
@@ -85,7 +87,16 @@ class PbrtLoader(pbrtListener):
                 values.append(int(str(ctx.STRING(i))))
                 i += 1
             self.currentParamSet.add_string(param_name, values)
-
+        elif param_type == 'color':
+            print("-->color")
+            i = 0
+            values = []
+            while True:
+                if ctx.NUMBER(i) is None:
+                    break
+                values.append(float(str(ctx.NUMBER(i))))
+                i += 1
+            self.currentParamSet.add_spectrum(param_name, Spectrum.create_from_array(values))
 
             # key = str(ctx.STRING(0))
             # if ctx.STRING(1) is  not None:
@@ -218,12 +229,12 @@ class PbrtLoader(pbrtListener):
     # Enter a parse tree produced by pbrtParser#transformBlock.
     def enterTransformBlock(self, ctx):
         print("enter trnasform block")
-        pass
+        pbrtTransformBegin()
 
     # Exit a parse tree produced by pbrtParser#transformBlock.
     def exitTransformBlock(self, ctx):
-        print("exit trnasform block")
-        pass
+        print("exit ternasform block")
+        pbrtTransformEnd()
 
     # Enter a parse tree produced by pbrtParser#texture.
     def enterTexture(self, ctx):
@@ -235,6 +246,17 @@ class PbrtLoader(pbrtListener):
     def exitTexture(self, ctx):
         print("exit texture block")
         pbrtTexture(self.name, self.currentParamSet)
+
+    # Enter a parse tree produced by pbrtParser#accelerator.
+    def enterAccelerator(self, ctx):
+        print("enter accelerator block")
+        self.currentParamSet.reset()
+        self.name = str(ctx.STRING()).replace('"', '')
+
+    # Exit a parse tree produced by pbrtParser#accelerator.
+    def exitAccelerator(self, ctx):
+        print("exit accelerator  block")
+        pbrtAccelerator(self.name, self.currentParamSet)
 
     # Enter a parse tree produced by pbrtParser#areaLightSource.
     def enterAreaLightSource(self, ctx):

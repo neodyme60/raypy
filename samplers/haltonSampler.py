@@ -1,5 +1,5 @@
 from core.buckets import BucketOrderInfo, BucketExtend
-from core.rand import get_radical_invers
+from core.monte_carlo import get_radical_invers
 from core.sample import Sample
 from core.sampler import Sampler
 import maths.tools
@@ -7,8 +7,8 @@ import maths.tools
 
 
 class HaltonSampler(Sampler):
-    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int):
-        super().__init__(bucket_extend, samples_per_pixel)
+    def __init__(self, bucket_extend: BucketExtend, samples_per_pixel: int, shutterOpen: float, shutterClose: float):
+        super().__init__(bucket_extend, samples_per_pixel, shutterOpen, shutterClose)
 
         self.pos_x = self.bucket_extend.start_x
         self.pos_y = self.bucket_extend.start_y
@@ -20,7 +20,7 @@ class HaltonSampler(Sampler):
         self.wantedSamples = self.samples_per_pixel * delta * delta
         self.currentSample = 0
 
-    def get_more_samples(self) ->  [Sample]:
+    def get_more_samples(self, samples) -> int:
 
         if self.currentSample >= self.wantedSamples:
             return 0
@@ -41,7 +41,7 @@ class HaltonSampler(Sampler):
                 break
 
         sample.lens_uv = (get_radical_invers(self.currentSample, 5), get_radical_invers(self.currentSample, 7))
-        sample.time = maths.tools.get_lerp(self.shutter_open, self.shutter_close, get_radical_invers(self.currentSample, 11))
+        sample.time = maths.tools.get_lerp(self.shutterOpen, self.shutterClose, get_radical_invers(self.currentSample, 11))
 
         samples.append(sample)
 
@@ -54,7 +54,7 @@ class HaltonSampler(Sampler):
         if bucket_extend.get_is_null():
             return None
 
-        return HaltonSampler(bucket_extend, self.samples_per_pixel, self.shutter_open, self.shutter_close)
+        return HaltonSampler(bucket_extend, self.samples_per_pixel, self.shutterOpen, self.shutterClose)
 
     def get_round_size(self, size: int) -> int:
         return 1

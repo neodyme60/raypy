@@ -1,6 +1,8 @@
 from core.bbox import BoundingBox
+from core.differential_geometry import DifferentialGeometry
 from core.intersection import Intersection
 from core.ray import Ray
+from core.transform import Transform
 from maths.normal import Normal
 from maths.point3d import Point3d
 
@@ -14,7 +16,7 @@ class Shape:
     def get_can_intersect(self)->bool:
         raise Exception("must be implemented")
 
-    def get_intersection(self, ray:Ray, intersection: Intersection)->bool:
+    def get_intersection(self, ray:Ray, dg: DifferentialGeometry)->(bool, float):
         return True
 
     def get_is_intersected(self, ray:Ray)->bool:
@@ -34,3 +36,8 @@ class Shape:
 
     def get_refine(self, shapes_list):
         raise Exception("must be implemented")
+
+    def get_shading_geometry(self, obj2world: Transform, dg: DifferentialGeometry, dgShading: DifferentialGeometry):
+        dgShading.normal = dg.normal
+        dgShading.point = dg.point
+        dgShading.shape = dg.shape

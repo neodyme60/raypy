@@ -51,7 +51,8 @@ class BoundingVolumeRenderer(Renderer):
 
         while True:
 
-            samples = sampler.get_more_samples()
+            samples = []
+            sampler.get_more_samples(samples)
 
             if len(samples) == 0:
                 break

@@ -1,14 +1,14 @@
 from random import random
-import string
-from core.integrator import SurfaceIntegrator
 from core.intersection import Intersection
-from core.param_set import ParamSet
 from core.ray import Ray
+from core.renderer import Renderer
+from core.sample import Sample
 from core.scene import Scene
 from core.spectrum import Spectrum
+from core.surface_integrator import SurfaceIntegrator
+from maths.config import infinity_max_f
 import maths.tools
 from maths.vector3d import Vector3d
-from shapes.sphere import Sphere
 
 
 class AmbientOcclusionIntegrator(SurfaceIntegrator):
@@ -18,19 +18,23 @@ class AmbientOcclusionIntegrator(SurfaceIntegrator):
         self.samples_count = samples_count
         self.max_distance = max_distance
 
-    def Li(self, scene: Scene, ray: Ray, intersection: Intersection)->Spectrum:
+    def Li(self, scene: Scene, renderer: Renderer, ray: Ray, intersection: Intersection, sample: Sample)->Spectrum:
 
         occlusion = 0
+        intersection.ray_epsilon = infinity_max_f
+
+        bsdf = intersection.get_bsdf(ray)
+        p = bsdf.dgShading.point
+
+        n = maths.tools.get_face_forward(intersection.differentialGeometry.normal, -ray.direction)
 
         for i in range(self.samples_count):
             w = maths.tools.get_uniform_sample_sphere(random(), random())
 
-            n = maths.tools.get_face_forward(intersection.differentialGeometry.normal, -ray.direction)
-
             if Vector3d.dot(w, n) < 0.0:
                 w = -w
 
-            r = Ray(intersection.differentialGeometry.point, w, 0.01, self.max_distance)
+            r = Ray(p, w, 0.01, self.max_distance)
             if scene.get_is_intersected(r):
                 occlusion += 1
 

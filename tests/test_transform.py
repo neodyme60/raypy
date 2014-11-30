@@ -137,7 +137,8 @@ class TestTransform(TestCase):
 
         p = Vector3d(0.0, 0.0, 500.0)
         t = Transform.create_perspective(60.0, 1000.0)
-        self.assertEqual(p * t, Vector3d(0.0, 0.0, 0.5))
+        a = p * t
+        self.assertEqual(a, Vector3d(0.0, 0.0, 0.5))
 
         p = Vector3d(0.0, 0.0, 000.0)
         t = Transform.create_perspective(60.0, 1000.0)

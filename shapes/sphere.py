@@ -1,10 +1,10 @@
 from core.bbox import BoundingBox
+from core.differential_geometry import DifferentialGeometry
 from core.shape import Shape
 import maths
 from maths.normal import Normal
 from maths.point3d import Point3d
 from maths.vector3d import Vector3d
-from core.intersection import Intersection
 from core.transform import Transform
 from core.ray import Ray
 from maths.vector4d import Vector4d
@@ -47,7 +47,7 @@ class Sphere(Shape):
             return (None, None)
         return t0, t1
 
-    def get_intersection(self, ray: Ray, intersection: Intersection) -> bool:
+    def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):
 
         # ray from word_space_to_object_space
         ray_o = ray * self.worldToObject
@@ -55,24 +55,20 @@ class Sphere(Shape):
         t0, t1 = self.internal_solve(ray_o, ray)
 
         if t0 == None and t1 == None:
-            return False
+            return (False, 0.0)
 
         if ray_o.min_t <= t0 < ray_o.max_t:
-            intersection.ray_epsilon = t0
-            intersection.differentialGeometry.point = ray_o.get_at(intersection.ray_epsilon) * self.objectToWorld
+            dg.point = ray_o.get_at(t0) * self.objectToWorld
             # intersection.differentialGeometry.point = ray.get_at(intersection.ray_epsilon)
             # * self.objectToWorld
             # intersection.differentialGeometry.normal = Normal.create_from_point3d(intersection.differentialGeometry.point);
 
-            v = Vector4d(intersection.differentialGeometry.point.x,
-                         intersection.differentialGeometry.point.y,
-                         intersection.differentialGeometry.point.z,
-                         1.0)* self.worldToObject
+            v = Vector4d(dg.point.x, dg.point.y, dg.point.z, 1.0)* self.worldToObject
             v = Vector3d(v.x, v.y, v.z).get_normalized()
-            intersection.differentialGeometry.normal = Normal(v.x, v.y, v.z) * self.objectToWorld
-            intersection.differentialGeometry.shape = self
-            return True
-        return False
+            dg.normal = Normal(v.x, v.y, v.z) * self.objectToWorld
+            dg.shape = self
+            return (True, t0)
+        return (False, 0.0)
 
     def get_is_intersected(self, ray: Ray) -> bool:
 

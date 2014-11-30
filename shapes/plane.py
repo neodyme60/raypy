@@ -1,5 +1,6 @@
 import math
 from core.bbox import BoundingBox
+from core.differential_geometry import DifferentialGeometry
 from core.intersection import Intersection
 from core.shape import Shape
 from maths.config import CONST_EPSILON
@@ -23,25 +24,24 @@ class Plane(Shape):
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-5.0, -0.1, -5.0), Point3d(5.0, 0.1, 5.0))
 
-    def get_intersection(self, ray: Ray, intersection: Intersection) -> bool:
+    def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):
 
         # ray from word_space_to_object_space
         ray_o = ray * self.worldToObject
 
         denominator = Vector3d.dot(self.normal, ray_o.direction)
         if math.fabs(denominator) < CONST_EPSILON:
-            return False
+            return (False, 0.0)
 
         o = Vector3d.create_from_point3d(ray_o.origin)
 
         t = -(Vector3d.dot(self.normal, o) + self.distance) / denominator
         if ray_o.min_t <= t < ray_o.max_t:
-            intersection.ray_epsilon = t
-            intersection.differentialGeometry.point = ray_o.get_at(t) * self.objectToWorld
-            intersection.differentialGeometry.normal = self.normal  * self.objectToWorld
-            intersection.differentialGeometry.shape = self
-            return True
-        return False
+            dg.point = ray_o.get_at(t) * self.objectToWorld
+            dg.normal = self.normal  * self.objectToWorld
+            dg.shape = self
+            return (True, t)
+        return (False, 0.0)
 
     def get_is_intersected(self, ray) -> bool:
         # ray from word_space_to_object_space

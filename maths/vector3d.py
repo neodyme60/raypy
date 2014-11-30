@@ -3,6 +3,7 @@ import math
 from core.transform import Transform
 from maths.matrix44 import Matrix44
 from maths.normal import Normal
+from maths.point3d import Point3d
 
 
 class Vector3d:
@@ -32,7 +33,7 @@ class Vector3d:
     @staticmethod
     def dot(a, b) -> float:
         assert type(a) == Vector3d or type(a) == Normal
-        assert type(b) == Vector3d or type(b) == Normal
+        assert type(b) == Vector3d or type(b) == Normal or type(b) == Point3d
         return a.x * b.x + a.y * b.y + a.z * b.z
 
     @staticmethod

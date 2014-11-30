@@ -3,7 +3,8 @@ grammar pbrt;
     
 // ***************** lexer rules:
 STRING:  '"' ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'-'|'.'|'-'|' ')+ '"';
-NUMBER: (('+'|'-')?('1'..'9')?('0'..'9')+('.'('0'..'9')+)?)|('.'('0'..'9')+);
+fragment Exponent : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
+NUMBER: ((('+'|'-')?('1'..'9')?('0'..'9')+('.'('0'..'9')+)?)|('.'('0'..'9')+))Exponent?;
 
 WS : [ \t\r\n]+ -> skip;
 LINE_COMMENT: '#' ~( '\r' | '\n' )*  -> skip;
@@ -64,16 +65,17 @@ surfaceIntegrator: SURFACEINTEGRATOR STRING paramSet*;
 camera: CAMERA STRING paramSet*;
 lookAt: LOOKAT vector3 vector3 vector3;
 program: body EOF;
-body: ( translate | concattransform | scale | film | renderer | sampler | pixelFilter | surfaceIntegrator | camera | lookAt | worldBlock )+;
-worldBlock: WORLDBEGIN ( objectInstance | shape | texture | material | transform | attributeBlock | objectBlock )* WORLDEND;        
+body: ( accelerator | transformBlock | translate | concattransform | scale | film | renderer | sampler | pixelFilter | surfaceIntegrator | camera | lookAt | worldBlock )+;
+worldBlock: WORLDBEGIN ( transformBlock | objectInstance | shape | texture | material | transform | attributeBlock | objectBlock )* WORLDEND;        
 objectBlock: OBJECTBEGIN ( include | material | translate | scale | rotate | shape | attributeBlock )* OBJECTEND;
 attributeBlock: ATTRIBUTEBEGIN ( include | material | areaLightSource | lightSource | rotate | translate | scale | shape)* ATTRIBUTEEND;
-transformBlock: TRANSFORMBEGIN ( transform | shape )* TRANSFORMEND;
+transformBlock: TRANSFORMBEGIN ( translate | transform | shape )* TRANSFORMEND;
 transform: TRANSFORM;
 shape: SHAPE STRING paramSet*;
 material: MATERIAL STRING paramSet*;
 rotate: ROTATE;
 lightSource: LIGHTSOURCE STRING paramSet+;
+accelerator: ACCELERATOR STRING paramSet+;
 translate : TRANSLATE NUMBER NUMBER NUMBER;
 scale: SCALE NUMBER NUMBER NUMBER;
 areaLightSource: AREALIGHTSOURCE paramSet*;

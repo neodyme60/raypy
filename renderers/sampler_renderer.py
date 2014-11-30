@@ -1,19 +1,25 @@
+from copy import deepcopy
 import multiprocessing
 from multiprocessing.pool import Pool
 import random
+import itertools
 
 from core.buckets import BucketOrder, BucketOrderSortType
 from core.buckets import BucketOrderInfo
 from core.buckets import BucketExtend
 
 from core.camera import Camera
-from core.integrator import SurfaceIntegrator, VolumeIntegrator
 from core.intersection import Intersection
+from core.ray import Ray
 from core.renderer import Renderer
+from core.sample import Sample
 from core.sampler import Sampler
+from core.scene import Scene
 from core.spectrum import Spectrum
-from maths.point3d import Point3d
-from maths.vector3d import Vector3d
+from core.surface_integrator import SurfaceIntegrator
+from core.volume_integrator import VolumeIntegrator
+from maths.config import infinity_max_f
+from maths.tools import get_clamp
 
 
 def write_png(buf, width, height):
@@ -78,8 +84,7 @@ class SamplerRenderer(Renderer):
 
     def render_task(self, task_index: int,
                     bucket_index: int,
-                    bucket_order_info: BucketOrderInfo,
-                    color: int):
+                    bucket_order_info: BucketOrderInfo, sample, renderer: Renderer):
 
         sampler = self.main_sampler.get_sub_sampler(bucket_index, bucket_order_info)
 
@@ -94,39 +99,48 @@ class SamplerRenderer(Renderer):
 
         pixels = []
 
+
+        maxSamples = sampler.get_maximum_sample_count()
+        samples = list(itertools.repeat(deepcopy(sample), maxSamples))
+
+        #preallocate array for each pixels
+        rays = [Ray()]*maxSamples
+        Ls = [Spectrum(0.0)]*maxSamples
+        Ts = [Spectrum(0.0)]*maxSamples
+        intersections = [Intersection()]*maxSamples
+
         while True:
 
-            samples = sampler.get_more_samples()
-
-            if len(samples) == 0:
+            if sampler.get_more_samples(samples) == 0:
                 break
 
-            intersection = Intersection()
-
-            spectrum = Spectrum(0.0)
-            spectrum_count = 0
-
             for i in range(len(samples)):
-                ray = self.camera.generate_ray(samples[i])
-                # if self.scene.get_is_intersected(rays[i]):
-                if self.scene.get_intersection(ray, intersection):
-#                    if type(intersection.differentialGeometry.shape) == Sphere:
-#                        spectrum.components[0] = 1.0
-#                        spectrum.components[1] = 0.0
-#                        spectrum.components[2] = 0.0
-#                    else:
-                    spectrum += self.surface_integrator.Li(self.scene, ray, intersection)
+                rays[i] = self.camera.generate_ray(samples[i])
+                Ls[i] = renderer.get_li(self.scene, rays[i], intersections[i], samples[i])
 
-                spectrum_count += 1
-
-                if spectrum.get_is_zero():
-                    spectrum = Spectrum(0.5)
-                    spectrum_count = 1
-            pixels.append(spectrum / float(spectrum_count))
+            s = Spectrum(0.0)
+            for i in range(len(samples)):
+                s +=Ls[i]
+            pixels.append(s / float(len(samples)))
 
         print("end render task " + str(task_index))
 
         return pixels, sampler.bucket_extend
+
+    def get_li(self, scene, ray: Ray, intersection: Intersection, sample: Sample)->Spectrum:
+
+        Li = Spectrum(0.0)
+        if self.scene.get_intersection(ray, intersection):
+            Li = self.surface_integrator.Li(scene, self, ray, intersection, sample)
+        else:
+            #Handle ray that doesn't intersect any geometry
+            for l in scene.lights:
+               Li += l.Le(ray)
+
+        #todo transmitance
+
+        return Li
+
 
     def draw(self, args):
         pixels = args[0]
@@ -135,7 +149,7 @@ class SamplerRenderer(Renderer):
         for y in range(bucket_extend.start_y, bucket_extend.end_y, 1):
             for x in range(bucket_extend.start_x, bucket_extend.end_x, 1):
                 r, g, b = pixels[i].toRGB()
-                self.camera.film.data[y, x] = int(r * 255.0) | int(g * 255.0) << 8 | int(g * 255.0) << 16
+                self.camera.film.data[y, x] = int(get_clamp(b,0.0, 1.0) * 255.0) | int(get_clamp(g,0.0, 1.0) * 255.0) << 8 | int(get_clamp(r,0.0, 1.0) * 255.0) << 16
                 i += 1
 
 
@@ -143,18 +157,21 @@ class SamplerRenderer(Renderer):
 
         self.scene = scene
 
+        sample = Sample(self.main_sampler, self.surface_integrator, self.volume_integrator, scene)
+
         if multiThread==True:
             my_bucket_orders = BucketOrder.create(bucket_order_info.width, bucket_order_info.height,
                                                   bucket_order_info.bucket_order_type)
 
             pool = Pool(processes=multiprocessing.cpu_count())
+#            pool = Pool(processes=1)
             pool._wrap_exception = False
 
             results = []
 
             for i in range(bucket_order_info.width * bucket_order_info.height):
                 a = pool.apply_async(self.render_task, args=(
-                    i, my_bucket_orders.buckets_orders[i], bucket_order_info, random.random() * 255),
+                    i, my_bucket_orders.buckets_orders[i], bucket_order_info, sample, self),
                                      callback=self.draw)
                 results.append(a)
 
@@ -163,7 +180,7 @@ class SamplerRenderer(Renderer):
 
         else:
             bucketOrderInfo = BucketOrderInfo(BucketOrderSortType.Random, 1, 1)
-            self.render_task(0, 0, bucketOrderInfo, 0)
+            self.render_task(0, 0, bucketOrderInfo, sample, 0, self)
 
         print("Render end")
 
@@ -171,3 +188,5 @@ class SamplerRenderer(Renderer):
         with open("my_image.png", 'wb') as fd:
             fd.write(data)
 
+    def Transmittance(self, scene: Scene, ray: Ray, sample: Sample)->Spectrum:
+        return self.volume_integrator.Transmittance(scene, self, ray, sample)

@@ -5,7 +5,6 @@ from core.renderer import Renderer
 from core.scene import Scene
 from core.transform import Transform
 from core.volume_region import AggregateVolume
-from renderers.sampler_renderer import SamplerRenderer
 
 
 class RenderOptions():
@@ -61,6 +60,8 @@ class RenderOptions():
         return scene
 
     def make_renderer(self) -> Renderer:
+        from  renderers.sampler_renderer import SamplerRenderer
+
         renderer = None
         camera = self.make_camera()
         if self.rendererName == "metropolis":

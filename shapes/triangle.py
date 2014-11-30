@@ -1,4 +1,6 @@
 from core.bbox import BoundingBox
+from core.differential_geometry import DifferentialGeometry
+from core.ray import Ray
 from core.shape import Shape
 from maths.normal import Normal
 from maths.point3d import Point3d
@@ -25,7 +27,7 @@ class TriangleMesh(Shape):
         return bb
 
     def get_refine(self, shapes: [Shape]):
-        for i in range(self.index/3):
+        for i in range(len(self.index)//3):
             shapes.append(Triangle(self.objectToWorld, self. worldToObject, self, i))
 
 
@@ -40,8 +42,8 @@ class Triangle(Shape):
 
     def get_object_bound(self) -> BoundingBox:
         p1_index = self.mesh.index[self.triangle_index*3 + 0]
-        p2_index = self.mesh.index[self.triangle_index*3 + 1]
-        p3_index = self.mesh.index[self.triangle_index*3 + 2]
+        p2_index = self.mesh.index[self.triangle_index*3 + 2]
+        p3_index = self.mesh.index[self.triangle_index*3 + 1]
 
         p1 = self.mesh.points[p1_index]
         p2 = self.mesh.points[p2_index]
@@ -49,10 +51,10 @@ class Triangle(Shape):
         bb = BoundingBox(p1, p2).get_union_point3d(p3)
         return bb
 
-    def get_intersection(self, ray, intersection: Intersection) -> bool:
+    def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):
         p1_index = self.mesh.index[self.triangle_index*3 + 0]
-        p2_index = self.mesh.index[self.triangle_index*3 + 1]
-        p3_index = self.mesh.index[self.triangle_index*3 + 2]
+        p2_index = self.mesh.index[self.triangle_index*3 + 2]
+        p3_index = self.mesh.index[self.triangle_index*3 + 1]
 
         p1 = self.mesh.points[p1_index]
         p2 = self.mesh.points[p2_index]
@@ -64,37 +66,37 @@ class Triangle(Shape):
         divisor = Vector3d.dot(s1, e1)
 
         if divisor == 0.0:
-            return False
+            return (False, 0.0)
         invDivisor = 1.0 / divisor
 
         # Compute first barycentric coordinate
-        d = ray.o - p1
+        d = ray.origin - p1
         b1 = Vector3d.dot(d, s1) * invDivisor
         if b1 < 0.0 or b1 > 1.0:
-            return False
+            return (False, 0.0)
 
         #Compute second barycentric coordinate
         s2 = Vector3d.cross(d, e1)
-        b2 = Vector3d.dot(ray.d, s2) * invDivisor
-        if b2 < 0.0 or b1 + b2 > 1.0:
-            return False
+        b2 = Vector3d.dot(ray.direction, s2) * invDivisor
+        if b2 < 0.0 or (b1 + b2) > 1.0:
+            return (False, 0.0)
 
         # Compute _t_ to intersection point
         t = Vector3d.dot(e2, s2) * invDivisor
-        if t < ray.mint or t > ray.maxt:
-            return False
+        if t < ray.min_t or t > ray.max_t:
+            return (False, 0.0)
 
-        intersection.differentialGeometry.shape = self
-        intersection.differentialGeometry.point = ray.get_at(t)
-        intersection.ray_epsilon = t
+        dg.shape = self
+        dg.point = ray.get_at(t)
+        dg.normal = Normal.create_from_vector3d( Vector3d.cross(e1, e2).get_normalized())
 
-        return True
+        return (True, t)
 
 
     def get_is_intersected(self, ray) -> bool:
         p1_index = self.mesh.index[self.triangle_index*3 + 0]
-        p2_index = self.mesh.index[self.triangle_index*3 + 1]
-        p3_index = self.mesh.index[self.triangle_index*3 + 2]
+        p2_index = self.mesh.index[self.triangle_index*3 + 2]
+        p3_index = self.mesh.index[self.triangle_index*3 + 1]
 
         p1 = self.mesh.points[p1_index]
         p2 = self.mesh.points[p2_index]
@@ -110,20 +112,20 @@ class Triangle(Shape):
         invDivisor = 1.0 / divisor
 
         # Compute first barycentric coordinate
-        d = ray.o - p1
+        d = ray.origin - p1
         b1 = Vector3d.dot(d, s1) * invDivisor
         if b1 < 0.0 or b1 > 1.0:
             return False
 
         #Compute second barycentric coordinate
         s2 = Vector3d.cross(d, e1)
-        b2 = Vector3d.dot(ray.d, s2) * invDivisor
-        if b2 < 0.0 or b1 + b2 > 1.0:
+        b2 = Vector3d.dot(ray.direction, s2) * invDivisor
+        if b2 < 0.0 or (b1 + b2) > 1.0:
             return False
 
         # Compute _t_ to intersection point
         t = Vector3d.dot(e2, s2) * invDivisor
-        if t < ray.mint or t > ray.maxt:
+        if t < ray.min_t or t > ray.max_t:
             return False
 
         return True

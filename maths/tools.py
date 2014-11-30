@@ -43,7 +43,7 @@ def get_solve_cubic(self, a: float, b: float, c: float, d: float) -> (float, flo
     p = 1.0 / 3.0 * (-1.0 / 3.0 * sq_a + _b)
     q = 1.0 / 2.0 * (2.0 / 27.0 * _a * sq_a - 1.0 / 3.0 * _a * _b + _c)
 
-    #use Cardano's formula
+    # use Cardano's formula
     cb_p = p * p * p
     det = q * q + cb_p
 
@@ -80,12 +80,12 @@ def get_solve_quadratic(a: float, b: float, c: float):
     # Find quadratic discriminant
     discriminant = b * b - 4.0 * a * c
     if discriminant < 0.0:
-        #no real roots http://jblanco_60.tripod.com/c_pp_quadratic.html
+        # no real roots http://jblanco_60.tripod.com/c_pp_quadratic.html
         return None, None
 
     root_discriminant = math.sqrt(discriminant)
 
-    #Compute quadratic _t_ values
+    # Compute quadratic _t_ values
     if math.fabs(b) < CONST_EPSILON:
         q = -0.5 * (b - root_discriminant)
     else:
@@ -155,7 +155,7 @@ def get_concentric_sample_disk(u1: float, u2: float) -> (float, float):
     sx = 2.0 * u1 - 1.0
     sy = 2.0 * u2 - 1.0
 
-    #Map square to $(r,\theta)$
+    # Map square to $(r,\theta)$
 
     # Handle degeneracy at the origin
     if sx == 0.0 and sy == 0.0:
@@ -189,3 +189,11 @@ def get_face_forward(n: Normal, v: maths.vector3d.Vector3d) -> Normal:
     if maths.vector3d.Vector3d.dot(n, v) < 0.0:
         return Normal(-n.x, n.y, n.z)
     return n
+
+
+def get_to_radians(deg: float)->float:
+    return (math.pi/180.0) * deg
+
+
+def get_to_degrees(rad: float)->float:
+    return (180.0/math.pi) * rad

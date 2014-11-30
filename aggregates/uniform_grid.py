@@ -6,7 +6,6 @@ from core.intersection import Intersection
 from core.primitive import Primitive
 from core.ray import Ray
 import maths
-from maths.config import infinity_min_f, infinity_max_f
 from maths.normal import Normal
 from maths.point3d import Point3d
 from maths.tools import get_clamp
@@ -32,7 +31,7 @@ class Voxel:
                 # Refine primitive _prim_ if it's not intersectable
                 if not prim.get_can_intersect():
                     prims = []
-                    prim.FullyRefine(prims)
+                    prim.get_fully_refine(prims)
                     assert len(prims) > 0
                     if len(prims) == 1:
                         self.primitives[i] = prims[0]
@@ -55,7 +54,7 @@ class Voxel:
                 # Refine primitive _prim_ if it's not intersectable
                 if not prim.get_can_intersect():
                     prims = []
-                    prim.FullyRefine(prims)
+                    prim.get_fully_refine(prims)
                     assert len(prims) > 0
                     if len(prims) == 1:
                         self.primitives[i] = prims[0]
@@ -78,7 +77,7 @@ class Voxel:
 
 
 class UniformGrid(Aggregate):
-    def __init__(self, primitive: [Primitive], refine_immediately: bool):
+    def __init__(self, primitives: [Primitive], refine_immediately: bool):
         super().__init__()
         self.voxels = []
         self.bounds = BoundingBox()
@@ -89,10 +88,10 @@ class UniformGrid(Aggregate):
 
         # Initialize _primitives_ with primitives for grid
         if refine_immediately:
-            for p in primitive:
+            for p in primitives:
                 p.get_fully_refine(self.primitives)
         else:
-            self.primitives = primitive
+            self.primitives = primitives
 
         # Compute bounds and choose grid resolution
         for p in self.primitives:
@@ -221,9 +220,9 @@ class UniformGrid(Aggregate):
         gridIntersect = ray.get_at(rayT)
 
 
-        intersection.differentialGeometry.point = gridIntersect
-        intersection.differentialGeometry.shape = self
-        intersection.differentialGeometry.normal = Normal(gridIntersect.x, gridIntersect.y, gridIntersect.z)
+#        intersection.differentialGeometry.point = gridIntersect
+#        intersection.differentialGeometry.shape = self
+#        intersection.differentialGeometry.normal = Normal(gridIntersect.x, gridIntersect.y, gridIntersect.z)
 #        return True
 
         # Set up 3D DDA for ray

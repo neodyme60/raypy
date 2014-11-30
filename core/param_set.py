@@ -1,4 +1,5 @@
 import string
+from core import texture
 
 from core.spectrum import Spectrum
 from core.texture import Texture
@@ -21,6 +22,27 @@ class ParamSet():
         self.spectrums = {}
         self.strings = {}
         self.textures = {}
+
+    def get_is_empty(self):
+        if len(self.bools):
+            return False
+        if len(self.ints):
+            return False
+        if len(self.floats):
+            return False
+        if len(self.points):
+            return False
+        if len(self.vectors):
+            return False
+        if len(self.normals):
+            return False
+        if len(self.spectrums):
+            return False
+        if len(self.strings):
+            return False
+        if (self.textures):
+            return False
+        return True
 
     def add_bool(self, name: string, values: [bool]):
         if name in self.bools:
@@ -70,7 +92,7 @@ class ParamSet():
         else:
             self.strings[name] = values
 
-    def add_texture(self, name: string, values: [Texture]):
+    def add_texture(self, name: string, values: [string]):
         if name in self.textures:
             del self.textures[name]
         else:
@@ -106,37 +128,60 @@ class ParamSet():
             return self.bools[name]
         return None
 
-    def find_point(self, name: string)->[Point3d]:
+    def find_point(self, name: string, default: Point3d)->Point3d:
+        if name in self.points:
+            return self.points[name][0]
+        return None
+
+    def find_points(self, name: string)->Point3d:
         if name in self.points:
             return self.points[name]
         return None
 
-    def find_normal(self, name: string)->[Normal]:
+    def find_normal(self, name: string, default: Normal)->Normal:
+        if name in self.normals:
+            return self.normals[name][0]
+        return None
+
+    def find_normals(self, name: string)->Normal:
         if name in self.normals:
             return self.normals[name]
         return None
 
-    def find_vector(self, name: string)->[Vector3d]:
+    def find_vector(self, name: string, default: Vector3d)->Vector3d:
+        if name in self.vectors:
+            return self.vectors[name][0]
+        return None
+
+    def find_vectors(self, name: string)->Vector3d:
         if name in self.vectors:
             return self.vectors[name]
         return None
 
-    def find_spectrum(self, name: string)->[Spectrum]:
+    def find_spectrum(self, name: string, default: Spectrum)->Spectrum:
         if name in self.spectrums:
             return self.spectrums[name]
-        return None
+        return default
 
     def find_string(self, name: string, default: string)->string:
         if name in self.strings:
-            return self.strings[name][0]
+            return self.strings[name]
         return default
 
-    def find_strings(self, name: string)->[string]:
-        if name in self.strings:
-            return self.strings[name]
-        return None
-
-    def find_texture(self, name: string)->[Texture]:
+    def find_texture(self, name: string)->texture:
         if name in self.textures:
             return self.textures[name]
-        return None
+        else:
+            return None
+
+    def find_strings(self, name: string, default: string)->[string]:
+        if name in self.strings:
+            return self.strings[name]
+        return default
+
+    def find_filename(self, name: string, default: string)->string:
+        filename = self.find_string(name, "")
+        if filename == "":
+            return default
+        filename = "todo" #AbsolutePath(ResolveFilename(filename))
+        return filename

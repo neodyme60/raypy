@@ -1,9 +1,7 @@
 from core.bbox import BoundingBox
+from core.differential_geometry import DifferentialGeometry
+from core.ray import Ray
 from core.shape import Shape
-import maths
-from maths.point3d import Point3d
-from maths.vector3d import Vector3d
-from core.intersection import Intersection
 from core.transform import Transform
 
 
@@ -14,7 +12,7 @@ class Torus(Shape):
     def get_can_intersect(self):
         return True
 
-    def get_intersection(self, ray, intersection: Intersection) ->bool:
+    def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):
         #todo
         raise NotImplemented
 
@@ -23,5 +21,4 @@ class Torus(Shape):
         raise NotImplemented
 
     def get_object_bound(self) -> BoundingBox:
-        return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),
-                           Point3d(self.radius, self.radius, self.radius))
+        return None

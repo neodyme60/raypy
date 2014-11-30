@@ -175,6 +175,15 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#accelerator.
+    def enterAccelerator(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#accelerator.
+    def exitAccelerator(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#include.
     def enterInclude(self, ctx):
         pass
