@@ -362,3 +362,14 @@ class PbrtLoader(pbrtListener):
     def exitAttributeBlock(self, ctx):
         print("exit attribute block")
         pbrtAttributeEnd()
+
+    # Enter a parse tree produced by pbrtParser#arealightsource.
+    def enterArealightsource(self, ctx):
+        print("exit arealight block")
+        self.currentParamSet.reset()
+        self.name = str(ctx.STRING()).replace('"', '')
+
+    # Exit a parse tree produced by pbrtParser#arealightsource.
+    def exitArealightsource(self, ctx):
+        pbrtAreaLightSource(self.name, self.currentParamSet)
+

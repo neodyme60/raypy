@@ -1,11 +1,11 @@
 from core.bbox import BoundingBox
 from core.differential_geometry import DifferentialGeometry
+from core.monte_carlo import UniformSampleTriangle
 from core.ray import Ray
 from core.shape import Shape
 from maths.normal import Normal
 from maths.point3d import Point3d
 from maths.vector3d import Vector3d
-from core.intersection import Intersection
 from core.transform import Transform
 
 
@@ -32,10 +32,39 @@ class TriangleMesh(Shape):
 
 
 class Triangle(Shape):
+
+    def Sample1(self, u: (float, float), n: Normal) -> Point3d:
+        b1, b2 = UniformSampleTriangle(u)
+        # Get triangle vertices in _p1_, _p2_, and _p3_
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 2]
+        p3_index = self.mesh.index[self.triangle_index*3 + 1]
+
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
+
+        p = p1 * b1 + p2 * b2 + p3 * (1.0 - b1 - b2)
+        n.Set(Normal.create_from_vector3d(Vector3d.cross(p2-p1, p3-p1)).get_normalized())
+#todo        if (ReverseOrientation) *Ns *= -1.f;
+        return p
+
     def __init__(self, o2w: Transform, w2o: Transform, mesh: TriangleMesh, index: int):
         super().__init__(o2w, w2o)
         self.mesh = mesh
         self.triangle_index = index
+
+    def Area(self):
+        # Get triangle vertices in _p1_, _p2_, and _p3_
+        p1_index = self.mesh.index[self.triangle_index*3 + 0]
+        p2_index = self.mesh.index[self.triangle_index*3 + 2]
+        p3_index = self.mesh.index[self.triangle_index*3 + 1]
+
+        p1 = self.mesh.points[p1_index]
+        p2 = self.mesh.points[p2_index]
+        p3 = self.mesh.points[p3_index]
+
+        return 0.5 * Vector3d.cross(p2-p1, p3-p1).get_length()
 
     def get_can_intersect(self)->bool:
         return True
@@ -48,7 +77,7 @@ class Triangle(Shape):
         p1 = self.mesh.points[p1_index]
         p2 = self.mesh.points[p2_index]
         p3 = self.mesh.points[p3_index]
-        bb = BoundingBox(p1, p2).get_union_point3d(p3)
+        bb = BoundingBox.create_from_two_point3d(p1, p2).get_union_point3d(p3)
         return bb
 
     def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):

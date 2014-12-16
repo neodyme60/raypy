@@ -13,21 +13,21 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by pbrtParser#body.
-    def enterBody(self, ctx):
-        pass
-
-    # Exit a parse tree produced by pbrtParser#body.
-    def exitBody(self, ctx):
-        pass
-
-
     # Enter a parse tree produced by pbrtParser#scale.
     def enterScale(self, ctx):
         pass
 
     # Exit a parse tree produced by pbrtParser#scale.
     def exitScale(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by pbrtParser#body.
+    def enterBody(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#body.
+    def exitBody(self, ctx):
         pass
 
 
@@ -73,6 +73,15 @@ class pbrtListener(ParseTreeListener):
 
     # Exit a parse tree produced by pbrtParser#surfaceIntegrator.
     def exitSurfaceIntegrator(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by pbrtParser#arealightsource.
+    def enterArealightsource(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#arealightsource.
+    def exitArealightsource(self, ctx):
         pass
 
 

@@ -15,8 +15,8 @@ class VisibilityTester:
 
     def SetSegment(self, p1: Point3d, eps1: float, p2: Point3d, eps2: float, time: float):
         dist = (p1 - p2).get_length()
-        dist_inv = 1.0/dist
-        self.ray = Ray(p1, (p2-p1) * dist_inv, eps1, dist * (1.0 - eps2), time)
+        d = (p2-p1) / dist
+        self.ray = Ray(p1, d, eps1, dist * (1.0 - eps2), time)
 #        Assert(!r.HasNaNs())
 
     def SetRay(self, p: Point3d, eps: float, w: Vector3d, time: float):

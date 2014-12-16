@@ -2,7 +2,7 @@ import math
 
 from core.differential_geometry import DifferentialGeometry
 from core.transform import Transform
-from maths.config import CONST_TWOPI_INV, CONST_PI_INV
+from maths.config import CONST_INV_TWOPI, CONST_PI_INV
 from maths.point3d import Point3d
 from maths.tools import get_spherical_theta, get_spherical_phi
 from maths.vector3d import Vector3d
@@ -29,7 +29,7 @@ class SphericalMapping2D(TextureMapping2D):
         theta = get_spherical_theta(vec)
         phi = get_spherical_phi(vec)
         s = theta * CONST_PI_INV
-        t = phi * CONST_TWOPI_INV
+        t = phi * CONST_INV_TWOPI
         return s, t
 
     def get_map(self, dg: DifferentialGeometry):

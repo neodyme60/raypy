@@ -12,7 +12,8 @@ class GraphicsState():
         self.materialParams = ParamSet()
         self.currentNamedMaterial = ""
         self.namedMaterials = {}
-
+        self.areaLight = ""
+        self.areaLightParams = None
 
     def CreateMaterial(self, params: ParamSet):
         global graphicsState

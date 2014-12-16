@@ -1,0 +1,85 @@
+############################################################################
+#
+# This RIB file describes the famous "Cornell Box", which is a test scene
+# commonly used to demonstrate radiosity.
+#
+############################################################################
+#PixelSamples 2 2
+#CropWindow .3 .4 .2 .3
+#Quantize "rgba" 0 0 0 0
+Scale -1.000000 1.000000 1.000000
+# ignored Orientation "rh"
+##CameraOrientation 278 273 -800 278 273 0 0 1 0
+ConcatTransform [ 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 ]
+#Translate -278.000000 -273.000000 500.000000
+#SurfaceIntegrator "whitted"
+
+LookAt 278 273 -500 278 273 0 0 1 0
+	   
+Accelerator "grid"
+	"integer nsamples" [1]
+	
+#SurfaceIntegrator "directlighting" 
+#	"integer nsamples" [1] 
+#	"float maxdist" [50.0]
+SurfaceIntegrator "path" 
+ "integer maxdepth" [2]
+ 
+Renderer "sampler" 
+	"integer samplesperpixel" [25]
+
+Camera "perspective" 
+	"float fov" [55.000000 ]
+	
+Film "image"
+	"integer xresolution" [256] 
+	"integer yresolution" [256]
+    "string filename" "cornell-mlt.exr"
+
+Sampler "random" 
+	
+PixelFilter "box"
+
+WorldBegin
+############################################################################
+# Light Source Definitions
+############################################################################
+AttributeBegin	
+	AreaLightSource "diffuse" "color L" [100 100 100 ]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [343.0 548.8 227.0 343.0 548.8 332.0 213.0 548.8 332.0 213.0 548.8 227.0  ] 
+AttributeEnd	
+ 
+		
+AttributeBegin
+    Material "matte" "color Kd" [.5 .5 .5]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [550 0 0 0 0 0 0 0 560 550 0 560 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [560 550 0 560 550 560 0 550 560 0 550 0 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [550 0 560 0 0 560 0 550 560 560 550 560 ] 
+        Material "matte" "color Kd" [0 .9 0]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [0 0 560 0 0 0 0 550 0 0 550 560 ] 
+        Material "matte" "color Kd" [.9  0 0]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [550 0 0 550 0 560 560 550 560 560 550 0 ] 
+AttributeEnd
+############################################################################
+# Short Box Definition
+############################################################################
+AttributeBegin
+    Material "matte" "color Kd" [.7 .7 .7]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [130 165 65 82 165 225 240 165 272 290 165 114 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [290 0 114 290 165 114 240 165 272 240 0 272 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [130 0 65 130 165 65 290 165 114 290 0 114 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [82 0 225 82 165 225 130 165 65 130 0 65 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [240 0 272 240 165 272 82 165 225 82 0 225 ] 
+AttributeEnd
+############################################################################
+# Tall Box Definition
+############################################################################
+AttributeBegin
+    Material "matte" "color Kd"  [.5 .5 .5]
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [423 330 247 265 330 296 314 330 456 472 330 406 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [423 0 247 423 330 247 472 330 406 472 0 406 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [472 0 406 472 330 406 314 330 456 314 0 456 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [314 0 456 314 330 456 265 330 296 265 0 296 ] 
+    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [265 0 296 265 330 296 423 330 247 423 0 247 ] 
+AttributeEnd
+WorldEnd

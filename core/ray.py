@@ -16,6 +16,14 @@ class Ray:
         self.min_t = min_t
         self.time = time
 
+    def Set(self, ray):
+        self.origin.Set(ray.origin)
+        self.direction.Set(ray.direction)
+        self.depth = ray.depth
+        self.max_t = ray.max_t
+        self.min_t = ray.min_t
+        self.time = ray.time
+
     def get_at(self, other: float):
         return self.origin + (self.direction * other)
 

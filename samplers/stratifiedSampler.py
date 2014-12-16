@@ -1,7 +1,7 @@
 import random
 
 from core.buckets import BucketOrderInfo, BucketExtend
-from core.monte_carlo import StratifiedSample2D
+from core.monte_carlo import StratifiedSample2D, LatinHypercube1d, LatinHypercube2d
 from core.sample import Sample
 from core.sampler import Sampler
 import maths.tools
@@ -31,16 +31,13 @@ class StratifiedSampler(Sampler):
         # generate random tuple for image samples and shift them
         StratifiedSample2D(self.image_samples, self.samples_x, self.samples_y, self.jitter_samples)
 
-        for i in range(nb_samples):
-            self.image_samples[i] = (self.image_samples[i][0] + self.pos_x, self.image_samples[i][1] + self.pos_y)
-
         # generate random tuple for lens samples and shift them
         StratifiedSample2D(self.lens_samples, self.samples_x, self.samples_y, self.jitter_samples)
-        for i in range(nb_samples):
-            self.lens_samples[i] = self.lens_samples[i]
 
-        # generate random value for time samples
         for i in range(nb_samples):
+            self.image_samples[i] = (self.image_samples[i][0] + self.pos_x, self.image_samples[i][1] + self.pos_y)
+            self.lens_samples[i] = self.lens_samples[i]
+            # generate random value for time samples
             self.time_samples[i] = random.random()
 
     def get_more_samples(self, samples: [Sample]) -> int:
@@ -55,6 +52,13 @@ class StratifiedSampler(Sampler):
             samples[i].lens_uv = self.lens_samples[i]
 #            samples[i].time = maths.tools.get_lerp(self.shutterOpen, self.shutterClose, self.time_samples[self.sample_pos])
             samples[i].time = maths.tools.get_lerp(0.0, 0.0, self.time_samples[i])
+
+            # Generate stratified samples for integrators
+            for j in range(len(samples[i].values_array_1d)):
+                LatinHypercube1d(samples[i].values_array_1d[j])
+            for j in range(len(samples[i].values_array_2d)):
+                LatinHypercube2d(samples[i].values_array_2d[j])
+
 
         self.pos_x += 1
         if self.pos_x == self.bucket_extend.end_x:

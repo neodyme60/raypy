@@ -14,6 +14,12 @@ class Vector3d:
         self.y = y
         self.z = z
 
+    def Set(self, v):
+        self.x = v.x
+        self.y = v.y
+        self.z = v.z
+        return self
+
     @staticmethod
     def create_from_vector2d(other, z: float=0.0):
         return Vector3d(other.x, other.y, z)
@@ -157,6 +163,12 @@ class Vector3d:
             return self
         else:
             raise NotImplemented
+
+    def __truediv__(self, other):
+        if type(other) == float:
+            inv = 1.0 / other
+            return Vector3d(self.x * inv, self.y * inv, self.z * inv)
+
 
     def __add__(self, other):
         from maths.vector4d import Vector4d

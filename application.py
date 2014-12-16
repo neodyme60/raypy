@@ -32,6 +32,6 @@ class Application(QtGui.QMainWindow):
         self.connect(self.timer, QtCore.SIGNAL('timeout()'), self.updateData)
         self.timer.start(100)
 
-        self.setGeometry(300, 300, self.film.width, self.film.height)
+        self.setGeometry(250, 250, self.film.width, self.film.height)
         self.setWindowTitle('Absolute')
         self.show()

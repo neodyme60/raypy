@@ -1,9 +1,13 @@
+import math
 from core.bbox import BoundingBox
 from core.differential_geometry import DifferentialGeometry
+from core.monte_carlo import UniformConePdf, UniformSampleSphere, UniformSampleCone2
+from core.sample import Sample
 from core.shape import Shape
 import maths
 from maths.normal import Normal
 from maths.point3d import Point3d
+from maths.tools import get_clamp
 from maths.vector3d import Vector3d
 from core.transform import Transform
 from core.ray import Ray
@@ -15,9 +19,11 @@ class Sphere(Shape):
         super().__init__(o2w, w2o)
 
         self.radius = radius
-        self.zmin = zmin
-        self.zmax = zmax
-        self.phimax = phimax
+        self.zmin = get_clamp(min(zmin, zmax), -radius, radius)
+        self.zmax = get_clamp(max(zmin, zmax), -radius, radius)
+        self.thetaMin = math.acos(get_clamp(zmin/radius, -1.0, 1.0))
+        self.thetaMax = math.acos(get_clamp(zmax/radius, -1.0, 1.0))
+        self.phimax = math.radians(get_clamp(phimax, 0.0, 360.0))
         self.radius_squared = self.radius * self.radius
 
     def get_can_intersect(self):
@@ -63,7 +69,7 @@ class Sphere(Shape):
             # * self.objectToWorld
             # intersection.differentialGeometry.normal = Normal.create_from_point3d(intersection.differentialGeometry.point);
 
-            v = Vector4d(dg.point.x, dg.point.y, dg.point.z, 1.0)* self.worldToObject
+            v = Vector4d(dg.point.x, dg.point.y, dg.point.z, 1.0) * self.worldToObject
             v = Vector3d(v.x, v.y, v.z).get_normalized()
             dg.normal = Normal(v.x, v.y, v.z) * self.objectToWorld
             dg.shape = self
@@ -82,3 +88,57 @@ class Sphere(Shape):
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),
                            Point3d(self.radius, self.radius, self.radius))
+
+    def Area(self):
+        return self.phimax * self.radius * (self.zmax - self.zmin)
+
+    def Pdf2(self, p: Point3d, wi: Vector3d) -> float:
+        Pcenter = Point3d(0, 0, 0) * self.objectToWorld
+
+        ds = (p - Pcenter).get_length_squared()
+
+        # Return uniform weight if point inside sphere
+        if ( ds - self.radius * self.radius < 1e-4):
+            return super().Pdf2(p, wi)
+
+        # Compute general sphere weight
+        sinThetaMax2 = self.radius * self.radius / ds
+        cosThetaMax = math.sqrt(max(0.0, 1.0 - sinThetaMax2))
+        return UniformConePdf(cosThetaMax)
+
+    def Sample2(self, p: Point3d, u: (float, float), Ns: Normal) -> Point3d:
+        # Compute coordinate system for sphere sampling
+        Pcenter = Point3d(0, 0, 0) * self.objectToWorld
+        wc = (Pcenter - p).get_normalized()
+        wcX, wcY = Transform.create_coordinateSystem(wc)
+
+        # Sample uniformly on sphere if $\pt{}$ is inside it
+        if (p - Pcenter).get_length_squared() - self.radius * self.radius < 1e-40:
+            return self.Sample1(u, Ns)
+
+        # Sample sphere uniformly inside subtended cone
+        sinThetaMax2 = self.radius * self.radius / (p - Pcenter).get_length_squared()
+        cosThetaMax = math.sqrt(max(0.0, 1.0 - sinThetaMax2))
+        dgSphere = DifferentialGeometry()
+
+        thit = 1.0
+
+        r = Ray(p, UniformSampleCone2(u, cosThetaMax, wcX, wcY, wc), 1e-3)
+        b, t = self.get_intersection(r, dgSphere)
+#        if not b:
+        #bug
+        thit = Vector3d.dot(Pcenter - p, r.direction.get_normalized())
+        ps = r.get_at(thit)
+
+        nn = (ps - Pcenter).get_normalized()
+        Ns.Set(nn)
+        # if (ReverseOrientation) *ns *= -1.f;
+        return ps
+
+    def Sample1(self, u: (float, float), Ns: Normal) -> Point3d:
+        p = Point3d(0, 0, 0) + UniformSampleSphere(u) * self.radius
+        Ns.Set((Normal(p.x, p.y, p.z) * self.objectToWorld).get_normalized())
+        # if (ReverseOrientation) *ns *= -1.f;
+        return p * self.objectToWorld
+
+

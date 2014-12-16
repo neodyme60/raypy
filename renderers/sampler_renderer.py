@@ -99,15 +99,24 @@ class SamplerRenderer(Renderer):
 
         pixels = []
 
-
         maxSamples = sampler.get_maximum_sample_count()
-        samples = list(itertools.repeat(deepcopy(sample), maxSamples))
+        samples = []
+        rays = []
+        Ls = []
+        Ts = []
+        intersections = []
+        for n in range(maxSamples):
+            samples.append(deepcopy(sample))
+            rays.append(Ray())
+            Ls.append(Spectrum(0.0))
+            Ts.append(Spectrum(0.0))
+            intersections.append(Intersection())
 
         #preallocate array for each pixels
-        rays = [Ray()]*maxSamples
-        Ls = [Spectrum(0.0)]*maxSamples
-        Ts = [Spectrum(0.0)]*maxSamples
-        intersections = [Intersection()]*maxSamples
+#        rays = [Ray()]*maxSamples
+#        Ls = [Spectrum(0.0)]*maxSamples
+#        Ts = [Spectrum(0.0)]*maxSamples
+#        intersections = [Intersection()]*maxSamples
 
         while True:
 
@@ -121,7 +130,10 @@ class SamplerRenderer(Renderer):
             s = Spectrum(0.0)
             for i in range(len(samples)):
                 s +=Ls[i]
-            pixels.append(s / float(len(samples)))
+
+            s /= float(len(samples))
+            s = s.get_clamp(0.0, 1.0)
+            pixels.append(s)
 
         print("end render task " + str(task_index))
 
@@ -149,7 +161,10 @@ class SamplerRenderer(Renderer):
         for y in range(bucket_extend.start_y, bucket_extend.end_y, 1):
             for x in range(bucket_extend.start_x, bucket_extend.end_x, 1):
                 r, g, b = pixels[i].toRGB()
-                self.camera.film.data[y, x] = int(get_clamp(b,0.0, 1.0) * 255.0) | int(get_clamp(g,0.0, 1.0) * 255.0) << 8 | int(get_clamp(r,0.0, 1.0) * 255.0) << 16
+                r = get_clamp(255.0 * pow(r, 1.0/2.2), 0.0, 255.0)
+                g = get_clamp(255.0 * pow(g, 1.0/2.2), 0.0, 255.0)
+                b = get_clamp(255.0 * pow(b, 1.0/2.2), 0.0, 255.0)
+                self.camera.film.data[y, x] = int(b) | int(g) << 8 | int(r) << 16
                 i += 1
 
 
@@ -170,9 +185,11 @@ class SamplerRenderer(Renderer):
             results = []
 
             for i in range(bucket_order_info.width * bucket_order_info.height):
+#            for i in range(55, 56):
                 a = pool.apply_async(self.render_task, args=(
                     i, my_bucket_orders.buckets_orders[i], bucket_order_info, sample, self),
                                      callback=self.draw)
+
                 results.append(a)
 
             for r in results:
@@ -180,7 +197,7 @@ class SamplerRenderer(Renderer):
 
         else:
             bucketOrderInfo = BucketOrderInfo(BucketOrderSortType.Random, 1, 1)
-            self.render_task(0, 0, bucketOrderInfo, sample, 0, self)
+            self.render_task(0, 0, bucketOrderInfo, sample, self)
 
         print("Render end")
 

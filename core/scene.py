@@ -15,5 +15,5 @@ class Scene():
             return self.aggregate.get_intersection(ray, intersection)
         return False
 
-    def get_is_intersected(self, ray: Ray):
+    def get_is_intersected(self, ray: Ray)->bool:
         return self.aggregate.get_is_intersected(ray)

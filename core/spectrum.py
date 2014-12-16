@@ -7,6 +7,8 @@ def XYZToRGB(x: float, y: float, z: float)->(float, float, float):
 def RGBToXYZ(r: float, g: float, b: float)->(float, float, float):
     return 0.412453*r + 0.357580*g + 0.180423*b, 0.212671*r + 0.715160*g + 0.072169*g,0.019334*r + 0.119193*g + 0.950227*b
 
+def y(self)->float:
+        raise NotImplemented
 
 Spectrum = RGBSpectrum
 #else:

@@ -39,6 +39,7 @@ def SameHemisphere(w: Vector3d, wp: Vector3d)->bool:
 
 class BxDFType:
     # BSDF Declarations
+    BSDF_NONE = 0
     BSDF_REFLECTION = 1 << 0
     BSDF_TRANSMISSION = 1 << 1
     BSDF_DIFFUSE = 1 << 2
@@ -57,7 +58,7 @@ class BxDF:
     def MatchesFlags(self, BxDFTypeFlags: int )->bool:
         return (self.bxdf_types & BxDFTypeFlags) == self.bxdf_types
 
-    def get_Pdf(self, wi: Vector3d, wo: Vector3d) -> float:
+    def get_Pdf(self, wo: Vector3d, wi: Vector3d) -> float:
         if SameHemisphere(wo, wi):
             pdf = AbsCosTheta(wi) * CONST_PI_INV
         else:
@@ -70,9 +71,9 @@ class BxDF:
     def get_f(self, wo: Vector3d, wi: Vector3d)->Spectrum:
         raise NotImplemented
 
-    def Sample_f(self, wo: Vector3d, wi: Vector3d, u1: float, u2: float)->(Vector3d, float, Spectrum):
+    def Sample_f(self, wo: Vector3d, u: (float, float))->(Vector3d, float, Spectrum):
         # Cosine-sample the hemisphere, flipping the direction if necessary
-        wi = CosineSampleHemisphere(u1, u2)
+        wi = CosineSampleHemisphere(u)
         if wo.z < 0.0:
             wi.z *= -1.0
         pdf = self.get_Pdf(wo, wi)
@@ -132,7 +133,7 @@ class SpecularReflection(BxDF):
     def get_Pdf(self, wi: Vector3d, wo: Vector3d) -> float:
         return 0.0
 
-    def Sample_f(self, wo: Vector3d, wi: Vector3d, u1: float, u2: float)->(Vector3d, float, Spectrum):
+    def Sample_f(self, wo: Vector3d, u: (float, float))->(Vector3d, float, Spectrum):
         # Compute perfect specular reflection direction
         wi = Vector3d(-wo.x, -wo.y, wo.z)
         pdf = 1.0

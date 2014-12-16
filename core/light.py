@@ -19,13 +19,12 @@ class Light:
         raise NotImplemented
 
     # return wi / spectrum / pdf
-    def Sample_L1(self, p: Point3d, pEpsilon: float, ls: LightSample, time: float, vis: VisibilityTester) -> (
-    Vector3d, Spectrum, float):
+    #todo epsilon param
+    def Sample_L1(self, p: Point3d, ls: LightSample, time: float, vis: VisibilityTester) -> (Vector3d, Spectrum, float):
         raise NotImplemented
 
     #return ray / normal /  spectrum / pdf
-    def Sample_L2(self, scene: Scene, ls: LightSample, u1: float, u2: float, time: float) -> (
-    Ray, Normal, Spectrum, float):
+    def Sample_L2(self, scene: Scene, ls: LightSample, u: (float, float), n: Normal, r: Ray, time: float) -> (Spectrum, float):
         raise NotImplemented
 
     def get_is_delta_light(self):
@@ -43,6 +42,6 @@ class AreaLight(Light):
     def __init__(self, l2w: Transform, ns: int):
         super().__init__(l2w, ns)
 
-    def L(self, p: Point3d, n:Normal, w: Vector3d)->Spectrum:
+    def L(self, p: Point3d, n: Normal, w: Vector3d)->Spectrum:
         raise NotImplemented
 

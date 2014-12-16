@@ -12,11 +12,11 @@ from core.transform import Transform
 
 
 class GeometricPrimitive(Primitive):
-    def __init__(self, shape: Shape, material: Material):
+    def __init__(self, shape: Shape, material: Material, areaLight: AreaLight):
         super().__init__()
         self.shape = shape
         self.material = material
-        self.areaLight = []
+        self.areaLight = areaLight
 
     def get_can_intersect(self):
         return self.shape.get_can_intersect()
@@ -41,7 +41,7 @@ class GeometricPrimitive(Primitive):
         shapes = []
         self.shape.get_refine(shapes)
         for i in shapes:
-            refined.append(GeometricPrimitive(i, self.material))
+            refined.append(GeometricPrimitive(i, self.material, self.areaLight))
 
     def GetBSDF(self, dg: DifferentialGeometry, ObjectToWorld: Transform)->BSDF:
         dgs = DifferentialGeometry()

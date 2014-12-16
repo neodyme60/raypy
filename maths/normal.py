@@ -1,3 +1,4 @@
+import math
 from core.transform import Transform
 from maths.matrix44 import Matrix44
 
@@ -11,6 +12,12 @@ class Normal:
         self.x = x
         self.y = y
         self.z = z
+
+    def Set(self, n):
+        self.x = n.x
+        self.y = n.y
+        self.z = n.z
+        return self
 
     @staticmethod
     def create_from_vector3d(other):
@@ -49,3 +56,20 @@ class Normal:
             return self * other.mat
         else:
             raise NotImplemented
+
+    @staticmethod
+    def dot(a, b) -> float:
+        return a.x * b.x + a.y * b.y + a.z * b.z
+
+    def get_length(self) -> float:
+        return math.sqrt(self.get_length_squared())
+
+    def get_length_squared(self) -> float:
+        return Normal.dot(self, self)
+
+    def get_normalized(self):
+        t = self.get_length()
+        if t == 0:
+            raise ZeroDivisionError
+        d = 1.0 / t
+        return Normal(self.x * d, self.y * d, self.z * d)

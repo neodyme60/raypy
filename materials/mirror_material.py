@@ -1,4 +1,5 @@
 from core.bsdf import BSDF
+from core.bxdf import SpecularReflection
 from core.differential_geometry import DifferentialGeometry
 from core.material import Material
 from core.texture import Texture
@@ -15,7 +16,7 @@ class MirrorMaterial(Material):
     def get_bsdf(self, dgGeom: DifferentialGeometry, dgShading: DifferentialGeometry)->[BSDF]:
 
         dgs = DifferentialGeometry()
-        if self.bumpMap == None:
+        if self.bumpMap is None:
             dgs = dgShading
         else:
             #todo Bump(bumpMap, dgGeom, dgShading, &dgs);

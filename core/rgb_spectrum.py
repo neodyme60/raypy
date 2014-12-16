@@ -14,3 +14,7 @@ class RGBSpectrum(CoefficientSpectrum):
 
     def toRGB(self)->(float, float, float):
         return self.components[0], self.components[1], self.components[2]
+
+    def y(self):
+        YWeight = [ 0.212671, 0.715160, 0.072169 ]
+        return YWeight[0] * self.components[0] + YWeight[1] * self.components[1] + YWeight[2] * self.components[2]

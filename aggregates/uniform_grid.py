@@ -6,7 +6,6 @@ from core.intersection import Intersection
 from core.primitive import Primitive
 from core.ray import Ray
 import maths
-from maths.normal import Normal
 from maths.point3d import Point3d
 from maths.tools import get_clamp
 from maths.vector3d import Vector3d
@@ -67,12 +66,11 @@ class Voxel:
         intersection_tmp = Intersection()
         for prim in self.primitives:
             if prim.get_intersection(ray, intersection_tmp):
-                if intersection_tmp.ray_epsilon < intersection.ray_epsilon:
-                    intersection.ray_epsilon = intersection_tmp.ray_epsilon
-                    intersection.differentialGeometry.point = intersection_tmp.differentialGeometry.point
-                    intersection.differentialGeometry.normal = intersection_tmp.differentialGeometry.normal
-                    intersection.differentialGeometry.shape = intersection_tmp.differentialGeometry.shape
-                    hitSomething = True
+                intersection.differentialGeometry.point = intersection_tmp.differentialGeometry.point
+                intersection.differentialGeometry.normal = intersection_tmp.differentialGeometry.normal
+                intersection.differentialGeometry.shape = intersection_tmp.differentialGeometry.shape
+                intersection.primitive=intersection_tmp.primitive
+                hitSomething = True
         return hitSomething
 
 
@@ -159,10 +157,6 @@ class UniformGrid(Aggregate):
 
         gridIntersect = ray.get_at(rayT)
 
-
-#        return True
-
-
         # Set up 3D DDA for ray
         NextCrossingT = [float] * 3
         DeltaT = [float] * 3
@@ -218,12 +212,6 @@ class UniformGrid(Aggregate):
             if rayT == None:
                 return False
         gridIntersect = ray.get_at(rayT)
-
-
-#        intersection.differentialGeometry.point = gridIntersect
-#        intersection.differentialGeometry.shape = self
-#        intersection.differentialGeometry.normal = Normal(gridIntersect.x, gridIntersect.y, gridIntersect.z)
-#        return True
 
         # Set up 3D DDA for ray
         NextCrossingT = [float] * 3

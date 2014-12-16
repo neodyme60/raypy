@@ -10,6 +10,12 @@ class Point3d:
         self.y = y
         self.z = z
 
+    def Set(self, p):
+        self.x = p.x
+        self.y = p.y
+        self.z = p.z
+        return self
+
     def __str__(self):
         return str(self.x) + " " + str(self.y) + " " + str(self.z)
 
@@ -62,6 +68,8 @@ class Point3d:
 
         if type(other) == Vector3d:
             return Point3d(self.x + other.x, self.y + other.y, self.z + other.z)
+        if type(other) == Point3d:
+            return Point3d(self.x + other.x, self.y + other.y, self.z + other.z)
         raise NotImplemented
 
     def __iadd__(self, other):
@@ -95,12 +103,14 @@ class Point3d:
 
     def __div__(self, other):
         from maths.vector3d import Vector3d
-        if type(other) == Vector3d or type(other)== Point3d:
-            return Point3d(self.x / other.x, self.y / other.y, self.z/ other.z)
+
+        if type(other) == Vector3d or type(other) == Point3d:
+            return Point3d(self.x / other.x, self.y / other.y, self.z / other.z)
 
     def __mul__(self, other):
-
-        if type(other) == Matrix44:
+        if type(other) == int or type(other) == float:
+            return Point3d(self.x * other, self.y * other, self.z * other)
+        elif type(other) == Matrix44:
             return Point3d(
                 self.x * other[0][0] + self.y * other[1][0] + self.z * other[2][0] + other[3][0],
                 self.x * other[0][1] + self.y * other[1][1] + self.z * other[2][1] + other[3][1],

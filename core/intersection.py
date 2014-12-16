@@ -22,7 +22,7 @@ class Intersection:
 
     def Le(self, w: Vector3d) -> Spectrum:
         area = self.primitive.GetAreaLight()
-        if len(area) > 0:
+        if area is not None:
             return area.L(self.differentialGeometry.point, self.differentialGeometry.normal, w)
         return Spectrum(0.0)
 

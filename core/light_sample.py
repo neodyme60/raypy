@@ -13,8 +13,8 @@ class LightSample:
         s = LightSample()
         # Assert(n < sample->n2D[offsets.posOffset]);
         #        Assert(n < sample->n1D[offsets.componentOffset]);
-        s.uPos = sample.values_array_2d[offsets.posOffset + num]
-        s.uComponent = sample.values_array_1d[offsets.componentOffset + num]
+        s.uPos = sample.values_array_2d[offsets.posOffset][num]
+        s.uComponent = sample.values_array_1d[offsets.componentOffset][num]
         #        Assert(uPos[0] >= 0.f && uPos[0] < 1.f);
         #        Assert(uPos[1] >= 0.f && uPos[1] < 1.f);
         #        Assert(uComponent >= 0.f && uComponent < 1.f);
