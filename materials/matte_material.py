@@ -17,7 +17,7 @@ class MatteMaterial(Material):
     def get_bsdf(self, dgGeom: DifferentialGeometry, dgShading: DifferentialGeometry)->[BSDF]:
 
         dgs = DifferentialGeometry()
-        if self.bumpMap == None:
+        if self.bumpMap is None:
             dgs = dgShading
         else:
             #todo Bump(bumpMap, dgGeom, dgShading, &dgs);

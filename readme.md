@@ -9,6 +9,7 @@ RayPy is a physically based renderer in python, and certainly the slowest render
 <img src="https://github.com/neodyme60/raypy/blob/master/doc/cornellebox_pathtracing_mq.png" alt="alt text" style="width:100;height:100">
 <img src="https://github.com/neodyme60/raypy/blob/master/doc/ao_100.png" alt="alt text" style="width:100;height:100">
 <img src="https://github.com/neodyme60/raypy/blob/master/doc/ao_3.png" alt="alt text" style="width:100;height:100">
+<img src="https://github.com/neodyme60/raypy/blob/master/doc/cornellebox_pathtracing_plastic_jensen_hq.png" alt="alt text" style="width:100;height:100">
 
 ### Tech
 * python 3.4

@@ -4,20 +4,23 @@ Film "image"
     "string filename" "sphere-ewa-vs-trilerp.exr"
 
 Renderer "sampler" 
-	"integer samplesperpixel" [16384] 
+	"integer samplesperpixel" [1] 
     "bool dodirectseparately" ["false"] 
+	
+Accelerator "simple"
+	"integer nsamples" [1]
 	
 Sampler "random" 
 	"integer xsamples" [1] 
 	"integer ysamples" [1] 
 	"bool jitter" ["false"]
 
-LookAt 0.0 3.0 -5.0  0.0 0.0 0.0   0 1 0
+LookAt 0.0 4.0 -6.0  0.0 0.5 0.0   0 1 0
 Camera "perspective" 
 	"float fov" [30]
 
 SurfaceIntegrator "ambientocclusion" 
-	"integer nsamples" [100] 
+	"integer nsamples" [1] 
 	"float maxdist" [2.0]
 
 WorldBegin
@@ -35,6 +38,5 @@ Translate 0.8 0.5 -1.0
 Shape "sphere"
 	"float radius" [0.5] 
 AttributeEnd
-
 
 WorldEnd

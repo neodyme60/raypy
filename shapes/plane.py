@@ -31,7 +31,7 @@ class Plane(Shape):
 
         denominator = Vector3d.dot(self.normal, ray_o.direction)
         if math.fabs(denominator) < CONST_EPSILON:
-            return (False, 0.0)
+            return False, 0.0
 
         o = Vector3d.create_from_point3d(ray_o.origin)
 
@@ -40,8 +40,8 @@ class Plane(Shape):
             dg.point = ray_o.get_at(t) * self.objectToWorld
             dg.normal = self.normal  * self.objectToWorld
             dg.shape = self
-            return (True, t)
-        return (False, 0.0)
+            return True, t
+        return False, 0.0
 
     def get_is_intersected(self, ray) -> bool:
         # ray from word_space_to_object_space

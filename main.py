@@ -46,8 +46,9 @@ def main():
 #    load_from_file("scenes/debug.pbrt")
 #    load_from_file("scenes/cornell.pbrt")
 
-    load_from_file("scenes/cornellebox_pathtracing_lq.pbrt")
-    load_from_file("scenes/cornellebox_pathtracing_mq.pbrt")
+#    load_from_file("scenes/cornellebox_pathtracing_lq.pbrt")
+#    load_from_file("scenes/cornellebox_pathtracing_mq.pbrt")
+    load_from_file("scenes/cornellebox_pathtracing_jensen_lq.pbrt")
 
     my_renderer = renderOptions.make_renderer()
     my_scene = renderOptions.make_scene()

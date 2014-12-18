@@ -28,6 +28,7 @@ class DirectLightingIntegrator(SurfaceIntegrator):
         self.strategy = LightStrategy.SAMPLE_ALL_UNIFORM
         self.lightSampleOffsets = []
         self.bsdfSampleOffsets = []
+        self.lightNumOffset = -1
 
     def Li(self, scene: Scene, renderer: Renderer, ray: Ray, intersection: Intersection, sample: Sample) -> Spectrum:
         L = Spectrum(0.0)

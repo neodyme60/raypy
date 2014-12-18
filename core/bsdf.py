@@ -1,14 +1,12 @@
 from random import random
-import math
-from core.bxdf import BxDF, BxDFType
+
+from core.bxdf import BxDF, BxDFType, Microfacet
 from core.differential_geometry import DifferentialGeometry
 from core.monte_carlo import StratifiedSample2D
 from core.sample import Sample
 from core.spectrum import Spectrum
 from core.transform import Transform
-from maths import vector3d
 from maths.normal import Normal
-from maths.tools import get_clamp
 from maths.vector3d import Vector3d
 
 
@@ -149,19 +147,21 @@ class BSDF:
             return wiW, pdf, BxDFSampledTypeFlags, Spectrum(0.0)
 
 #        which = min(Floor2Int(bsdfSample.uComponent * matchingComps), matchingComps-1)
-        which = min((bsdfSample.uComponent * matchingComps), matchingComps-1)
+        which = min(int(bsdfSample.uComponent * matchingComps), matchingComps-1)
 
         bxdf = None
 
         count = which
         for b in self.bxdfs:
             if b.MatchesFlags(BxDFTypeFlags) and count == 0:
-                count = count -1
                 bxdf = b
                 break
+            count -= 1
 
         # Sample chosen _BxDF_
         wo = self.WorldToLocal(woW)
+#        if isinstance(bxdf, Microfacet):
+#            print("dd")
         wi, pdf, f = bxdf.Sample_f(wo, bsdfSample.uDir)
         if pdf == 0.0:
             BxDFSampledTypeFlags = BxDFType.BSDF_NONE
@@ -190,38 +190,4 @@ class BSDF:
                 if self.bxdfs[i].MatchesFlags(flags):
                     f += self.bxdfs[i].get_f(wo, wi)
         return wiW, pdf, BxDFSampledTypeFlags, f
-
-
-def CosTheta(w: vector3d) -> float:
-    return w.z
-
-
-def AbsCosTheta(w: vector3d) -> float:
-    return math.fabs(w.z)
-
-
-def SinTheta2(w: vector3d) -> float:
-    return max(0.0, 1.0 - CosTheta(w) * CosTheta(w))
-
-
-def SinTheta(w: vector3d) -> float:
-    return math.sqrt(SinTheta2(w))
-
-
-def CosPhi(w: vector3d) -> float:
-    sintheta = SinTheta(w)
-    if sintheta == 0.0:
-        return 1.0
-    return get_clamp(w.x / sintheta, -1.0, 1.0)
-
-
-def SinPhi(w: vector3d) -> float:
-    sintheta = SinTheta(w)
-    if sintheta == 0.0:
-        return 0.0
-    return get_clamp(w.y / sintheta, -1.0, 1.0)
-
-
-def SameHemisphere(w: vector3d, wp: vector3d) -> bool:
-    return w.z * wp.z > 0.0
 

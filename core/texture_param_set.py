@@ -18,9 +18,9 @@ class TextureParamSet:
 
     def GetSpectrumTexture(self, n: string, d: Spectrum):
         name = self.geomParams.find_texture(n)
-        if name==None:
+        if name is None:
             name = self.materialParams.find_texture(n)
-        if name != None:
+        if name is not None:
             if name in self.spectrumTextures:
                 return self.spectrumTextures[name]
             else:
@@ -30,9 +30,9 @@ class TextureParamSet:
 
     def GetFloatTexture(self, n: string, d: float):
         name = self.geomParams.find_texture(n)
-        if name == None:
+        if name is None:
             name = self.materialParams.find_texture(n)
-        if name != None:
+        if name is not None:
             if name in self.floatTextures:
                 return self.floatTextures[name]
             else:

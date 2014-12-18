@@ -1,7 +1,7 @@
 from core.api import pbrtPixelFilter, pbrtFilm, pbrtCamera, pbrtSurfaceIntegrator, pbrtSampler, pbrtLightSource, \
     pbrtTexture, pbrtAreaLightSource, pbrtShape, pbrtMaterial, pbrtObjectInstance, pbrtRenderer, \
     pbrtLookAt, pbrtIdentity, pbrtTranslate, pbrtAttributeBegin, pbrtAttributeEnd, pbrtScale, pbrtTransformBegin, \
-    pbrtTransformEnd, pbrtAccelerator, pbrtNamedMaterial
+    pbrtTransformEnd, pbrtAccelerator, pbrtNamedMaterial, pbrtMakeNamedMaterial
 from core.param_set import ParamSet
 from core.spectrum import Spectrum
 from loader.pbrt.pbrtListener import pbrtListener
@@ -82,11 +82,14 @@ class PbrtLoader(pbrtListener):
             i = 0
             values = []
             while True:
-                if ctx.NUMBER(i) is None:
+                if ctx.STRING(i) is None:
                     break
-                values.append(int(str(ctx.STRING(i))))
+                values.append(str(ctx.STRING(i)).replace("\"", ""))
                 i += 1
-            self.currentParamSet.add_string(param_name, values)
+            if len(values) == 1:
+                self.currentParamSet.add_string(param_name, values[0])
+            else:
+                self.currentParamSet.add_string(param_name, values)
         elif param_type == 'color':
             print("-->color")
             i = 0
@@ -103,7 +106,7 @@ class PbrtLoader(pbrtListener):
             # value = str(ctx.STRING(1))
             # elif ctx.INT() is not None:
             # value = ctx.INT()
-            #       elif ctx.FLOAT() is not None:
+            # elif ctx.FLOAT() is not None:
             #           value = ctx.FLOAT()
             #       print("->("+ str(key)+","+str(value)+")")
 
@@ -114,9 +117,12 @@ class PbrtLoader(pbrtListener):
     # Enter a parse tree produced by pbrtParser#lookAt.
     def enterLookAt(self, ctx):
         print("enter look at")
-        e = Vector3d(float(str(ctx.vector3(0).NUMBER(0))), float(str(ctx.vector3(0).NUMBER(1))), float(str(ctx.vector3(0).NUMBER(2))))
-        l = Vector3d(float(str(ctx.vector3(1).NUMBER(0))), float(str(ctx.vector3(1).NUMBER(1))), float(str(ctx.vector3(1).NUMBER(2))))
-        u = Vector3d(float(str(ctx.vector3(2).NUMBER(0))), float(str(ctx.vector3(2).NUMBER(1))), float(str(ctx.vector3(2).NUMBER(2))))
+        e = Vector3d(float(str(ctx.vector3(0).NUMBER(0))), float(str(ctx.vector3(0).NUMBER(1))),
+                     float(str(ctx.vector3(0).NUMBER(2))))
+        l = Vector3d(float(str(ctx.vector3(1).NUMBER(0))), float(str(ctx.vector3(1).NUMBER(1))),
+                     float(str(ctx.vector3(1).NUMBER(2))))
+        u = Vector3d(float(str(ctx.vector3(2).NUMBER(0))), float(str(ctx.vector3(2).NUMBER(1))),
+                     float(str(ctx.vector3(2).NUMBER(2))))
         pbrtLookAt(e, l, u)
 
     # Exit a parse tree produced by pbrtParser#lookAt.
@@ -288,6 +294,28 @@ class PbrtLoader(pbrtListener):
     def exitMaterial(self, ctx):
         print("exit material  block")
         pbrtMaterial(self.name, self.currentParamSet)
+
+    # Enter a parse tree produced by pbrtParser#namedmaterial.
+    def enterNamedmaterial(self, ctx):
+        print("enter named material block")
+        self.currentParamSet.reset()
+        self.name = str(ctx.STRING()).replace('"', '')
+
+    # Exit a parse tree produced by pbrtParser#namedmaterial.
+    def exitNamedmaterial(self, ctx):
+        print("exit named material  block")
+        pbrtNamedMaterial(self.name)
+
+    # Enter a parse tree produced by pbrtParser#namedmaterial.
+    def enterMakenamedmaterial(self, ctx):
+        print("enter make named material block")
+        self.currentParamSet.reset()
+        self.name = str(ctx.STRING()).replace('"', '')
+
+    # Exit a parse tree produced by pbrtParser#namedmaterial.
+    def exitMakenamedmaterial(self, ctx):
+        print("exit make named material  block")
+        pbrtMakeNamedMaterial(self.name, self.currentParamSet)
 
     # Enter a parse tree produced by pbrtParser#renderer.
     def enterRenderer(self, ctx):

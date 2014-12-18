@@ -49,15 +49,15 @@ class DiffuseAreaLight(AreaLight):
         return wi, self.L(ps, ns, -wi), self.shapeSet.Pdf2(p, wi)
 
     def Sample_L2(self, scene: Scene, ls: LightSample, u: (float, float), n: Normal, ray: Ray, time: float) -> (
-             Spectrum, float):
-        org = self.shapeSet.Sample2(ls, n)
-        dir = UniformSampleSphere(u)
-        if Vector3d.dot(dir, n) < 0.0:
-            dir *= -1.0
+            Spectrum, float):
+        origin = self.shapeSet.Sample2(ls, n)
+        direction = UniformSampleSphere(u)
+        if Vector3d.dot(direction, n) < 0.0:
+            direction *= -1.0
 
-        ray.Set(Ray(org, dir, 1e-3, infinity_max_f, time))
+        ray.Set(Ray(origin, direction, 1e-3, infinity_max_f, time))
 
-        Ls = self.L(org, n, dir)
-        pdf = self.shapeSet.Pdf1(org) * CONST_INV_TWOPI
+        Ls = self.L(origin, n, direction)
+        pdf = self.shapeSet.Pdf1(origin) * CONST_INV_TWOPI
         return ray, Ls, pdf
 

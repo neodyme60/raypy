@@ -95,31 +95,31 @@ class Triangle(Shape):
         divisor = Vector3d.dot(s1, e1)
 
         if divisor == 0.0:
-            return (False, 0.0)
+            return False, 0.0
         invDivisor = 1.0 / divisor
 
         # Compute first barycentric coordinate
         d = ray.origin - p1
         b1 = Vector3d.dot(d, s1) * invDivisor
         if b1 < 0.0 or b1 > 1.0:
-            return (False, 0.0)
+            return False, 0.0
 
         #Compute second barycentric coordinate
         s2 = Vector3d.cross(d, e1)
         b2 = Vector3d.dot(ray.direction, s2) * invDivisor
         if b2 < 0.0 or (b1 + b2) > 1.0:
-            return (False, 0.0)
+            return False, 0.0
 
         # Compute _t_ to intersection point
         t = Vector3d.dot(e2, s2) * invDivisor
         if t < ray.min_t or t > ray.max_t:
-            return (False, 0.0)
+            return False, 0.0
 
         dg.shape = self
         dg.point = ray.get_at(t)
         dg.normal = Normal.create_from_vector3d( Vector3d.cross(e1, e2).get_normalized())
 
-        return (True, t)
+        return True, t
 
 
     def get_is_intersected(self, ray) -> bool:

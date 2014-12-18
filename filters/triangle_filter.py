@@ -10,7 +10,7 @@ class TriangleFilter(Filter):
         self.c = c
 
     def evaluate(self, x: float, y: float) -> float:
-        return self.mitchell_1d(x * self.inv_width) * self.mitchell_1d(y * self.inv_height);
+        return self.mitchell_1d(x * self.inv_width) * self.mitchell_1d(y * self.inv_height)
 
     def mitchell_1d(self, x: float) -> float:
         x = math.fabs(2.0 * x)

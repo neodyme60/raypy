@@ -59,8 +59,8 @@ class BucketOrderInfo:
 
 
 class RowBucketOrder(BucketOrder):
-    def __init__(self, width: int, height: int, sort_order):
-        super().__init__(width, height, sort_order)
+    def __init__(self, width: int, height: int):
+        super().__init__(width, height, BucketOrderSortType.Row)
         for i in range(self.height * self.width):
             by = i // self.width
             bx = i % self.width

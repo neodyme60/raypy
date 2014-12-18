@@ -48,19 +48,19 @@ class RenderOptions():
         volume_region = AggregateVolume(self.volumeRegions)
 
         accelerator = core.api.make_accelerator(self.acceleratorName, self.primitives, self.acceleratorParams)
-        if accelerator == None:
+        if accelerator is None:
             accelerator = core.api.make_accelerator("grid", self.primitives, ParamSet())
 
         scene = Scene(accelerator, self.lights, volume_region)
         # // Erase primitives, lights, and volume regions from _RenderOptions_
         # primitives.erase(primitives.begin(), primitives.end());
-        #    lights.erase(lights.begin(), lights.end());
+        # lights.erase(lights.begin(), lights.end());
         #    volumeRegions.erase(volumeRegions.begin(), volumeRegions.end());
 
         return scene
 
     def make_renderer(self) -> Renderer:
-        from  renderers.sampler_renderer import SamplerRenderer
+        from renderers.sampler_renderer import SamplerRenderer
 
         renderer = None
         camera = self.make_camera()

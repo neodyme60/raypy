@@ -10,7 +10,15 @@ from maths.vector3d import Vector3d
 
 class ParamSet():
     def __init__(self):
-        self.reset()
+        self.bools = {}
+        self.ints = {}
+        self.floats = {}
+        self.points = {}
+        self.vectors = {}
+        self.normals = {}
+        self.spectrums = {}
+        self.strings = {}
+        self.textures = {}
 
     def reset(self):
         self.bools = {}
@@ -22,27 +30,6 @@ class ParamSet():
         self.spectrums = {}
         self.strings = {}
         self.textures = {}
-
-    def get_is_empty(self):
-        if len(self.bools):
-            return False
-        if len(self.ints):
-            return False
-        if len(self.floats):
-            return False
-        if len(self.points):
-            return False
-        if len(self.vectors):
-            return False
-        if len(self.normals):
-            return False
-        if len(self.spectrums):
-            return False
-        if len(self.strings):
-            return False
-        if (self.textures):
-            return False
-        return True
 
     def add_bool(self, name: string, values: [bool]):
         if name in self.bools:

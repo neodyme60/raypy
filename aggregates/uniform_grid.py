@@ -152,7 +152,7 @@ class UniformGrid(Aggregate):
             rayT = ray.min_t
         else:
             rayT, tmp = self.bounds.get_intersect(ray)
-            if rayT == None:
+            if rayT is None:
                 return False
 
         gridIntersect = ray.get_at(rayT)
@@ -185,7 +185,7 @@ class UniformGrid(Aggregate):
         while True:
             o = self.get_offset(Pos[0], Pos[1], Pos[2])
             voxel = self.voxels[o]
-            if voxel != None:
+            if voxel is not None:
                 if voxel.get_is_intersected(ray):
                     return True
             # Advance to next voxel
@@ -209,7 +209,7 @@ class UniformGrid(Aggregate):
             rayT = ray.min_t
         else:
             rayT, tmp = self.bounds.get_intersect(ray)
-            if rayT == None:
+            if rayT is None:
                 return False
         gridIntersect = ray.get_at(rayT)
 
@@ -242,7 +242,7 @@ class UniformGrid(Aggregate):
         while True:
             # Check for intersection in current voxel and advance to next
             voxel = self.voxels[self.get_offset(Pos[0], Pos[1], Pos[2])]
-            if voxel != None:
+            if voxel is not None:
                 hitSomething |= voxel.get_intersection(ray, intersection)
 
             # Advance to next voxel

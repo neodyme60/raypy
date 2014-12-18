@@ -4,7 +4,6 @@ from core.texture_param_set import TextureParamSet
 
 
 class GraphicsState():
-
     def __init__(self):
         self.floatTextures = {}
         self.spectrumTextures = {}
@@ -16,13 +15,11 @@ class GraphicsState():
         self.areaLightParams = None
 
     def CreateMaterial(self, params: ParamSet):
-        global graphicsState
-
         mtl = None
 
         mp = TextureParamSet(params, self.materialParams, self.floatTextures, self.spectrumTextures)
-        if self.currentNamedMaterial!="" and (self.currentNamedMaterial in self.namedMaterials):
-            mtl = self.namedMaterials[graphicsState.currentNamedMaterial]
+        if self.currentNamedMaterial != "" and (self.currentNamedMaterial in self.namedMaterials):
+            mtl = self.namedMaterials[self.currentNamedMaterial]
         if mtl is None:
             mtl = core.api.make_material(self.material, core.api.curTransform[0], mp)
         if mtl is None:

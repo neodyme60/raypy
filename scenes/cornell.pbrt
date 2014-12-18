@@ -11,14 +11,24 @@ Scale -1.000000 1.000000 1.000000
 # ignored Orientation "rh"
 ##CameraOrientation 278 273 -800 278 273 0 0 1 0
 ConcatTransform [ 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 ]
-Translate -278.000000 -273.000000 500.000000
+#Translate -278.000000 -273.000000 500.000000
 #SurfaceIntegrator "whitted"
 
+LookAt 278 273 -500 278 273 0 0 1 0
+	   
+Accelerator "grid"
+	"integer nsamples" [1]
+	
+SurfaceIntegrator "ambientocclusion" 
+	"integer nsamples" [1] 
+	"float maxdist" [50.0]
+	   
 Renderer "sampler" 
-	"integer samplesperpixel" [2048]
+	"integer samplesperpixel" [1]
 
 Camera "perspective" 
 	"float fov" [55.000000 ]
+	
 Film "image" 
 	"integer xresolution" [250 ] 
 	"integer yresolution" [250 ]
@@ -52,7 +62,7 @@ AttributeBegin
     Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [560.000000 550.000000 0.000000 560.000000 550.000000 560.000000 0.000000 550.000000 560.000000 0.000000 550.000000 0.000000 ] 
     Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [550.000000 0.000000 560.000000 0.000000 0.000000 560.000000 0.000000 550.000000 560.000000 560.000000 550.000000 560.000000 ] 
     Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [0.000000 0.000000 560.000000 0.000000 0.000000 0.000000 0.000000 550.000000 0.000000 0.000000 550.000000 560.000000 ] 
-        Material "matte" "color Kd" [.9 .5 .5]
+    Material "matte" "color Kd" [.9 .5 .5]
     Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [550.000000 0.000000 0.000000 550.000000 0.000000 560.000000 560.000000 550.000000 560.000000 560.000000 550.000000 0.000000 ] 
 AttributeEnd
 ############################################################################

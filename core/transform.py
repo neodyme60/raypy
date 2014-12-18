@@ -240,4 +240,4 @@ class Transform:
             invLen = 1.0 / math.sqrt(v1.y*v1.y + v1.z*v1.z)
             v2 =  maths.vector3d.Vector3d(0.0, v1.z * invLen, -v1.y * invLen)
         v3 = maths.vector3d.Vector3d.cross(v1, v2)
-        return (v2,v3)
+        return v2,v3

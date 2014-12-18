@@ -46,7 +46,8 @@ class FresnelDielectric(Fresnel):
 
         # Compute indices of refraction for dielectric
         entering = cosi > 0.0
-        ei = self.eta_i, et = self.eta_t
+        ei = self.eta_i
+        et = self.eta_t
         if entering:
             ei, et = et, ei
 
@@ -55,9 +56,9 @@ class FresnelDielectric(Fresnel):
         if sint >= 1.0:
             # Handle total internal reflection
             return 1.0
-        else:
-            cost = math.sqrt(max(0.0, 1.0 - sint*sint))
-            return FrDiel(math.fabs(cosi), cost, ei, et)
+
+        cost = math.sqrt(max(0.0, 1.0 - sint*sint))
+        return FrDiel(math.fabs(cosi), cost, ei, et)
 
 
 class FresnelNoOp(Fresnel):

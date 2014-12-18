@@ -24,6 +24,14 @@ from core.texture_param_set import TextureParamSet
 from lights.diffuse_area_light import DiffuseAreaLight
 from lights.projection_light import ProjectionLight
 from lights.spot_ligt import SpotLight
+from materials.glass_material import GlassMaterial
+from materials.kd_subsurface_material import KdSubsurfaceMaterial
+from materials.measured_material import MeasuredMaterial
+from materials.metal_material import MetalMaterial
+from materials.plastic_material import PlasticMaterial
+from materials.substrate_material import SubstrateMaterial
+from materials.subsurface_material import SubsurfaceMaterial
+from materials.uber_material import UberMaterial
 from maths.point3d import Point3d
 from renderers.render_options import RenderOptions
 from core.shape import Shape
@@ -111,7 +119,7 @@ def make_camera(name: string, paramset: ParamSet, cam2world: Transform, film: Fi
     return camera
 
 
-#==========================shape
+# ==========================shape
 
 def create_shape_sphere(paramset: ParamSet, object2world: Transform, world2object: Transform) -> Sphere:
     radius = paramset.find_float("radius", 1.0)
@@ -149,7 +157,7 @@ def make_shape(name: string, paramset: ParamSet, object2world: Transform, world2
     return shape
 
 
-#==========================light
+# ==========================light
 
 def create_light_point(paramSet: ParamSet, light2world: Transform) -> PointLight:
     I = paramSet.find_spectrum("I", Spectrum(1.0))
@@ -171,12 +179,12 @@ def create_spotLight(paramSet: ParamSet, light2world: Transform) -> PointLight:
     # Compute spotlight world to light transformation
     frome = paramSet.find_point("from", Point3d(0.0, 0.0, 0.0))
     to = paramSet.find_point("to", Point3d(0.0, 0.0, 1.0))
-    dir = (to - frome).get_normalized()
+    direction = (to - frome).get_normalized()
     du, dv = Transform.create_coordinateSystem(dir)
     m = Matrix44.create_from_vector4d(
         Vector4d(du.x, du.y, du.z, 0.0),
         Vector4d(dv.x, dv.y, dv.z, 0.0),
-        Vector4d(dir.x, dir.y, dir.z, 0.0),
+        Vector4d(direction.x, direction.y, direction.z, 0.0),
         Vector4d(0.0, 0.0, 0.0, 1.0))
     dirToZ = Transform(m)
     light2world = light2world * Transform.create_translate(frome.ex, frome.ey, frome.ez) * dirToZ.get_invert()
@@ -236,10 +244,12 @@ def create_surface_integrator_direct_lighting(paramset: ParamSet) -> DirectLight
     integrator = DirectLightingIntegrator(samples_count, max_distance)
     return integrator
 
+
 def create_surface_integrator_path(paramset: ParamSet) -> DirectLightingIntegrator:
     samples_count = paramset.find_int("maxdepth", 2)
     integrator = PathIntegrator(samples_count)
     return integrator
+
 
 def make_surface_integrator(name: string, paramset: ParamSet) -> SurfaceIntegrator:
     integrator = None
@@ -551,6 +561,127 @@ def create_material_matte(materialToWorld: Transform, paramset: TextureParamSet)
 
 
 def create_material_mirror(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    Kr = paramset.GetSpectrumTexture("Kr", Spectrum(0.9))
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return MirrorMaterial(Kr, bumpMap)
+
+
+def CreatePlasticMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    Kd = paramset.GetSpectrumTexture("Kd", Spectrum(0.25))
+    Ks = paramset.GetSpectrumTexture("Ks", Spectrum(0.25))
+    roughness = paramset.GetFloatTexture("roughness", 0.1)
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return PlasticMaterial(Kd, Ks, roughness, bumpMap)
+
+
+def CreateTranslucentMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    return None
+
+
+def CreateGlassMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    Kr = paramset.GetSpectrumTexture("Kr", Spectrum(1.0))
+    Kt = paramset.GetSpectrumTexture("Kt", Spectrum(1.0))
+    index = paramset.GetFloatTexture("index", 1.5)
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return GlassMaterial(Kr, Kt, index, bumpMap)
+
+
+def CreateMetalMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    CopperSamples = 56
+
+    CopperWavelengths = [
+        298.7570554, 302.4004341, 306.1337728, 309.960445, 313.8839949, 317.9081487, 322.036826,
+        326.2741526, 330.6244747, 335.092373, 339.6826795, 344.4004944, 349.2512056, 354.2405086,
+        359.374429, 364.6593471, 370.1020239, 375.7096303, 381.4897785, 387.4505563, 393.6005651,
+        399.9489613, 406.5055016, 413.2805933, 420.2853492, 427.5316483, 435.0322035, 442.8006357,
+        450.8515564, 459.2006593, 467.8648226, 476.8622231, 486.2124627, 495.936712, 506.0578694,
+        516.6007417, 527.5922468, 539.0616435, 551.0407911, 563.5644455, 576.6705953, 590.4008476,
+        604.8008683, 619.92089, 635.8162974, 652.5483053, 670.1847459, 688.8009889, 708.4810171,
+        729.3186941, 751.4192606, 774.9011125, 799.8979226, 826.5611867, 855.0632966, 885.6012714]
+
+    CopperN = [
+        1.400313, 1.38, 1.358438, 1.34, 1.329063, 1.325, 1.3325, 1.34, 1.334375, 1.325,
+        1.317812, 1.31, 1.300313, 1.29, 1.281563, 1.27, 1.249062, 1.225, 1.2, 1.18, 1.174375, 1.175,
+        1.1775, 1.18, 1.178125, 1.175, 1.172812, 1.17, 1.165312, 1.16, 1.155312, 1.15, 1.142812, 1.135,
+        1.131562, 1.12, 1.092437, 1.04, 0.950375, 0.826, 0.645875, 0.468, 0.35125, 0.272, 0.230813, 0.214,
+        0.20925, 0.213, 0.21625, 0.223, 0.2365, 0.25, 0.254188, 0.26, 0.28, 0.3]
+
+    CopperK = [
+        1.662125, 1.687, 1.703313, 1.72, 1.744563, 1.77, 1.791625, 1.81, 1.822125, 1.834,
+        1.85175, 1.872, 1.89425, 1.916, 1.931688, 1.95, 1.972438, 2.015, 2.121562, 2.21, 2.177188, 2.13,
+        2.160063, 2.21, 2.249938, 2.289, 2.326, 2.362, 2.397625, 2.433, 2.469187, 2.504, 2.535875, 2.564,
+        2.589625, 2.605, 2.595562, 2.583, 2.5765, 2.599, 2.678062, 2.809, 3.01075, 3.24, 3.458187, 3.67,
+        3.863125, 4.05, 4.239563, 4.43, 4.619563, 4.817, 5.034125, 5.26, 5.485625, 5.717]
+
+    #    copperN = Spectrum::FromSampled(CopperWavelengths, CopperN, CopperSamples)
+    #    eta = paramset.GetSpectrumTexture("eta", copperN)
+
+    #    copperK = Spectrum::FromSampled(CopperWavelengths, CopperK, CopperSamples)
+    #    k = paramset.GetSpectrumTexture("k", copperK)
+
+    #    roughness = paramset.GetFloatTexture("roughness", 0.01)
+    #    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    #    return MetalMaterial(eta, k, roughness, bumpMap)
+    pass
+
+
+def CreateSubstrateMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    Kd = paramset.GetSpectrumTexture("Kd", Spectrum(0.5))
+    Ks = paramset.GetSpectrumTexture("Ks", Spectrum(0.5))
+    uroughness = paramset.GetFloatTexture("uroughness", 0.1)
+    vroughness = paramset.GetFloatTexture("vroughness", 0.10)
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return SubstrateMaterial(Kd, Ks, uroughness, vroughness, bumpMap)
+
+
+def CreateUberMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    Kd = paramset.GetSpectrumTexture("Kd", Spectrum(0.25))
+    Ks = paramset.GetSpectrumTexture("Ks", Spectrum(0.25))
+    Kr = paramset.GetSpectrumTexture("Kr", Spectrum(0.0))
+    Kt = paramset.GetSpectrumTexture("Kt", Spectrum(0.0))
+    roughness = paramset.GetFloatTexture("roughness", 0.1)
+    eta = paramset.GetFloatTexture("index", 1.5)
+    opacity = paramset.GetSpectrumTexture("opacity", 1.0)
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return UberMaterial(Kd, Ks, Kr, Kt, roughness, opacity, eta, bumpMap)
+
+
+def CreateSubsurfaceMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    #    sa_rgb = [ 0.0011, 0.0024, 0.014 ]
+    #    sps_rgb = [ 2.55, 3.21, 3.77 ]
+    #    sa = Spectrum::FromRGB(sa_rgb), sps = Spectrum::FromRGB(sps_rgb)
+    #    name = paramset.FindString("name")
+    #    found = GetVolumeScatteringProperties(name, &sa, &sps)
+    #    if (name != "" and not found)
+    #        Warning("Named material \"%s\" not found.  Using defaults.", name.c_str());
+    #    scale = paramset.FindFloat("scale", 1.0)
+
+    #    sigma_a = paramset.GetSpectrumTexture("sigma_a", sa)
+    #    sigma_prime_s = paramset.GetSpectrumTexture("sigma_prime_s", sps)
+    #    ior = paramset.GetFloatTexture("index", 1.3)
+    #    Kr = paramset.GetSpectrumTexture("Kr", Spectrum(1.0))
+    #    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    #    return SubsurfaceMaterial(scale, Kr, sigma_a, sigma_prime_s, ior, bumpMap)
+    pass
+
+
+def CreateKdSubsurfaceMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    #    Kd = [ 0.5, 0.5, 0.5 ]
+    #    kd = paramset.GetSpectrumTexture("Kd", Spectrum::FromRGB(Kd))
+    #    mfp = paramset.GetFloatTexture("meanfreepath", 1.0)
+    #    ior = paramset.GetFloatTexture("index", 1.3)
+    #    kr = paramset.GetSpectrumTexture("Kr", Spectrum(1.0))
+    #    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    #    return KdSubsurfaceMaterial(kd, kr, mfp, ior, bumpMap)
+    pass
+
+
+def CreateMeasuredMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
+    bumpMap = paramset.GetFloatTextureOrNull("bumpmap")
+    return MeasuredMaterial(paramset.FindFilename("filename"), bumpMap)
+
+
+def CreateShinyMetalMaterial(materialToWorld: Transform, paramset: TextureParamSet) -> MirrorMaterial:
     return None
 
 
@@ -560,6 +691,26 @@ def make_material(name: string, materialToWorld: Transform, paramset: TexturePar
         material = create_material_matte(materialToWorld, paramset)
     elif name == "mirror":
         material = create_material_mirror(materialToWorld, paramset)
+    elif name == "plastic":
+        material = CreatePlasticMaterial(materialToWorld, paramset)
+    elif name == "translucent":
+        material = CreateTranslucentMaterial(materialToWorld, paramset)
+    elif name == "glass":
+        material = CreateGlassMaterial(materialToWorld, paramset)
+    elif name == "metal":
+        material = CreateMetalMaterial(materialToWorld, paramset)
+    elif name == "substrate":
+        material = CreateSubstrateMaterial(materialToWorld, paramset)
+    elif name == "uber":
+        material = CreateUberMaterial(materialToWorld, paramset)
+    elif name == "subsurface":
+        material = CreateSubsurfaceMaterial(materialToWorld, paramset)
+    elif name == "kdsubsurface":
+        material = CreateKdSubsurfaceMaterial(materialToWorld, paramset)
+    elif name == "measured":
+        material = CreateMeasuredMaterial(materialToWorld, paramset)
+    elif name == "shinymetal":
+        material = CreateShinyMetalMaterial(materialToWorld, paramset)
     return material
 
 
@@ -670,16 +821,16 @@ def pbrtActiveTransformStartTime():
     pass
 
 
-def pbrtTransformTimes(start:float, end:float):
+def pbrtTransformTimes(start:float, end: float):
     pass
 
 
-def pbrtPixelFilter(name:string, params:ParamSet):
+def pbrtPixelFilter(name:string, params: ParamSet):
     renderOptions.filterName = name
     renderOptions.filterParams = copy(params)
 
 
-def pbrtFilm(name:string, params:ParamSet):
+def pbrtFilm(name:string, params: ParamSet):
     renderOptions.filmName = name
     renderOptions.filmParams = copy(params)
 
@@ -689,27 +840,27 @@ def pbrtSampler(name:string, params: ParamSet):
     renderOptions.samplerParams = copy(params)
 
 
-def pbrtAccelerator(name: string, params:ParamSet):
+def pbrtAccelerator(name: string, params: ParamSet):
     renderOptions.acceleratorName = name
     renderOptions.acceleratorParams = copy(params)
 
 
-def pbrtSurfaceIntegrator(name:string, params:ParamSet):
+def pbrtSurfaceIntegrator(name:string, params: ParamSet):
     renderOptions.surfIntegratorName = name
     renderOptions.surfIntegratorParams = copy(params)
 
 
-def pbrtVolumeIntegrator(name:string, params:ParamSet):
+def pbrtVolumeIntegrator(name:string, params: ParamSet):
     renderOptions.volIntegratorName = name
     renderOptions.volIntegratorParams = copy(params)
 
 
-def pbrtRenderer(name:string, params:ParamSet):
+def pbrtRenderer(name:string, params: ParamSet):
     renderOptions.rendererName = name
     renderOptions.rendererParams = copy(params)
 
 
-def pbrtCamera(name:string, params:ParamSet):
+def pbrtCamera(name:string, params: ParamSet):
     renderOptions.cameraName = name
     renderOptions.cameraParams = copy(params)
     renderOptions.cameraToWorld = curTransform[0]
@@ -748,7 +899,7 @@ def pbrtTransformEnd():
     curTransform = pushedTransforms.pop()
 
 
-def pbrtTexture(name:string, type: string, texname:string, params:ParamSet):
+def pbrtTexture(name: string, type: string, texname: string, params: ParamSet):
     global graphicsState
 
     tp = TextureParamSet(params, params, graphicsState.floatTextures, graphicsState.spectrumTextures)
@@ -768,20 +919,17 @@ def pbrtTexture(name:string, type: string, texname:string, params:ParamSet):
     else:
         pass
 
-
-def pbrtMaterial(name:string, params:ParamSet):
+def pbrtMaterial(name: string, params: ParamSet):
     global graphicsState
     graphicsState.material = name
     graphicsState.materialParams = deepcopy(params)
     graphicsState.currentNamedMaterial = ""
 
-
-def pbrtMakeNamedMaterial(name:string, params:ParamSet):
+def pbrtMakeNamedMaterial(name: string, params: ParamSet):
     global graphicsState
-    mp = TextureParamSet(params, graphicsState.materialParams, graphicsState.floatTextures,
-                         graphicsState.spectrumTextures)
+    mp = TextureParamSet(params, graphicsState.materialParams, graphicsState.floatTextures, graphicsState.spectrumTextures)
     matName = mp.FindString("type")
-    if matName == None:
+    if matName is None:
         raise Exception("No parameter string \"type\" found in MakeNamedMaterial")
     else:
         mtl = make_material(matName, curTransform[0], mp)
@@ -789,12 +937,12 @@ def pbrtMakeNamedMaterial(name:string, params:ParamSet):
             graphicsState.namedMaterials[name] = mtl
 
 
-def pbrtNamedMaterial(name:string):
+def pbrtNamedMaterial(name: string):
     global graphicsState
     graphicsState.currentNamedMaterial = name
 
 
-def pbrtLightSource(name:string, params:ParamSet):
+def pbrtLightSource(name: string, params: ParamSet):
     l = make_light(name, curTransform[0], params)
     if l:
         renderOptions.lights.append(l)
@@ -802,12 +950,13 @@ def pbrtLightSource(name:string, params:ParamSet):
         raise Exception("pbrtLightSource: light type \"%s\" unknown.", name)
 
 
-def pbrtAreaLightSource(name:string, params: ParamSet):
+def pbrtAreaLightSource(name: string, params: ParamSet):
     global graphicsState
     graphicsState.areaLight = name
     graphicsState.areaLightParams = deepcopy(params)
 
-def pbrtShape(name:string, params:ParamSet):
+
+def pbrtShape(name: string, params: ParamSet):
     global graphicsState
 
     shape = make_shape(name, params, curTransform[0], curTransform[0].get_invert())
@@ -829,11 +978,11 @@ def pbrtReverseOrientation():
     pass
 
 
-def pbrtVolume(name:string, params:ParamSet):
+def pbrtVolume(name: string, params: ParamSet):
     pass
 
 
-def pbrtObjectBegin(name:string):
+def pbrtObjectBegin(name: string):
     pass
 
 
@@ -841,7 +990,7 @@ def pbrtObjectEnd():
     pass
 
 
-def pbrtObjectInstance(name:string):
+def pbrtObjectInstance(name: string):
     pass
 
 

@@ -1,7 +1,7 @@
 import math
 from random import random
 
-from maths.config import CONST_EPSILON
+from maths.config import CONST_EPSILON, CONST_PI
 from maths.normal import Normal
 import maths.vector3d
 
@@ -110,7 +110,7 @@ def get_rejection_sample_disk() -> (float, float):
         sy = 1.0 - 2.0 * random.random()
         if sx * sx + sy * sy > 1.0:
             break
-    return (sx, sy)
+    return sx, sy
 
 
 def get_uniform_sample_hemisphere(u1: float, u2: float) -> maths.vector3d.Vector3d:
@@ -142,12 +142,12 @@ def get_uniform_sphere_pdf() -> float:
 def UniformSampleDisk(u1: float, u2: float) -> (float, float):
     r = math.sqrt(u1)
     theta = 2.0 * math.pi * u2
-    return (r * math.cos(theta), r * math.sin(theta))
+    return r * math.cos(theta), r * math.sin(theta)
 
 
 def get_uniform_sample_triangle(u1: float, u2: float) -> (float, float):
     su1 = math.sqrt(u1)
-    return (1.0 - su1, u2 * su1)
+    return 1.0 - su1, u2 * su1
 
 
 def get_concentric_sample_disk(u1: float, u2: float) -> (float, float):
@@ -159,7 +159,7 @@ def get_concentric_sample_disk(u1: float, u2: float) -> (float, float):
 
     # Handle degeneracy at the origin
     if sx == 0.0 and sy == 0.0:
-        return (0.0, 0.0)
+        return 0.0, 0.0
     if sx >= -sy:
         if sx > sy:
             # Handle first region of disk
@@ -197,3 +197,18 @@ def get_to_radians(deg: float)->float:
 
 def get_to_degrees(rad: float)->float:
     return (180.0/math.pi) * rad
+
+def  SphericalDirection1(sintheta: float, costheta: float, phi: float):
+    return maths.vector3d.Vector3d(sintheta * math.cos(phi), sintheta * math.sin(phi), costheta)
+
+def  SphericalDirection2(sintheta: float, costheta: float, phi: float, x: maths.vector3d.Vector3d, y: maths.vector3d.Vector3d, z: maths.vector3d.Vector3d):
+    return x * sintheta * math.cos(phi) + y * sintheta * math.sin(phi) + z * costheta
+
+def SphericalTheta(v: maths.vector3d.Vector3d)->float:
+    return math.acos(get_clamp(v.z, -1.0, 1.0))
+
+def SphericalPhi(v: maths.vector3d.Vector3d)->float:
+    p = math.atan2(v.y, v.x)
+    if p < 0.0:
+        return p + 2.0*CONST_PI
+    return p

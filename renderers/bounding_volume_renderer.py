@@ -16,6 +16,7 @@ class BoundingVolumeRenderer(Renderer):
     def __init__(self, sampler: Sampler, camera: Camera):
         super().__init__()
 
+        self.scene = None
         self.camera = camera
         self.main_sampler = sampler
 
@@ -31,12 +32,11 @@ class BoundingVolumeRenderer(Renderer):
 
     def render_task(self, task_index: int,
                     bucket_index: int,
-                    bucket_order_info: BucketOrderInfo,
-                    color: int):
+                    bucket_order_info: BucketOrderInfo, sample, renderer):
 
         sampler = self.main_sampler.get_sub_sampler(bucket_index, bucket_order_info)
 
-        if sampler == None:
+        if sampler is None:
             return
 
             # print("start render task : id(" + str(task_index) + ") (" + str(sampler.bucket_extend.start_x) + "," + str(
@@ -70,7 +70,7 @@ class BoundingVolumeRenderer(Renderer):
 
                 # print("end render task " + str(task_index))
 
-    def get_li(self, scene: Scene, ray: Ray, intersection: Intersection):
+    def get_li(self, scene, ray: Ray, intersection: Intersection, sample: Sample)->Spectrum:
         color = 0xff303030
         if self.scene.get_intersection(ray, intersection):
             color = min(intersection.ray_epsilon / 5.0 * 100, 255)
@@ -82,8 +82,7 @@ class BoundingVolumeRenderer(Renderer):
 
         self.scene = scene
 
-        sample_list = []
-        sample_list.append(Sample(self.main_sampler, scene))
+        sample_list = [Sample(self.main_sampler, scene)]
 
         my_bucket_orders = BucketOrder.create(bucket_order_info.width, bucket_order_info.height,
                                               bucket_order_info.bucket_order_type)

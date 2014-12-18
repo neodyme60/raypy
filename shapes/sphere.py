@@ -39,18 +39,18 @@ class Sphere(Shape):
 
         # Solve quadratic equation for _t_ values
         t0, t1 = maths.tools.get_solve_quadratic(a, b, c)
-        if t0 == None and t1 == None:
-            return (None, None)
+        if t0 is None and t1 is None:
+            return None, None
 
         # Compute intersection distance along ray
         if t0 > ray_w.max_t or t1 < ray_w.min_t:
-            return (None, None)
+            return None, None
 
         thit = t0
         if t0 < ray_w.min_t:
             thit = t1
         if thit > ray_w.max_t:
-            return (None, None)
+            return None, None
         return t0, t1
 
     def get_intersection(self, ray: Ray, dg: DifferentialGeometry) -> (bool, float):
@@ -60,8 +60,8 @@ class Sphere(Shape):
 
         t0, t1 = self.internal_solve(ray_o, ray)
 
-        if t0 == None and t1 == None:
-            return (False, 0.0)
+        if t0 is None and t1 is None:
+            return False, 0.0
 
         if ray_o.min_t <= t0 < ray_o.max_t:
             dg.point = ray_o.get_at(t0) * self.objectToWorld
@@ -73,8 +73,8 @@ class Sphere(Shape):
             v = Vector3d(v.x, v.y, v.z).get_normalized()
             dg.normal = Normal(v.x, v.y, v.z) * self.objectToWorld
             dg.shape = self
-            return (True, t0)
-        return (False, 0.0)
+            return True, t0
+        return False, 0.0
 
     def get_is_intersected(self, ray: Ray) -> bool:
 
@@ -83,7 +83,7 @@ class Sphere(Shape):
 
         t0, t1 = self.internal_solve(ray_o, ray)
 
-        return t0 != None and t1 != None
+        return t0 is not None and t1 is not None
 
     def get_object_bound(self) -> BoundingBox:
         return BoundingBox(Point3d(-self.radius, -self.radius, -self.radius),
@@ -98,7 +98,7 @@ class Sphere(Shape):
         ds = (p - Pcenter).get_length_squared()
 
         # Return uniform weight if point inside sphere
-        if ( ds - self.radius * self.radius < 1e-4):
+        if ds - self.radius * self.radius < 1e-4:
             return super().Pdf2(p, wi)
 
         # Compute general sphere weight

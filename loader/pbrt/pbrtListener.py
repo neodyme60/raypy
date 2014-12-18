@@ -58,6 +58,15 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#makenamedmaterial.
+    def enterMakenamedmaterial(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#makenamedmaterial.
+    def exitMakenamedmaterial(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#worldBlock.
     def enterWorldBlock(self, ctx):
         pass
@@ -175,21 +184,21 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by pbrtParser#material.
-    def enterMaterial(self, ctx):
-        pass
-
-    # Exit a parse tree produced by pbrtParser#material.
-    def exitMaterial(self, ctx):
-        pass
-
-
     # Enter a parse tree produced by pbrtParser#accelerator.
     def enterAccelerator(self, ctx):
         pass
 
     # Exit a parse tree produced by pbrtParser#accelerator.
     def exitAccelerator(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by pbrtParser#material.
+    def enterMaterial(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#material.
+    def exitMaterial(self, ctx):
         pass
 
 
@@ -247,15 +256,6 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by pbrtParser#objectBlock.
-    def enterObjectBlock(self, ctx):
-        pass
-
-    # Exit a parse tree produced by pbrtParser#objectBlock.
-    def exitObjectBlock(self, ctx):
-        pass
-
-
     # Enter a parse tree produced by pbrtParser#translate.
     def enterTranslate(self, ctx):
         pass
@@ -265,12 +265,30 @@ class pbrtListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by pbrtParser#objectBlock.
+    def enterObjectBlock(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#objectBlock.
+    def exitObjectBlock(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by pbrtParser#vector3.
     def enterVector3(self, ctx):
         pass
 
     # Exit a parse tree produced by pbrtParser#vector3.
     def exitVector3(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by pbrtParser#namedmaterial.
+    def enterNamedmaterial(self, ctx):
+        pass
+
+    # Exit a parse tree produced by pbrtParser#namedmaterial.
+    def exitNamedmaterial(self, ctx):
         pass
 
 

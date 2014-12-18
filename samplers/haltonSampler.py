@@ -35,7 +35,7 @@ class HaltonSampler(Sampler):
             lerp_delta = float(max(self.bucket_extend.get_width(), self.bucket_extend.get_height()))
             image_xy = (maths.tools.get_lerp(self.bucket_extend.start_x, self.bucket_extend.start_x + lerp_delta, u),
                         maths.tools.get_lerp(self.bucket_extend.start_y, self.bucket_extend.start_y + lerp_delta, v))
-            self.currentSample = self.currentSample+1
+            self.currentSample += 1
             if image_xy[0] < self.bucket_extend.end_x and image_xy[1] < self.bucket_extend.end_y:
                 sample.image_xy = image_xy
                 break

@@ -1,12 +1,14 @@
 import math
+
 import core.bsdf
 from core.fresnel import Fresnel
+from core.microfacet_distribution import MicrofacetDistribution
 from core.monte_carlo import CosineSampleHemisphere
-
 from core.spectrum import Spectrum
 from maths.config import CONST_PI_INV
-from maths.tools import get_to_radians, get_clamp
+from maths.tools import get_clamp
 from maths.vector3d import Vector3d
+
 
 
 # BSDF Inline Functions
@@ -36,6 +38,8 @@ def  SinPhi(w: Vector3d)->float:
 
 def SameHemisphere(w: Vector3d, wp: Vector3d)->bool:
     return w.z * wp.z > 0.0
+
+
 
 class BxDFType:
     # BSDF Declarations
@@ -92,7 +96,7 @@ class OrenNayar(BxDF):
     def __init__(self, reflection_spectrum: Spectrum, sig: float):
         super().__init__(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_DIFFUSE)
         self.reflection_spectrum = reflection_spectrum
-        sigma = get_to_radians(sig)
+        sigma = math.radians(sig)
         sigma2 = sigma*sigma
         self.A = 1.0 - (sigma2 / (2.0 * (sigma2 + 0.33)))
         self.B = 0.45 * sigma2 / (sigma2 + 0.09)
@@ -137,8 +141,49 @@ class SpecularReflection(BxDF):
         # Compute perfect specular reflection direction
         wi = Vector3d(-wo.x, -wo.y, wo.z)
         pdf = 1.0
-        s = self.fresnel.Evaluate(CosTheta(wo)) * self.reflection_spectrum / AbsCosTheta(*wi)
+        s = self.fresnel.Evaluate(CosTheta(wo)) * self.reflection_spectrum / AbsCosTheta(wi)
         return wi, pdf, s
 
 
+
+class Microfacet(BxDF):
+
+    # Microfacet Public Methods
+    def __init__(self, reflectance: Spectrum, f: Fresnel, d: MicrofacetDistribution):
+        super().__init__(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_GLOSSY)
+        self.r = reflectance
+        self.distribution = d
+        self.fresnel = f
+
+    def get_f(self, wo: Vector3d, wi: Vector3d)->Spectrum:
+        cosThetaO = AbsCosTheta(wo)
+        cosThetaI = AbsCosTheta(wi)
+        if cosThetaI == 0.0 or cosThetaO == 0.0:
+            return Spectrum(0.0)
+        wh = wi + wo
+        if wh.x == 0.0 and wh.y == 0.0 and wh.z == 0.0:
+            return Spectrum(0.0)
+        wh = wh.get_normalized()
+        cosThetaH = Vector3d.dot(wi, wh)
+        F = self.fresnel.Evaluate(cosThetaH)
+        return self.r * self.distribution.D(wh) * self.G(wo, wi, wh) * F / (4.0 * cosThetaI * cosThetaO)
+
+    def G(self, wo: Vector3d, wi: Vector3d, wh: Vector3d):
+        NdotWh = AbsCosTheta(wh)
+        NdotWo = AbsCosTheta(wo)
+        NdotWi = AbsCosTheta(wi)
+        WOdotWh = abs(Vector3d.dot(wo, wh))
+        return min(1.0, min((2.0 * NdotWh * NdotWo / WOdotWh), 2.0 * NdotWh * NdotWi / WOdotWh))
+
+    def Sample_f(self, wo: Vector3d, u: (float, float))->(Vector3d, float, Spectrum):
+        wi, pdf = self.distribution.Sample_f(wo, u)
+        if not SameHemisphere(wo, wi):
+            return wi, pdf, Spectrum(0.0)
+        f = self.get_f(wo, wi)
+        return wi, pdf, f
+
+    def get_Pdf(self, wo: Vector3d, wi: Vector3d) -> float:
+        if not SameHemisphere(wo, wi):
+            return 0.0
+        return self.distribution.Pdf(wo, wi)
 

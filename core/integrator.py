@@ -39,7 +39,7 @@ def UniformSampleAllLights(scene: Scene, renderer: Renderer, p: Point3d, n: Norm
     L = Spectrum(0.0)
     for i in range(len(scene.lights)):
         light = scene.lights[i]
-        if lightSampleOffsets == None:
+        if lightSampleOffsets is None:
             nSamples = 1
         else:
             nSamples = lightSampleOffsets[i].nSamples

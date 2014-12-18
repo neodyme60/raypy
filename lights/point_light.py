@@ -14,16 +14,15 @@ from maths.vector3d import Vector3d
 
 
 class PointLight(Light):
-
     def __init__(self, l2w: Transform, le: Spectrum):
         super().__init__(l2w)
         self.intensity = le
-        self.lightPos = Point3d(0.0, 0.0, 0.0)*l2w
+        self.lightPos = Point3d(0.0, 0.0, 0.0) * l2w
 
-    def get_power(self, scene: Scene)->Spectrum:
+    def get_power(self, scene: Scene) -> Spectrum:
         return 4.0 * math.pi * self.intensity
 
-    #return spectrum and pdf
+    # return spectrum and pdf
     def Sample_L1(self, p: Point3d, ls: LightSample, time: float, vis: VisibilityTester) -> (Vector3d, Spectrum, float):
         wi = (self.lightPos - p).get_normalized()
         pdf = 1.0
@@ -31,7 +30,8 @@ class PointLight(Light):
         s = self.intensity / (self.lightPos - p).get_length_squared()
         return wi, s, pdf
 
-    def Sample_L2(self, scene: Scene, ls: LightSample, u: (float, float), n: Normal, ray: Ray, time: float) -> (Spectrum, float):
+    def Sample_L2(self, scene: Scene, ls: LightSample, u: (float, float), n: Normal, ray: Ray, time: float) -> (
+            Spectrum, float):
         ray = Ray(self.lightPos, UniformSampleSphere(ls.uPos), 0.0, infinity_max_f, time)
         n.Set(Normal.create_from_vector3d(ray.direction))
         return self.intensity, UniformSpherePdf()
@@ -39,8 +39,8 @@ class PointLight(Light):
     def get_is_delta_light(self):
         return True
 
-    def Le(self, r: Ray)->Spectrum:
+    def Le(self, r: Ray) -> Spectrum:
         return Spectrum(0.0)
 
-    def get_pdf(self, p: Point3d, wi: Vector3d)->float:
+    def get_pdf(self, p: Point3d, wi: Vector3d) -> float:
         return 0.0

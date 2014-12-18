@@ -54,7 +54,7 @@ def RejectionSampleDisk() -> (float, float):
         sy = 1.0 - 2.0 * random()
         if sx * sx + sy * sy > 1.0:
             break
-    return (sx, sy)
+    return sx, sy
 
 
 def UniformSampleHemisphere(u1: float, u2: float) -> Vector3d:
@@ -121,9 +121,9 @@ def ConcentricSampleDisk(u: (float, float)) -> (float, float):
 
     # Handle degeneracy at the origin
     if sx == 0.0 and sy == 0.0:
-        return (0.0, 0.0)
-    if (sx >= -sy):
-        if (sx > sy):
+        return 0.0, 0.0
+    if sx >= -sy:
+        if sx > sy:
             # Handle first region of disk
             r = sx
             if sy > 0.0:
